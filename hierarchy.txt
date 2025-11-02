@@ -1,0 +1,48 @@
+
+core x
+    utils x
+      image_constant.dart
+      navigator_service.dart
+      size_utils.dart
+    app_export.dart
+
+presentation x
+    account_dashboard_screen x
+      models x
+        account_dashboard_model.dart
+        service_item_model.dart
+        transaction_item_model.dart
+
+      provider x
+        account_dashboard_provider.dart
+
+      widgets x
+        service_item_widget.dart
+        transaction_item.dart
+      account_dashboard_screen.dart
+
+    app_navigation_screen  x
+        models x
+          app_navigation_model.dart
+
+        provider x
+          app_navigation_provider.dart
+        
+        app_navigation_screen.dart
+
+
+routes x
+    app_routes.dart
+
+theme x
+    text_style_helper.dart
+    theme_helper.dart
+
+widgets x
+    custom_app_bar.dart
+    custom_bottom_app_bar.dart
+    custom_fab.dart
+    custom_icon_button.dart
+    custom_image_view.dart
+
+main.dart
