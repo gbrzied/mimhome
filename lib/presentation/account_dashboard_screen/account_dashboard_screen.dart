@@ -48,15 +48,15 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 12.h),
+                    //SizedBox(height: 12.h),
                     _buildBalanceCard(context, provider),
-                    SizedBox(height: 22.h),
+                    SizedBox(height: 12.h),
                     _buildServicesSection(context, provider),
-                    SizedBox(height: 18.h),
+                    SizedBox(height: 08.h),
                     _buildPaymentsSection(context, provider),
-                    SizedBox(height: 18.h),
+                    SizedBox(height: 08.h),
                     _buildTransactionsSection(context, provider),
-                    SizedBox(height: 110.h), // Extra space for bottom bar and FAB
+                    SizedBox(height: 120.h), // Extra space for bottom bar and FAB
                   ],
                 ),
               ),
@@ -101,7 +101,7 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
       BuildContext context, AccountDashboardProvider provider) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(26.h),
+      padding: EdgeInsets.all(40.h),
       margin: EdgeInsets.only(top: 12.h, right: 2.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.h),
@@ -112,7 +112,7 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -122,6 +122,7 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
                 style: TextStyleHelper.instance.title16MediumManrope,
               ),
               CustomIconButton(
+                height: 30,
                 text: 'Défaut',
                 leftIcon: ImageConstant.imgWalletoutline,
                 backgroundColor: appTheme.color26FFFF,
@@ -138,6 +139,7 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
           ),
           SizedBox(height: 22.h),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
