@@ -141,7 +141,7 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '1 234',
+                '234',
                 style: TextStyleHelper.instance.display42SemiBoldDMSans,
               ),
               Padding(
@@ -154,7 +154,7 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
               Padding(
                 padding: EdgeInsets.only(left: 14.h, bottom: 18.h),
                 child: CustomImageView(
-                  imagePath: ImageConstant.imgVector,
+                  imagePath: ImageConstant.imgEye,
                   height: 14.h,
                   width: 22.h,
                 ),

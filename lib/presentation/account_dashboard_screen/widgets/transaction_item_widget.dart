@@ -20,23 +20,34 @@ class TransactionItemWidget extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 2.h),
-            decoration: BoxDecoration(
-              color: (transactionItem.isPositive ?? false)
-                  ? Color(0xFFC5F9EF)
-                  : appTheme.deep_orange_100,
-              borderRadius: BorderRadius.circular(6.h),
-            ),
-            child: Text(
-              transactionItem.type ?? '',
-              style: TextStyleHelper.instance.label6MediumInter.copyWith(
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CustomImageView(
+                imagePath: transactionItem.icon ?? '',
+                height: 24.h,
+                width: 64.h,
+              ),
+              SizedBox(height: 4.h),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 2.h),
+                decoration: BoxDecoration(
                   color: (transactionItem.isPositive ?? false)
-                      ? Color(0xFF2B6F71)
-                      : appTheme.pink_900),
-            ),
+                      ? Color(0xFFC5F9EF)
+                      : appTheme.deep_orange_100,
+                  borderRadius: BorderRadius.circular(6.h),
+                ),
+                child: Text(
+                  transactionItem.type ?? '',
+                  style: TextStyleHelper.instance.label6MediumInter.copyWith(
+                      color: (transactionItem.isPositive ?? false)
+                          ? Color(0xFF2B6F71)
+                          : appTheme.pink_900),
+                ),
+              ),
+            ],
           ),
-          SizedBox(width: 8.h),
+          SizedBox(width: 18.h),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
