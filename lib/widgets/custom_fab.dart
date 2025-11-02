@@ -57,7 +57,7 @@ class CustomFab extends StatelessWidget {
       child: FloatingActionButton(
         onPressed: onPressed,
         backgroundColor: backgroundColor ?? Theme.of(context).primaryColor,
-        elevation: elevation ?? 6.0,
+        elevation: elevation ?? 60.0,
         mini: fabSize < 40.h, // Use mini FAB for smaller sizes
         child: CustomImageView(
           imagePath: iconPath ?? ImageConstant.imgIconsGrid,

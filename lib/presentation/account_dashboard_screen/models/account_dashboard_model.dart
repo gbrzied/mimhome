@@ -10,7 +10,7 @@ class AccountDashboardModel {
     this.transactionItems,
     this.id,
   }) {
-    balance = balance ?? "1 234,567 TND";
+    balance = balance ?? "234,567 TND";
     serviceItems = serviceItems ?? [];
     transactionItems = transactionItems ?? [];
     id = id ?? "";

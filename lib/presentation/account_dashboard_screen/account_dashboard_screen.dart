@@ -41,28 +41,43 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
       appBar: _buildAppBar(),
       body: Consumer<AccountDashboardProvider>(
         builder: (context, provider, child) {
-          return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 20.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 12.h),
-                _buildBalanceCard(context, provider),
-                SizedBox(height: 22.h),
-                _buildServicesSection(context, provider),
-                SizedBox(height: 18.h),
-                _buildPaymentsSection(context, provider),
-                SizedBox(height: 18.h),
-                _buildTransactionsSection(context, provider),
-                SizedBox(height: 20.h),
-              ],
-            ),
+          return Stack(
+            children: [
+              SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 20.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 12.h),
+                    _buildBalanceCard(context, provider),
+                    SizedBox(height: 22.h),
+                    _buildServicesSection(context, provider),
+                    SizedBox(height: 18.h),
+                    _buildPaymentsSection(context, provider),
+                    SizedBox(height: 18.h),
+                    _buildTransactionsSection(context, provider),
+                    SizedBox(height: 110.h), // Extra space for bottom bar and FAB
+                  ],
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: _buildBottomAppBar(),
+              ),
+              Positioned(
+                bottom: 40.h, // Position above the bottom bar
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: _buildFloatingActionButton(),
+                ),
+              ),
+            ],
           );
         },
       ),
-      bottomNavigationBar: _buildBottomAppBar(),
-      //floatingActionButton: _buildFloatingActionButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
@@ -232,7 +247,9 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
                       Padding(
                         padding: EdgeInsets.only(top: 8.h),
                         child: CustomImageView(
-                          imagePath: ImageConstant.imgVectorWhiteA700,
+                         // imagePath: ImageConstant.imgVectorWhiteA700,
+                        imagePath: ImageConstant.imgQrcode,
+
                           height: 24.h,
                           width: 24.h,
                         ),
@@ -281,9 +298,13 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
                         child: Padding(
                           padding: EdgeInsets.only(top: 4.h),
                           child: Text(
-                            'Factures & Services',
-                            style: TextStyleHelper.instance.body12SemiBoldInter
-                                .copyWith(color: appTheme.cyan_300),
+                            'Factures \n& Services',
+                            // style: TextStyleHelper.instance.body12SemiBoldInter
+                            //     .copyWith(color: appTheme.cyan_300),
+                  style: TextStyleHelper.instance.body12RegularDMSans.copyWith(fontWeight: FontWeight.bold),
+
+
+
                           ),
                         ),
                       ),
@@ -389,24 +410,66 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
           onFabTapped: () {
             provider.onFabTapped();
           },
-          fabIcon: ImageConstant.imgIconsGrid,
-          fabText: 'Menu',
+         // fabIcon: ImageConstant.imgIconsGrid,
+          fabText: 'Menur',
         );
       },
     );
   }
 
+  // Widget _buildFloatingActionButton() {
+  //   return Consumer<AccountDashboardProvider>(
+  //     builder: (context, provider, child) {
+  //       return CustomFab(
+  //         iconPath: ImageConstant.imgIconsGrid,
+  //         size: 56.h,
+  //         onPressed: () {
+  //           provider.onFabTapped();
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
+
   Widget _buildFloatingActionButton() {
     return Consumer<AccountDashboardProvider>(
       builder: (context, provider, child) {
-        return CustomFab(
-          iconPath: ImageConstant.imgIconsGrid,
-          size: 28.h,
-          onPressed: () {
+        return GestureDetector(
+          onTap: () {
             provider.onFabTapped();
           },
+          child: Container(
+            height: 56.h,
+            width: 60.h,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment(0.157, 0),
+                end: Alignment(1, 1),
+                colors: [
+                  Color(0xFF43A0A3),
+                  appTheme.cyan_900,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12.h),
+              boxShadow: [
+                BoxShadow(
+                  color: appTheme.color8C0000,
+                  blurRadius: 35.h,
+                  offset: Offset(4.h, 12.h),
+                ),
+              ],
+            ),
+            child: Center(
+              child: CustomImageView(
+                imagePath: ImageConstant.imgIconsGrid,
+                height: 28.h,
+                width: 28.h,
+              ),
+            ),
+          ),
         );
       },
     );
   }
+
 }

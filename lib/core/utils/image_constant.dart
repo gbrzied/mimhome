@@ -22,13 +22,15 @@ class ImageConstant {
 
   // Account Dashboard Screen
   static String imgEllipse645 = '${_basePath}img_ellipse_645.png';
-  static String imgFileDocumentM = '${_basePath}img_file_document_m.svg';
+  static String imgFileDocumentM = '${_basePath}img_file_document_m.png';
   static String imgIconNotification = '${_basePath}img_icon_notification.png';
   static String imgIconsGrid = '${_basePath}img_icons_grid.png';
   static String imgLogo = '${_basePath}img_logo.svg';
   static String imgVector = '${_basePath}img_vector.svg';
   static String imgVectorWhiteA700 = '${_basePath}img_vector_white_a700.svg';
   static String imgWalletoutline = '${_basePath}img_walletoutline.png';
+
+  static String imgQrcode = '${_basePath}img_qr_code.png';
 
   // Custom Bottom App Bar Screen
   // Custom Fab Screen

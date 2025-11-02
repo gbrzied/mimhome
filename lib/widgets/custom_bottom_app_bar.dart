@@ -52,13 +52,15 @@ class CustomBottomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-      height: 116.h,
+      height: 90.h,
       color: appTheme.color7FFFFF,
       shape: CircularNotchedRectangle(),
       notchMargin: 8.h,
       child: Container(
         decoration: BoxDecoration(
           color: appTheme.color7FFFFF,
+         // color: appTheme.black_900,
+
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(16.h),
             topRight: Radius.circular(16.h),
@@ -89,12 +91,12 @@ class CustomBottomAppBar extends StatelessWidget {
                 ),
               ),
             ),
-            Positioned(
-              top: 14.h,
-              left: 0,
-              right: 0,
-              child: _buildFloatingActionButton(),
-            ),
+            // Positioned(
+            //   top: 0.h,
+            //   left: 0,
+            //   right: 0,
+            //   child: _buildFloatingActionButton(),
+            // ),
           ],
         ),
       ),
@@ -182,7 +184,7 @@ class CustomBottomAppBar extends StatelessWidget {
               ),
             ),
           ),
-          if (fabText != null) ...[
+          if (fabText != null && fabText!.isNotEmpty) ...[
             SizedBox(height: 6.h),
             Text(
               fabText!,
@@ -194,6 +196,8 @@ class CustomBottomAppBar extends StatelessWidget {
       ),
     );
   }
+
+
 }
 
 /// Item data model for custom bottom app bar
