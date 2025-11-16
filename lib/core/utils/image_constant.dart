@@ -26,6 +26,8 @@ class ImageConstant {
   static String imgIconNotification = '${_basePath}img_icon_notification.png';
   static String imgIconsGrid = '${_basePath}img_icons_grid.png';
   static String imgLogo = '${_basePath}img_logo.svg';
+  static String imgLogo2 = '${_basePath}logo2.svg';
+
   static String imgEye = '${_basePath}imgEye.png';
   static String imgVectorWhiteA700 = '${_basePath}img_vector_white_a700.svg';
   static String imgWalletoutline = '${_basePath}img_walletoutline.png';

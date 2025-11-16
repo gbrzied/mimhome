@@ -43,7 +43,7 @@ class TextStyleHelper {
 
   TextStyle get title18SemiBoldSyne => TextStyle(
         fontSize: 18.fSize,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w400,
         fontFamily: 'Syne',
         color: appTheme.blue_gray_700,
       );

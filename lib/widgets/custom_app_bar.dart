@@ -102,7 +102,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   Widget _buildTitleSection() {
     return Container(
-      margin: EdgeInsets.only(left: 20.h, bottom: 4.h),
+      margin: EdgeInsets.only(left: 15.h, bottom: 4.h),
       child: Text(
         title ?? "MILLIME",
         style: titleTextStyle ??

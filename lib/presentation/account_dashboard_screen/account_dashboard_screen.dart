@@ -84,7 +84,7 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
   PreferredSizeWidget _buildAppBar() {
     return CustomAppBar(
       title: 'MILLIME',
-      logoImagePath: ImageConstant.imgLogo,
+      logoImagePath: ImageConstant.imgLogo2,
       notificationImagePath: ImageConstant.imgIconNotification,
       profileImagePath: ImageConstant.imgEllipse645,
       height: 56.h,
@@ -101,8 +101,8 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
       BuildContext context, AccountDashboardProvider provider) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(40.h),
-      margin: EdgeInsets.only(top: 12.h, right: 2.h),
+      padding: EdgeInsets.only(top:20,bottom: 40,right: 30,left: 40),
+      margin: EdgeInsets.only(top: 1, right: 2.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.h),
         gradient: LinearGradient(
@@ -123,6 +123,7 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
               ),
               CustomIconButton(
                 height: 30,
+              
                 text: 'Défaut',
                 leftIcon: ImageConstant.imgWalletoutline,
                 backgroundColor: appTheme.color26FFFF,
@@ -187,7 +188,7 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
               },
               child: Text(
                 'Voir plus',
-                style: TextStyleHelper.instance.body15SemiBoldManrope,
+                style: TextStyleHelper.instance.body15SemiBoldManrope.copyWith(fontWeight: FontWeight.normal),
               ),
             ),
           ],
@@ -243,6 +244,7 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
                     ),
                   ),
                   child: Row(
+                    
                     spacing: 14.h,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -283,6 +285,10 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.h),
                     color: appTheme.cyan_200_16,
+                              border: Border.all(
+            color: Colors.black,
+            width: 1
+          ),
                   ),
                   child: Row(
                     spacing: 16.h,
@@ -342,7 +348,7 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
                 },
                 child: Text(
                   'Voir plus',
-                  style: TextStyleHelper.instance.body15SemiBoldManrope,
+                style: TextStyleHelper.instance.body15SemiBoldManrope.copyWith(fontWeight: FontWeight.normal),
                 ),
               ),
             ],

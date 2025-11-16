@@ -43,7 +43,7 @@ class AccountDashboardProvider extends ChangeNotifier {
       ),
       ServiceItemModel(
         icon: ImageConstant.imgIconAlimcarte34x40,
-        title: 'carte →\n wallet',
+        title: 'carte/wallet',
         id: '31_95_272_331_70_70',
       ),
     ];
@@ -111,6 +111,9 @@ class AccountDashboardProvider extends ChangeNotifier {
 
   void onServiceItemTap(ServiceItemModel serviceItem) {
     // Handle service item tap
+
+        NavigatorService.pushNamed(AppRoutes.accountOpeningPage);
+
     notifyListeners();
   }
 

@@ -20,7 +20,7 @@ class ServiceItemWidget extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 70.h,
-        padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 6.h),
+        padding: EdgeInsets.symmetric(horizontal: 1.h, vertical: 6.h),
         decoration: BoxDecoration(
           color: appTheme.white_A700,
           borderRadius: BorderRadius.circular(12.h),
