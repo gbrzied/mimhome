@@ -86,6 +86,7 @@ class AccountDashboardProvider extends ChangeNotifier {
         title: 'Favoris',
         routeName: '/favoris',
       ),
+   
       CustomBottomAppBarItem(
         icon: ImageConstant.imgNavServices,
         title: 'Services',
@@ -101,6 +102,7 @@ class AccountDashboardProvider extends ChangeNotifier {
 
   void onDefaultButtonPressed() {
     // Handle default button press
+    NavigatorService.pushNamed(AppRoutes.walletSetupConfirmationScreen);
     notifyListeners();
   }
 
@@ -112,7 +114,7 @@ class AccountDashboardProvider extends ChangeNotifier {
   void onServiceItemTap(ServiceItemModel serviceItem) {
     // Handle service item tap
 
-        NavigatorService.pushNamed(AppRoutes.accountOpeningPage);
+        NavigatorService.pushNamed(AppRoutes.billPaymentSelectionScreen);
 
     notifyListeners();
   }

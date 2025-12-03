@@ -52,10 +52,10 @@ class CustomBottomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-      height: 90.h,
+      height: 75.h,
       color: appTheme.color7FFFFF,
       shape: CircularNotchedRectangle(),
-      notchMargin: 8.h,
+      notchMargin: 18.h,
       child: Container(
         decoration: BoxDecoration(
           color: appTheme.color7FFFFF,
@@ -158,14 +158,11 @@ class CustomBottomAppBar extends StatelessWidget {
               height: 56.h,
               width: 60.h,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment(0.157, 0),
-                  end: Alignment(1, 1),
-                  colors: [
-                    Color(0xFF43A0A3),
-                    appTheme.cyan_900,
-                  ],
-                ),
+             gradient: LinearGradient(
+                      begin: Alignment(0.34, -0.94),
+                      end: Alignment(-0.34, 0.94),
+                      colors: [Color(0xFF156778), Color(0xFF228E91)],
+                    ),
                 borderRadius: BorderRadius.circular(12.h),
                 boxShadow: [
                   BoxShadow(

@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
     return Sizer(
       builder: (context, orientation, deviceType) {
         return MaterialApp(
-          title: 'tassnim_s_application',
+          title: 'millimes-mobile',
           debugShowCheckedModeBanner: false,
           theme: theme,
           // 🚨 CRITICAL: NEVER REMOVE OR MODIFY

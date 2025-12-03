@@ -35,51 +35,36 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: appTheme.gray_50_01,
-      appBar: _buildAppBar(),
-      body: Consumer<AccountDashboardProvider>(
-        builder: (context, provider, child) {
-          return Stack(
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: appTheme.gray_50_01,
+    appBar: _buildAppBar(),
+    body: Consumer<AccountDashboardProvider>(
+      builder: (context, provider, child) {
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 20.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    //SizedBox(height: 12.h),
-                    _buildBalanceCard(context, provider),
-                    SizedBox(height: 12.h),
-                    _buildServicesSection(context, provider),
-                    SizedBox(height: 08.h),
-                    _buildPaymentsSection(context, provider),
-                    SizedBox(height: 08.h),
-                    _buildTransactionsSection(context, provider),
-                    SizedBox(height: 120.h), // Extra space for bottom bar and FAB
-                  ],
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: _buildBottomAppBar(),
-              ),
-              Positioned(
-                bottom: 40.h, // Position above the bottom bar
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: _buildFloatingActionButton(),
-                ),
-              ),
+              //SizedBox(height: 12.h),
+              _buildBalanceCard(context, provider),
+              SizedBox(height: 12.h),
+              _buildServicesSection(context, provider),
+              SizedBox(height: 08.h),
+              _buildPaymentsSection(context, provider),
+              SizedBox(height: 14.h),
+              _buildTransactionsSection(context, provider),
+              SizedBox(height: 20.h), // Reduced space since bottom bar is now outside body
             ],
-          );
-        },
-      ),
-    );
-  }
+          ),
+        );
+      },
+    ),
+    bottomNavigationBar: _buildBottomAppBar(),
+    floatingActionButton: _buildFloatingActionButton(),
+    floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+  );
+}
 
   PreferredSizeWidget _buildAppBar() {
     return CustomAppBar(
@@ -234,7 +219,7 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
                       .onScanQRCodePressed();
                 },
                 child: Container(
-                  padding: EdgeInsets.all(14.h),
+                  padding: EdgeInsets.all(20.h),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.h),
                     gradient: LinearGradient(
@@ -243,33 +228,33 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
                       colors: [Color(0xFF156778), Color(0xFF228E91)],
                     ),
                   ),
-                  child: Row(
-                    
-                    spacing: 14.h,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: 8.h),
-                        child: CustomImageView(
-                         // imagePath: ImageConstant.imgVectorWhiteA700,
-                        imagePath: ImageConstant.imgQrcode,
+             child: Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  spacing: 14.h,
+  crossAxisAlignment: CrossAxisAlignment.center,
+  children: [
+    Padding(
+      padding: EdgeInsets.zero,
+      child: CustomImageView(
+        imagePath: ImageConstant.imgQrcode,
+        height: 24.h,
+        width: 24.h,
+      ),
+    ),
+    Padding(
+      padding: EdgeInsets.zero,
+      child: Text(
+        'Scanner\n QR code',
+        style: TextStyleHelper.instance.body12SemiBoldInter
+            .copyWith(color: appTheme.white_A700),
+      ),
+    ),
+  ],
+),
 
-                          height: 24.h,
-                          width: 24.h,
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 4.h),
-                          child: Text(
-                            'Scanner\n QR code',
-                            style: TextStyleHelper.instance.body12SemiBoldInter
-                                .copyWith(color: appTheme.white_A700),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+
+    
+
                 ),
               ),
             ),
@@ -281,7 +266,7 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
                       .onBillsServicesPressed();
                 },
                 child: Container(
-                  padding: EdgeInsets.all(14.h),
+                  padding: EdgeInsets.all(20.h),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20.h),
                     color: appTheme.cyan_200_16,
@@ -291,30 +276,18 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
           ),
                   ),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     spacing: 16.h,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Padding(
-                        padding: EdgeInsets.only(top: 8.h),
-                        child: CustomImageView(
-                          imagePath: ImageConstant.imgFileDocumentM,
-                          height: 24.h,
-                          width: 24.h,
-                        ),
+                      CustomImageView(
+                        imagePath: ImageConstant.imgFileDocumentM,
+                        height: 24.h,
+                        width: 24.h,
                       ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 4.h),
-                          child: Text(
-                            'Factures \n& Services',
-                            // style: TextStyleHelper.instance.body12SemiBoldInter
-                            //     .copyWith(color: appTheme.cyan_300),
-                  style: TextStyleHelper.instance.body12RegularDMSans.copyWith(fontWeight: FontWeight.bold),
-
-
-
-                          ),
-                        ),
+                      Text(
+                        'Factures \n& Services',
+                        style: TextStyleHelper.instance.body12RegularDMSans.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -474,8 +447,11 @@ class _AccountDashboardScreenState extends State<AccountDashboardScreen> {
                 width: 28.h,
               ),
             ),
+            
           ),
+          
         );
+        
       },
     );
   }

@@ -20,6 +20,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
     Key? key,
     this.title,
+    this.leadingIcon,
+    this.onLeadingPressed,
     this.logoImagePath,
     this.notificationImagePath,
     this.profileImagePath,
@@ -32,6 +34,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   /// The title text to display in the app bar
   final String? title;
+    /// Optional path to the leading icon (SVG/PNG)
+  final String? leadingIcon;
+
+  /// Callback function when leading icon is tapped
+  final VoidCallback? onLeadingPressed;
 
   /// Path to the logo image (SVG supported)
   final String? logoImagePath;
@@ -68,9 +75,29 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       toolbarHeight: height ?? 56.h,
       title: _buildAppBarContent(),
+
+
+      titleSpacing: leadingIcon != null ? 0 : 28.h,
+      leading: leadingIcon != null ? _buildLeading() : null,
+    //  title: title != null ? _buildTitle() : null,
+      leadingWidth: leadingIcon != null ? 62.h : null,
     );
   }
-
+ Widget _buildLeading() {
+    return GestureDetector(
+      onTap: onLeadingPressed,
+      child: Container(
+        margin: EdgeInsets.only(left: 28.h, bottom: 2.h),
+        alignment: Alignment.bottomLeft,
+        child: CustomImageView(
+          imagePath: leadingIcon!,
+          height: 12.h,
+          width: 6.h,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
   Widget _buildAppBarContent() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 22.h, vertical: 8.h),

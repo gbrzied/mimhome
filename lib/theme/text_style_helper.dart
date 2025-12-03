@@ -119,4 +119,110 @@ class TextStyleHelper {
         fontWeight: FontWeight.w500,
         fontFamily: 'Inter',
       );
+
+
+
+  TextStyle get title20SemiBoldSyne => TextStyle(
+        fontSize: 20.fSize,
+        fontWeight: FontWeight.w600,
+        fontFamily: 'Syne',
+        color: appTheme.blue_gray_900,
+      );
+
+  TextStyle get title16SemiBoldPoppins => TextStyle(
+        fontSize: 16.fSize,
+        fontWeight: FontWeight.w600,
+        fontFamily: 'Poppins',
+        color: appTheme.blue_gray_900_01,
+      );
+ 
+  TextStyle get title16MediumSyne => TextStyle(
+        fontSize: 16.fSize,
+        fontWeight: FontWeight.w500,
+        fontFamily: 'Syne',
+        color: appTheme.cyan_900,
+      );
+
+  // Body Styles
+  // Standard text styles for body content
+
+  TextStyle get body14RegularSyne => TextStyle(
+        fontSize: 14.fSize,
+        fontWeight: FontWeight.w400,
+        fontFamily: 'Syne',
+        color: appTheme.gray_700,
+      );
+
+  TextStyle get body12MediumPoppins => TextStyle(
+        fontSize: 12.fSize,
+        fontWeight: FontWeight.w500,
+        fontFamily: 'Poppins',
+        color: appTheme.gray_500,
+      );
+
+
+      // Title Styles
+  // Medium text styles for titles and subtitles
+
+
+  TextStyle get title18SemiBoldQuicksand => TextStyle(
+        fontSize: 18.fSize,
+        fontWeight: FontWeight.w600,
+        fontFamily: 'Quicksand',
+        color: appTheme.black_900,
+      );
+
+  TextStyle get title16SemiBoldManrope => TextStyle(
+        fontSize: 16.fSize,
+        fontWeight: FontWeight.w600,
+        fontFamily: 'Manrope',
+        color: appTheme.whiteCustom,
+      );
+
+  // Body Styles
+  // Standard text styles for body content
+
+  TextStyle get body14BoldManrope => TextStyle(
+        fontSize: 14.fSize,
+        fontWeight: FontWeight.w700,
+        fontFamily: 'Manrope',
+        color: appTheme.black_900,
+      );
+
+  TextStyle get body14SemiBoldManrope => TextStyle(
+        fontSize: 14.fSize,
+        fontWeight: FontWeight.w600,
+        fontFamily: 'Manrope',
+        color: appTheme.black_900,
+      );
+
+  TextStyle get body12RegularManrope => TextStyle(
+        fontSize: 12.fSize,
+        fontWeight: FontWeight.w400,
+        fontFamily: 'Manrope',
+        color: appTheme.gray_400,
+      );
+
+  TextStyle get body12ExtraBoldManrope => TextStyle(
+        fontSize: 12.fSize,
+        fontWeight: FontWeight.w800,
+        fontFamily: 'Manrope',
+        color: appTheme.black_900,
+      );
+
+  // Label Styles
+  // Small text styles for labels, captions, and hints
+
+  TextStyle get label10SemiBoldManrope => TextStyle(
+        fontSize: 10.fSize,
+        fontWeight: FontWeight.w600,
+        fontFamily: 'Manrope',
+      );
+
+  TextStyle get label10RegularManrope => TextStyle(
+        fontSize: 10.fSize,
+        fontWeight: FontWeight.w400,
+        fontFamily: 'Manrope',
+        color: appTheme.gray_600,
+      );
 }

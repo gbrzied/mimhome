@@ -35,9 +35,41 @@ class AppNavigationScreenState extends State<AppNavigationScreen> {
                   padding: EdgeInsets.only(top: 10.h),
                   child: Column(
                     children: [
+// IdentityVerificationScreen
+                _buildScreenTitle(
+                        context,
+                        screenTitle: "identityVerificationScreen",
+                        onTapScreenTitle: () => onTapScreenTitle(
+                            context, AppRoutes.identityVerificationScreen),
+                      ),
+                _buildScreenTitle(
+                        context,
+                        screenTitle: "accountTypeSelectionScreen",
+                        onTapScreenTitle: () => onTapScreenTitle(
+                            context, AppRoutes.accountTypeSelectionScreen),
+                      ),
+                      
                       _buildScreenTitle(
                         context,
-                        screenTitle: "v3",
+                        screenTitle: "walletSetupConfirmationScreen",
+                        onTapScreenTitle: () => onTapScreenTitle(
+                            context, AppRoutes.walletSetupConfirmationScreen),
+                      ),
+                      _buildScreenTitle(
+                        context,
+                        screenTitle: "billPaymentSelectionScreen",
+                        onTapScreenTitle: () => onTapScreenTitle(
+                            context, AppRoutes.billPaymentSelectionScreen),
+                      ),
+                      _buildScreenTitle(
+                        context,
+                        screenTitle: "choix_nivTwo",
+                        onTapScreenTitle: () => onTapScreenTitle(
+                            context, AppRoutes.accountLevelSelectionScreen),
+                      ),                  
+                       _buildScreenTitle(
+                        context,
+                        screenTitle: "accountDashboardScreen",
                         onTapScreenTitle: () => onTapScreenTitle(
                             context, AppRoutes.accountDashboardScreen),
                       ),

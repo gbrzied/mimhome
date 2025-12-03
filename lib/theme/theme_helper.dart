@@ -69,6 +69,8 @@ class LightCodeColors {
   Color get blue_gray_900 => Color(0xFF33363F);
   Color get teal_300 => Color(0xFF43A0A3);
   Color get gray_50_01 => Color(0xFFFAFBFA);
+  Color get gray_400 => Color(0xFFBEBCBC);
+
 
   // Additional Colors
   Color get transparentCustom => Colors.transparent;
@@ -82,4 +84,31 @@ class LightCodeColors {
   // Color Shades - Each shade has its own dedicated constant
   Color get grey200 => Colors.grey.shade200;
   Color get grey100 => Colors.grey.shade100;
+
+
+    // App Colors
+  Color get blue_gray_100_66 => Color(0x66D9D7D7);
+  Color get gray_700 => Color(0xFF5B5F5F);
+  
+  Color get gray_900 => Color(0xFF111111);
+  Color get blue_gray_900_01 => Color(0xFF333333);
+  Color get gray_500 => Color(0xFF979797);
+  Color get deep_purple_800_11 => Color(0x113629B7);
+ 
+  Color get colorFF6BA8 => Color(0xFF6BA8B8);
+  Color get colorFF9BC4 => Color(0xFF9BC4CC);
+
+
+
+  Color get blue_gray_100 => Color(0xFFD9D9D9);
+  Color get blue_gray_100_01 => Color(0xFFD2CFCA);
+  Color get blue_gray_50 => Color(0xFFEDF3F3);
+  Color get gray_300 => Color(0xFFE3E4E8);
+
+  Color get redCustom => Colors.red;
+  Color get color161567 => Color(0x16156778);
+  Color get colorFF52D1 => Color(0xFF52D1C6);
+
+
+
 }

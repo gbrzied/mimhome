@@ -6,7 +6,26 @@ class ImageConstant {
   // Placeholder image for fallback
   static String imgPlaceholder = '${_basePath}placeholder.png';
 
+  // Account Level Selection Screen
+  static String imgGroup2 = '${_basePath}img_group_2.svg';
+  static String imgRectangle2 = '${_basePath}img_rectangle_2.svg';
+  static String imgRectangle4 = '${_basePath}img_rectangle_4.svg';
+  static String imgRefresh = '${_basePath}img_refresh.svg';
+  static String imgTrendingUp = '${_basePath}img_trending_up.svg';
+
+  // Account Type Selection Screen
+  static String imgCaptureDCran72x102 =
+      '${_basePath}img_capture_d_cran_72x102.png';
+
+
+
+
+
   // Common Images
+  static String imgPP= '${_basePath}img_pp.png';
+  static String imgPM= '${_basePath}img_pm.png';
+
+
   static String imgCaptureDCran = '${_basePath}img_capture_d_cran.png';
   static String imgIconAlimcarte = '${_basePath}img_icon_alimcarte.png';
   static String imgIconAlimcarte34x40 =
@@ -38,4 +57,19 @@ class ImageConstant {
   // Custom Fab Screen
   // Custom Image View Screen
   static String imgImageNotFound = '${_basePath}image_not_found.png';
+
+   // Placeholder image for fallback
+
+  // Common Images
+  static String imgElectric = '${_basePath}img_electric.png';
+  static String imgInternet = '${_basePath}img_internet.png';
+  static String imgMotoway = '${_basePath}img_motoway.png';
+  static String imgWater = '${_basePath}img_water.png';
+
+  // Bill Payment Selection Screen
+  static String imgArrowLeft = '${_basePath}img_arrow_left.svg';
+
+  // Custom Image View Screen
+  // Wallet Setup Confirmation Screen
+  static String imgWalletInfo = '${_basePath}img_default_wallet_confirm.png';
 }
