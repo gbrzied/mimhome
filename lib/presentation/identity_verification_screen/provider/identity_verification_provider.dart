@@ -26,5 +26,7 @@ class IdentityVerificationProvider extends ChangeNotifier {
 
   void navigateToNextScreen(BuildContext context) {
     // Navigation logic for next screen
+          NavigatorService.pushNamed(AppRoutes.finEnrolScreen);
+
   }
 }

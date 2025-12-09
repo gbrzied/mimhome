@@ -66,13 +66,61 @@ class AppNavigationScreenState extends State<AppNavigationScreen> {
                         screenTitle: "choix_nivTwo",
                         onTapScreenTitle: () => onTapScreenTitle(
                             context, AppRoutes.accountLevelSelectionScreen),
-                      ),                  
+                      ),
                        _buildScreenTitle(
+                        context,
+                        screenTitle: "accordionDocumentScreen",
+                        onTapScreenTitle: () => onTapScreenTitle(
+                            context, AppRoutes.accordionDocumentScreen),
+                      ),
+                      _buildScreenTitle(
                         context,
                         screenTitle: "accountDashboardScreen",
                         onTapScreenTitle: () => onTapScreenTitle(
                             context, AppRoutes.accountDashboardScreen),
                       ),
+                      //  _buildScreenTitle(
+                      //    context,
+                      //    screenTitle: "termsConditionsScreen",
+                      //    onTapScreenTitle: () => onTapScreenTitle(
+                      //        context, AppRoutes.termsConditionsScreen),
+                      //  ),
+                       _buildScreenTitle(
+                         context,
+                         screenTitle: "termsConditionsScreenV2",
+                         onTapScreenTitle: () => onTapScreenTitle(
+                             context, AppRoutes.termsConditionsScreenV2),
+                       ),
+                       _buildScreenTitle(
+                         context,
+                         screenTitle: "otpScreen",
+                         onTapScreenTitle: () => onTapScreenTitle(
+                             context, AppRoutes.otpScreen),
+                       ),
+                       _buildScreenTitle(
+                         context,
+                         screenTitle: "personalInformationsScreen",
+                         onTapScreenTitle: () => onTapScreenTitle(
+                             context, AppRoutes.personalInformationsScreen),
+                       ),
+                       _buildScreenTitle(
+                         context,
+                         screenTitle: "accountRecoveryScreen",
+                         onTapScreenTitle: () => onTapScreenTitle(
+                             context, AppRoutes.accountRecoveryScreen),
+                       ),
+                       _buildScreenTitle(
+                         context,
+                         screenTitle: "loginScreen",
+                         onTapScreenTitle: () => onTapScreenTitle(
+                             context, AppRoutes.loginScreen),
+                       ),
+                       _buildScreenTitle(
+                         context,
+                         screenTitle: "finEnrolScreen",
+                         onTapScreenTitle: () => onTapScreenTitle(
+                             context, AppRoutes.finEnrolScreen),
+                       ),
                     ],
                   ),
                 ),

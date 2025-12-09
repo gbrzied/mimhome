@@ -60,8 +60,8 @@ class AccountLevelSelectionProvider extends ChangeNotifier {
         ),
       );
 
-      // Navigate to next screen (placeholder - update with actual route when available)
-      // NavigatorService.pushNamed(AppRoutes.nextScreen);
+      // Navigate to personal informations screen
+      NavigatorService.pushNamed(AppRoutes.personalInformationsScreen);
     });
   }
 

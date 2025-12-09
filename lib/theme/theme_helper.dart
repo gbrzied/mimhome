@@ -109,6 +109,46 @@ class LightCodeColors {
   Color get color161567 => Color(0x16156778);
   Color get colorFF52D1 => Color(0xFF52D1C6);
 
+  Color get colorF98600 => Color(0xFFF98600);
 
+  Color get colorFEE2E2 => Color(0xFFFEE2E2);
+
+
+
+
+  // ===== SEMANTIC COLOR SYSTEM =====
+  // Primary Colors - Core brand identity
+  Color get primaryColor => cyan_900; // Main brand color (#156778)
+  Color get primaryVariant => teal_400; // Secondary brand color (#228E91)
+  Color get secondaryColor => blue_gray_700; // Alternative accent (#2B6F71)
+  Color get breakColor => colorF98600; // Alternative accent (#2B6F71)
+
+  // Background Colors - App surface colors
+  Color get backgroundColor => white_A700; // Main background (#FFFFFF)
+  Color get surfaceColor => gray_50_01; // Card/surface backgrounds (#FAFBFA)
+  Color get onPrimary => whiteCustom; // Text/icons on primary color
+  Color get backgroundErrColor => colorFEE2E2; // Main background (#FFFFFF)
+
+
+  // Text Colors - Typography hierarchy
+  Color get onBackground => black_900; // Primary text on backgrounds (#000000)
+  Color get onSurface => gray_600; // Secondary text on surfaces (#787878)
+  Color get onSurfaceVariant => gray_700; // Tertiary text (#5B5F5F)
+
+  // Semantic Colors - Functional meanings
+  Color get errorColor => red_A700; // Error states (#FD0A0A)
+  Color get errorContainer => deep_orange_100; // Error backgrounds (#F9C5C5)
+  Color get successColor => teal_400; // Success states (#228E91)
+  Color get warningColor => deep_orange_100; // Warning states (#F9C5C5)
+
+  // Neutral Colors - Borders, dividers, disabled states
+  Color get borderColor => gray_200; // Borders and outlines (#EAEAEB)
+  Color get dividerColor => gray_400; // Dividers and separators (#BEBCBC)
+  Color get disabledColor => gray_600; // Disabled elements (#787878)
+
+  // Transparency - Overlay effects
+  Color get overlayLight => color7FFFFF; // Light overlays (50% white)
+  Color get overlayDark => color190000; // Dark overlays (10% black)
+  Color get transparent => transparentCustom; // Full transparency
 
 }

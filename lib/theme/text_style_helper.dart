@@ -19,7 +19,7 @@ class TextStyleHelper {
         fontSize: 42.fSize,
         fontWeight: FontWeight.w600,
         fontFamily: 'DM Sans',
-        color: appTheme.white_A700,
+        color: appTheme.onPrimary,
       );
 
   // Headline Styles
@@ -29,7 +29,7 @@ class TextStyleHelper {
         fontSize: 30.fSize,
         fontWeight: FontWeight.w500,
         fontFamily: 'DM Sans',
-        color: appTheme.white_A700,
+        color: appTheme.onPrimary,
       );
 
   // Title Styles
@@ -45,21 +45,21 @@ class TextStyleHelper {
         fontSize: 18.fSize,
         fontWeight: FontWeight.w400,
         fontFamily: 'Syne',
-        color: appTheme.blue_gray_700,
+        color: appTheme.secondaryColor,
       );
 
   TextStyle get title16MediumManrope => TextStyle(
         fontSize: 16.fSize,
         fontWeight: FontWeight.w500,
         fontFamily: 'Manrope',
-        color: appTheme.white_A700,
+        color: appTheme.onPrimary,
       );
 
   TextStyle get title16BoldManrope => TextStyle(
         fontSize: 16.fSize,
         fontWeight: FontWeight.w700,
         fontFamily: 'Manrope',
-        color: appTheme.blue_gray_700_01,
+        color: appTheme.secondaryColor,
       );
 
   // Body Styles
@@ -69,7 +69,7 @@ class TextStyleHelper {
         fontSize: 15.fSize,
         fontWeight: FontWeight.w600,
         fontFamily: 'Manrope',
-        color: appTheme.blue_gray_700,
+        color: appTheme.secondaryColor,
       );
 
   TextStyle get body12SemiBoldInter => TextStyle(
@@ -91,20 +91,21 @@ class TextStyleHelper {
         fontSize: 11.fSize,
         fontWeight: FontWeight.w500,
         fontFamily: 'Inter',
-        color: appTheme.gray_600,
+        color: appTheme.onSurface,
       );
 
   TextStyle get label11MediumManrope => TextStyle(
         fontSize: 11.fSize,
         fontWeight: FontWeight.w500,
         fontFamily: 'Manrope',
+        color: appTheme.onSurface,
       );
 
   TextStyle get label10BoldManrope => TextStyle(
         fontSize: 10.fSize,
         fontWeight: FontWeight.w700,
         fontFamily: 'Manrope',
-        color: appTheme.teal_900,
+        color: appTheme.secondaryColor,
       );
 
   TextStyle get label10MediumInter => TextStyle(
@@ -126,21 +127,21 @@ class TextStyleHelper {
         fontSize: 20.fSize,
         fontWeight: FontWeight.w600,
         fontFamily: 'Syne',
-        color: appTheme.blue_gray_900,
+        color: appTheme.onBackground,
       );
 
   TextStyle get title16SemiBoldPoppins => TextStyle(
         fontSize: 16.fSize,
         fontWeight: FontWeight.w600,
         fontFamily: 'Poppins',
-        color: appTheme.blue_gray_900_01,
+        color: appTheme.onBackground,
       );
  
   TextStyle get title16MediumSyne => TextStyle(
         fontSize: 16.fSize,
         fontWeight: FontWeight.w500,
         fontFamily: 'Syne',
-        color: appTheme.cyan_900,
+        color: appTheme.primaryColor,
       );
 
   // Body Styles
@@ -150,14 +151,14 @@ class TextStyleHelper {
         fontSize: 14.fSize,
         fontWeight: FontWeight.w400,
         fontFamily: 'Syne',
-        color: appTheme.gray_700,
+        color: appTheme.onSurfaceVariant,
       );
 
   TextStyle get body12MediumPoppins => TextStyle(
         fontSize: 12.fSize,
         fontWeight: FontWeight.w500,
         fontFamily: 'Poppins',
-        color: appTheme.gray_500,
+        color: appTheme.onSurface,
       );
 
 
@@ -169,14 +170,40 @@ class TextStyleHelper {
         fontSize: 18.fSize,
         fontWeight: FontWeight.w600,
         fontFamily: 'Quicksand',
-        color: appTheme.black_900,
+        color: appTheme.onBackground,
+      );
+
+  TextStyle get title38BoldQuicksand => TextStyle(
+        fontSize: 38.fSize,
+        fontWeight: FontWeight.w500, // Changed from w700 to w600 for thinner appearance
+        fontFamily: 'Quicksand',
+        height: 1.0, // 100% line height
+        letterSpacing: -0.5, // More negative for rounder appearance
+        color: const Color(0xFF2E2E2E), // Darker for main title
+      );
+
+  TextStyle get title20RegularQuicksand => TextStyle(
+        fontSize: 20.fSize,
+        fontWeight: FontWeight.w400,
+        fontFamily: 'Quicksand',
+        height: 1.0, // 100% line height
+        letterSpacing: -0.5, // More negative for rounder appearance
+        color: const Color(0xFF9E9E9E), // Lighter grey as requested
+      );
+
+  TextStyle get title14SemiBoldQuicksand => TextStyle(
+        fontSize: 14.fSize,
+        fontWeight: FontWeight.w500, // Changed from w600 to w500 for thinner appearance
+        fontFamily: 'Quicksand',
+        letterSpacing: -0.3,
+        color: const Color(0xFF9E9E9E), // Lighter grey as requested
       );
 
   TextStyle get title16SemiBoldManrope => TextStyle(
         fontSize: 16.fSize,
         fontWeight: FontWeight.w600,
         fontFamily: 'Manrope',
-        color: appTheme.whiteCustom,
+        color: appTheme.onPrimary,
       );
 
   // Body Styles
@@ -186,28 +213,28 @@ class TextStyleHelper {
         fontSize: 14.fSize,
         fontWeight: FontWeight.w700,
         fontFamily: 'Manrope',
-        color: appTheme.black_900,
+        color: appTheme.onBackground,
       );
 
   TextStyle get body14SemiBoldManrope => TextStyle(
         fontSize: 14.fSize,
         fontWeight: FontWeight.w600,
         fontFamily: 'Manrope',
-        color: appTheme.black_900,
+        color: appTheme.onBackground,
       );
 
   TextStyle get body12RegularManrope => TextStyle(
         fontSize: 12.fSize,
         fontWeight: FontWeight.w400,
         fontFamily: 'Manrope',
-        color: appTheme.gray_400,
+        color: appTheme.dividerColor,
       );
 
   TextStyle get body12ExtraBoldManrope => TextStyle(
         fontSize: 12.fSize,
         fontWeight: FontWeight.w800,
         fontFamily: 'Manrope',
-        color: appTheme.black_900,
+        color: appTheme.onBackground,
       );
 
   // Label Styles
@@ -223,6 +250,6 @@ class TextStyleHelper {
         fontSize: 10.fSize,
         fontWeight: FontWeight.w400,
         fontFamily: 'Manrope',
-        color: appTheme.gray_600,
+        color: appTheme.disabledColor,
       );
 }

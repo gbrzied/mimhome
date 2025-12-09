@@ -112,18 +112,14 @@ class CustomProgressAppBar extends StatelessWidget
     final progressValue = totalSteps > 0 ? currentStep / totalSteps : 0.0;
 
     return Expanded(
-      child: Container(
-        height: 14.h,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(6.h),
-          child: LinearProgressIndicator(
-            value: progressValue,
-            backgroundColor: progressBackgroundColor ?? Color(0xFFD9D9D9),
-            valueColor: AlwaysStoppedAnimation<Color>(
-              progressColor ?? Color(0xFF52D1C6),
-            ),
-          ),
+      child: LinearProgressIndicator(
+        value: progressValue,
+        backgroundColor: progressBackgroundColor ?? appTheme.surfaceColor,
+        valueColor: AlwaysStoppedAnimation<Color>(
+          progressColor ?? appTheme.primaryColor,
         ),
+        minHeight: 8,
+        borderRadius: BorderRadius.circular(4),
       ),
     );
   }
@@ -133,7 +129,7 @@ class CustomProgressAppBar extends StatelessWidget
     return Text(
       "$currentStep/$totalSteps",
       style: TextStyleHelper.instance.label10SemiBoldManrope
-          .copyWith(color: textColor ?? Color(0xFF787878), height: 1.4),
+          .copyWith(color: textColor ?? appTheme.onSurface, height: 1.4),
     );
   }
 }

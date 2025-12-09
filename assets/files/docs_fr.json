@@ -1,0 +1,242 @@
+{
+ "documents":  [
+
+     {
+        "pdf": "cgu_fr.pdf",
+        "collapseAll":true,
+
+        "titre": "Conditions générales d’utilisation",
+        "icon": "description",
+        "file":"cgu_fr.html",
+        "articles":[
+            { 
+                "titre":"Article premier: Définitions",
+                "ancre":"Article1",
+                "résumé":"Compte de paiement: Le compte de paiement est un compte au sens de la circulaire de la BCT N o 2018-16 du 31-12-2018.Il est utilisé, à titre exclusif, pour effectuer des services de paiement tels que définis par les articles 2 et 17 de la circulaire suscitée.Il peut être ouvert au nom d’une personne physique ou personne morale qui n’a droit d’ouvrir qu’un seul compte auprès de l’établissement de paiement. Il est tenu exclusivement en dinar tunisien."
+            },
+            { 
+                "titre":"Article 2: Conditions générales d’utilisation d’un compte de paiement",
+                "ancre":"Article2",
+                "résumé":"Le compte est un compte de paiement au sens de la circulaire de la BCT N o 2018-16 du 31-12-2018. Le compte est utilisé, à titre exclusif, pour effectuer des services de paiement tels que définis par les articles 2 et 17 de la circulaire de la BCT N o 2018-16 ;Le compte peut être ouvert au nom d’une personne physique juridiquement capable ;"
+            },
+            { 
+                "titre":"Article 3: Reconnaissance du Client et données « KYC »",
+                "ancre":"Article3",
+                "résumé":"Pour se conformer aux exigences de la Circulaire de la BCT aux établissements de paiement No 2018-16 du 31-12-2018 et notamment ses exigences pour l’identification des clients ; il est prévu ce qui suit : Une personne qui prétend à l’ouverture d’un compte de paiement doit justifier de son identité et s’engage à fournir à l’Etablissement :"
+            },
+            { 
+                "titre":"Article 4: Ouverture de compte de paiement",
+                "ancre":"Article4",
+                "résumé":"4.1 Modalités d’enrôlement :\n L’ouverture de compte de paiement est possible à distance selon les procédures e-KYC pour les comptes de niveaux 1 et 2,"
+            },
+            { 
+                "titre":"Article 5 : Services de paiement accessibles au Client",
+                "ancre":"Article5",
+                
+                "résumé":"5.01 Modalités d’accès au RIB, avis d’opérations, extrait et relevé de compte :\n L’Etablissement met à la disposition de sa Clientèle un réseau d’agents de paiement lui permettant de réaliser une panoplie d’opérations à savoir :"
+            },
+            { 
+                "titre":"Article 6 : Conditions tarifaires",
+                "ancre":"Article6",
+                "résumé":"Les conditions tarifaires, des opérations et services de paiement, sont annexées à la présente convention et en font partie intégrante. Elles sont mises à jour annuellement et accessibles au Client, et au public en général,"
+            },
+            { 
+                "titre":"Article 7 : Obligations des parties",
+                "ancre":"Article7",
+                "résumé":"7.1 Obligations du Client :\n Le Client s’interdit d’ouvrir plus d’un compte de paiement auprès de l’Etablissement.\nLe Client reconnaît et accepte de respecter l’ensemble des consignes de fonctionnement, de sécurité,de lutte contre la fraude, de conformité à la réglementation délivrées par l’Etablissement pour les besoins de l’exécution de la présente Convention."
+            },
+            { 
+                "titre":"Article 8 : Médiation",
+                "ancre":"Article8",
+                "résumé":"8.1 Obligation d’affiliation de l’Etablissement à l’APTBEF pour permettre au Client d’accéder à un médiateur :\n Etant affilié à l’Association Professionnelle Tunisienne des Banques et des Etablissements Financiers « APTBEF » ;l’Etablissement assure, "
+            },
+            { 
+                "titre":"Article 9 : Résiliation",
+                "ancre":"Article9",
+                "résumé":"9.1 Résiliation à l’initiative du Client :\n Le Client reconnait avoir lu et approuvé la Charte de médiation mise à disposition de la clientèle dans les locaux et le site Internet de l’Etablissement et auprès de son réseau d’agents accrédité."
+            },
+            { 
+                "titre":"Article 10 : Comptes dormants ou inactifs",
+                "ancre":"Article10",
+                "résumé":"Un compte de paiement est considéré inactif s’il est sans mouvement initié par son titulaire ou son mandataire pendant douze (12) mois consécutifs.\nLorsque le compte de paiement est reconnu inactif ; l’Etablissement tient informé le titulaire de l’état d’inactivité du compte par tout moyen laissant trace écrite.\nLe compte inactif restera ouvert auprès de l’Etablissement pendant dix (10) ans à compter de sa première année d’inactivité. "
+            },
+            { 
+                "titre":"Article 11 : Cas de force majeure ",
+                "ancre":"Article11",
+                "résumé":"Sans que cela soit limitatif ; sont réputés constituer un cas de force majeure tout évènement revêtant les caractères d’extériorité, d’irrésistibilité et d’imprévisibilité tels qu’une panne d'électricité, un incendie ou une inondation, un séisme, une grève du personnel de l’Etablissement ou d'un de ses sous-traitants ou fournisseurs "
+            },
+            { 
+                "titre":"Article 12 : Election de domicile ",
+                "ancre":"Article12",
+                "résumé":"Pour l’exécution de la convention, les parties élisent domicile en leurs demeures sus-indiquées. Tout changement d’adresse doit être notifié par tout moyen laissant trace écrite. A défaut, leurs"
+            },
+            { 
+                "titre":"Article 13 : Droit applicable & juridiction compétente",
+                "ancre":"Article13",
+                "résumé":"La convention est régie par le droit tunisien. Tout litige né de l’interprétation ou de l’exécution des conditions générales d’utilisation et demeurant sans solution à l’amiable"
+            },
+            { 
+                "titre":"Annexe : Conditions tarifaires",
+                "ancre":"Annexe",
+                "résumé":"Les conditions tarifaires sont accessibles au Client par voies de "
+            }
+
+
+            
+        ]
+     },
+
+     {
+        "pdf": "pc_fr.pdf",
+        "titre": "Politique de confidentialité",
+        "icon": "shield",
+        "file":"pc_fr.html",
+        "articles":[
+
+            { 
+                "titre":"A – Principes généraux en matière de collecte et de traitement des données ",
+                "ancre":"Article1",
+                "résumé":"L’établissement de paiement mettra tout en œuvre pour assurer la sécurité et la confidentialité des données à caractère personnel de ses clients dans le respect des lois et règlements applicables et des règles de l’art. Conformément aux dispositions de la loi organique n° 2004-63 du 27 juillet 2004 portant sur la protection des données à caractère personnel et de la circulaire de la BCT n° 2020-11 du 31 mai 2020 portant sur les conditions de fourniture des services de paiement mobile domestique, la collecte et le traitement des données des utilisateurs de l’application mobile respectent les principes suivants :"
+            },
+            { 
+                "titre":"B - Identité du responsable du traitement",
+                "ancre":"Article2",
+                "résumé":"L’EdP est une société anonyme de droit tunisien au capital de (x) millions de dinars tunisiens, ayant son siège social au … et est immatriculée au Registre National des Entreprises (RNE) sous le numéro : nnnnnnnK."
+            },
+            { 
+                "titre":"C – Finalités de collecte et de traitement des données à caractère personnel ",
+                "ancre":"Article3",
+                "résumé":"Les données à caractère personnel des clients sont collectées et traitées à des fins de gestion du compte de paiement et des moyens de paiement y associés, gestion de la relation "
+            },
+            { 
+                "titre":"D – Collecte et traitement des données à caractère personnel ",
+                "ancre":"Article4",
+                "résumé":"D’une manière générale et compte tenu du niveau de compte de paiement sollicité par le client personne physique, les données collectées peuvent couvrir : Nom, Prénom, Pièce d’identité (type, numéro, date début validité, date fin validité, autorité de délivrance), genre, naissance (date et lieu), adresse postale, adresse email, numéro de téléphone mobile national et justificatifs de revenus.D’une manière générale et compte tenu du niveau de compte de paiement sollicité par le client personne morale, les données collectées peuvent couvrir : Raison sociale, sigle, Numéro d’immatriculation au registre national des entreprises, forme juridique, création (date et lieu), nature d’activité, adresse postale, adresse email, numéro de téléphone, justificatifs de revenus."
+            },
+            { 
+                "titre":"E – Demandes d’informations concernant les transactions suspectes des clients",
+                "ancre":"Article5",
+                "résumé":"L’EdP est assujetti aux sanctions pénales qui sanctionnent le blanchiment d’argent et le financement du terrorisme.\nLe Client accepte que l’EdP peut s’informer auprès "
+            }
+    
+
+        ]
+     },
+
+     {
+        "show_read_and_approuved":false,
+        "disable":true,
+        "collapseAll":true,
+        "titre": "FAQ – MillimePay",
+        "icon": "help",
+        "file":"faq_fr.html",
+        "articles":[
+
+            { 
+                "titre":"Q01 : Qu’est-ce que MillimePay ?",
+                "ancre":"Article1",
+                "résumé":"MillimePay est une application de paiement mobile qui vous est proposée par votre institution financière "
+            },
+            { 
+                "titre":"Q02 : Qu’est-ce qu’un compte de paiement ?",
+                "ancre":"Article2",
+                "résumé":"Le compte de paiement est un compte utilisé, à titre exclusif, pour effectuer des services de paiement."
+            },
+            { 
+                "titre":"Q03 : Comment devenir Client ?",
+                "ancre":"Article3",
+                "résumé":"L’enrôlement peut se faire à distance (e-KYC), auprès d’un agent de paiement ou en agence "
+            },
+            { 
+                "titre":"Q04 : Quels sont les prestations offertes par MillimePay ?",
+                "ancre":"Article4",
+                "résumé":"MillimePay vous propose d’initier et/ou recevoir des ordres de paiement On us et Off us"
+            },
+            { 
+                "titre":"Q05 : Puis-je formuler une réclamation si nécessaire ?",
+                "ancre":"Article5",
+                "résumé":"MillimePay vous offre la possibilité de formuler des réclamations et l’institution financière s’engage "
+            },
+            { 
+                "titre":"Q06 : Que faire en cas de perte ou vol de mon téléphone ?",
+                "ancre":"Article5",
+                "résumé":"MillimePay est une application sécurisée par login et mot de passe. "
+            },
+            { 
+                "titre":"Q07 : Que faire en cas de changement de téléphone ?",
+                "ancre":"Article5",
+                "résumé":"Avec votre nouvel Smartphone, vous procédez à l’installation de MillimePay. "
+            },
+            { 
+                "titre":"Q08 : Que faire en cas de changement de numéro de téléphone mobile ?",
+                "ancre":"Article5",
+                "résumé":"MillimePay vous propose un service pour changer votre numéro de téléphone. "
+            },
+            { 
+                "titre":"Q09 : Que faire en cas d’oubli du mot de passe ?",
+                "ancre":"Article5",
+                "résumé":"MillimePay vous permet de désigner, lors de l’enrôlement, une adresse email et/ou un "
+            },
+            { 
+                "titre":"Q10 : Puis-je utiliser MillimePay au cas où je ne dispose pas d’accès à internet ?",
+                "ancre":"Article5",
+                "résumé":"Une connexion internet active – Wi-Fi, 3G, 4G – est  "
+            }
+    
+    
+    
+
+        ]
+     }  
+ 
+    
+    
+    
+    
+    
+    
+    
+    
+    ],
+
+
+
+     
+     "commented":{
+        "titre": "FAQ – MillimePay",
+        "file":"faq_fr.html",
+        "articles":[
+
+            { 
+                "titre":"A – Principes généraux en matière de collecte et de traitement des données ",
+                "ancre":"Article1",
+                "résumé":"L’établissement de paiement mettra tout en œuvre pour assurer la sécurité et la confidentialité des données à caractère personnel de ses clients dans le respect des lois et règlements applicables et des règles de l’art. Conformément aux dispositions de la loi organique n° 2004-63 du 27 juillet 2004 portant sur la protection des données à caractère personnel et de la circulaire de la BCT n° 2020-11 du 31 mai 2020 portant sur les conditions de fourniture des services de paiement mobile domestique, la collecte et le traitement des données des utilisateurs de l’application mobile respectent les principes suivants :"
+            },
+            { 
+                "titre":"B - Identité du responsable du traitement",
+                "ancre":"Article2",
+                "résumé":"L’EdP est une société anonyme de droit tunisien au capital de (x) millions de dinars tunisiens, ayant son siège social au … et est immatriculée au Registre National des Entreprises (RNE) sous le numéro : nnnnnnnK."
+            },
+            { 
+                "titre":"C – Finalités de collecte et de traitement des données à caractère personnel ",
+                "ancre":"Article3",
+                "résumé":"Les données à caractère personnel des clients sont collectées et traitées à des fins de gestion du compte de paiement et des moyens de paiement y associés, gestion de la relation "
+            },
+            { 
+                "titre":"D – Collecte et traitement des données à caractère personnel ",
+                "ancre":"Article4",
+                "résumé":"D’une manière générale et compte tenu du niveau de compte de paiement sollicité par le client personne physique, les données collectées peuvent couvrir : Nom, Prénom, Pièce d’identité (type, numéro, date début validité, date fin validité, autorité de délivrance), genre, naissance (date et lieu), adresse postale, adresse email, numéro de téléphone mobile national et justificatifs de revenus.D’une manière générale et compte tenu du niveau de compte de paiement sollicité par le client personne morale, les données collectées peuvent couvrir : Raison sociale, sigle, Numéro d’immatriculation au registre national des entreprises, forme juridique, création (date et lieu), nature d’activité, adresse postale, adresse email, numéro de téléphone, justificatifs de revenus."
+            },
+            { 
+                "titre":"E – Demandes d’informations concernant les transactions suspectes des clients",
+                "ancre":"Article5",
+                "résumé":"L’EdP est assujetti aux sanctions pénales qui sanctionnent le blanchiment d’argent et le financement du terrorisme.\nLe Client accepte que l’EdP peut s’informer auprès "
+            }
+    
+
+        ]
+     }  
+ 
+
+    
+}

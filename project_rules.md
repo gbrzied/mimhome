@@ -46,8 +46,10 @@ lib/
 
 ## 2. State Management
 
-### Provider Pattern
-All screens MUST use the Provider pattern for state management:
+### Provider Pattern Usage
+Use the Provider pattern only when necessary:
+- **Use Provider for**: Complex state management, shared state between widgets, data persistence, network operations
+- **Don't use Provider for**: Simple form inputs, local widget state, static content display
 
 ```dart
 class [ScreenName]Provider extends ChangeNotifier {
@@ -138,9 +140,29 @@ enum [EnumName] {
 ## 4. Theming and Styling
 
 ### Colors
-- Use `appTheme.[colorName]` from `theme_helper.dart`
-- Custom colors follow the pattern: `color[HexValue]` or `color[Name]`
-- Opacity colors: `color[Name][Opacity]` (e.g., `color7FFFFF`)
+- **PRIMARY RULE**: Use semantic color names from `appTheme` (e.g., `appTheme.primaryColor`, `appTheme.onBackground`)
+- **AVOID**: Direct usage of raw color names like `cyan_900`, `black_900` - use semantic equivalents instead
+- **SEMANTIC COLOR SYSTEM**:
+  - `primaryColor`: Main brand color (dark teal)
+  - `primaryVariant`: Secondary brand color (medium teal)
+  - `secondaryColor`: Alternative accent color
+  - `backgroundColor`: Main app background (white)
+  - `surfaceColor`: Card/surface backgrounds (light gray)
+  - `onBackground`: Primary text on backgrounds (black)
+  - `onSurface`: Secondary text on surfaces (medium gray)
+  - `onSurfaceVariant`: Tertiary text (dark gray)
+  - `errorColor`: Error states (bright red)
+  - `errorContainer`: Error backgrounds (light pink)
+  - `successColor`: Success states (teal)
+  - `borderColor`: Borders and outlines (light gray)
+  - `dividerColor`: Dividers and separators (medium gray)
+  - `disabledColor`: Disabled elements (medium gray)
+  - `overlayLight`: Light overlays (semi-transparent white)
+  - `overlayDark`: Dark overlays (semi-transparent black)
+  - `transparent`: Full transparency
+- **LEGACY COLORS**: Raw color names (e.g., `cyan_900`, `white_A700`) are deprecated but kept for backward compatibility
+- **CUSTOM COLORS**: Follow pattern `color[HexValue]` or `color[Name]` for app-specific colors
+- **OPACITY COLORS**: Pattern `color[Name][Opacity]` (e.g., `color7FFFFF` for 50% white)
 
 ### Text Styles
 - Use `TextStyleHelper.instance.[styleName]` from `text_style_helper.dart`
@@ -229,6 +251,12 @@ class AppRoutes {
 - Use `Column` with `Expanded` and `SingleChildScrollView` for scrollable content
 - Use `SizedBox` with `.h` for spacing
 - Use `Padding` with `.h` values
+#### Form Button Placement
+- Place form action buttons at the bottom of the screen within a `SafeArea`
+- Use `ElevatedButton` for primary actions, `OutlinedButton` for secondary actions
+- Ensure buttons remain visible and accessible when the keyboard is shown
+- Maintain consistent spacing (16.h) between form fields and buttons
+- For forms with multiple buttons, place the primary action button first (rightmost in LTR layouts)
 
 ## 10. Localization
 
@@ -323,7 +351,7 @@ class AppRoutes {
 
 ### MUST Rules (Critical)
 1. Follow the exact directory structure in `hierarchy.txt`
-2. Use Provider pattern for all state management
+2. Use Provider pattern for state management only when necessary
 3. Use `appTheme` and `TextStyleHelper.instance` for styling
 4. Lock device orientation and disable text scaling
 5. Use `NavigatorService` for navigation

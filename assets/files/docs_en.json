@@ -1,0 +1,237 @@
+{
+ "documents":  [
+
+     {
+        "pdf": "cgu_en.pdf",
+
+        "titre": "Terms of Service",
+        "file":"cgu_en.html",
+
+        "articles":[
+            { 
+                "titre":"Article 1: Definitions",
+                "ancre":"Article1",
+                "résumé":"Payment account: The payment account is an account within the meaning of CBT Circular No. 2018-16 of 31-12-2018."
+            },
+            { 
+                "titre":"Article 2: General conditions of use of a payment account ",
+                "ancre":"Article2",
+                "résumé":"The account is a payment account within the meaning of CBT circular No 2018-16 of 31-12-2018;The account is used, on an exclusive basis, to perform payment services as defined by articles 2 and 17"
+            },
+            { 
+                "titre":"Article 3: Customer recognition and “KYC” data",
+                "ancre":"Article3",
+                "résumé":"To comply with the requirements of the Circular of the CBT to payment institutions No 2018-16 of 31-12-2018 and in particular its requirements for the identification of customers; the following is planned"
+            },
+            { 
+                "titre":"Article 4: Opening a payment account",
+                "ancre":"Article4",
+                "résumé":"Enrollment methods: The opening of a payment account is possible remotely according to the e-KYC"
+            },
+            { 
+                "titre":"Article 5 : Payment services accessible to the Customer",
+                "ancre":"Article5",
+                
+                "résumé":"Terms of access to the RIB, notice of operations, extract and statement of account: Through the application; the Client can consult, download and edit"
+            },
+            { 
+                "titre":"Article 6 : Pricing conditions",
+                "ancre":"Article6",
+                "résumé":"The pricing conditions, operations and payment services, are annexed to this agreement and form an integral part thereof."
+            },
+            { 
+                "titre":"Article 7 : Obligations of the parties",
+                "ancre":"Article7",
+                "résumé":"The Customer is prohibited from opening more than one payment account with the Establishment.                "
+            },
+            { 
+                "titre":"Article 8 : Mediation",
+                "ancre":"Article8",
+                "résumé":"Obligation of affiliation of the Establishment to the APTBEF "
+            },
+            { 
+                "titre":"Article 9 : Termination",
+                "ancre":"Article9",
+                "résumé":"Termination at the Customer's initiative: The agreement may be termin"
+            },
+            { 
+                "titre":"Article 10 : Dormant or inactive accounts",
+                "ancre":"Article10",
+                "résumé":"A payment account is considered inactive if there is no movement initiated by its"
+            },
+            { 
+                "titre":"Article 11 : Force majeure",
+                "ancre":"Article11",
+                "résumé":"Without this being limiting; are deemed to constitute a case of force majeure any event"
+            },
+            { 
+                "titre":"Article 12 : Election of domicile",
+                "ancre":"Article12",
+                "résumé":"For the execution of the agreement, the parties elect domicile in their above-mentioned residences."
+            },
+            { 
+                "titre":"Article 13 : Applicable law & competent jurisdiction",
+                "ancre":"Article13",
+                "résumé":"The agreement is governed by Tunisian law."
+            },
+            { 
+                "titre":"Appendix: Pricing conditions",
+                "ancre":"Annexe",
+                "résumé":"The Price conditions are accessible to the Customer by"
+            }
+        ]
+
+
+
+
+     },
+
+     {
+        "pdf": "pc_en.pdf",
+        "titre": "Policy of Data Privacy",
+        "file":"pc_en.html",
+        "articles":[
+
+            { 
+                "titre":"A – General Guidelines for Data Collection and Processing",
+                "ancre":"Article1",
+                "résumé":"The payment institution will make every effort to ensure the security and confidentiality of its customers' personal data in compliance with applicable laws, regulations, and the rule of law in place. "
+            },
+            { 
+                "titre":"B – Identity of the Person in Charge of Data Processing",
+                "ancre":"Article2",
+                "résumé":"The Payment institution is a company with a limited eligibility under Tunisian law with a capital of five million Tunisian dinars, having its registered office in ... and is registered in the National Register of Companies (NRC) under the number "
+            },
+            { 
+                "titre":"C – Purposes of Collecting and Processing Personal Data",
+                "ancre":"Article3",
+                "résumé":"Customers' personal data are collected and processed for the purposes of managing the payment account, and the associated means of payment; "
+            },
+            { 
+                "titre":"D – Collection and Processing of Personal Data",
+                "ancre":"Article4",
+                "résumé":"In general, taking into account the level of payment account requested by the natural person customer, the data collected include "
+            },
+            { 
+                "titre":"E – Requests for Information Concerning Suspicious Customer Transactions",
+                "ancre":"Article5",
+                "résumé":"The Payment institution is subject to criminal sanctions that punish money laundering and financing of terrorism. The customer accepts that the Payment "
+            }
+    
+
+        ]
+     },  
+     {
+        "show_read_and_approuved":false,
+        "disable":true,
+        "titre": "FAQ – MillimePay",
+        "file":"faq_en.html",
+        "articles":[
+
+            { 
+                "titre":"Q01 : What is MillimePay ?",
+                "ancre":"Article1",
+                "résumé":"MillimePay is a mobile application offered to you by your financial institution"
+            },
+            { 
+                "titre":"Q02: What is a payment account?",
+                "ancre":"Article2",
+                "résumé":"The payment account is an account used, on an exclusive basis, to perform payment services."
+            },
+            { 
+                "titre":"Q03: How to become a customer?",
+                "ancre":"Article3",
+                "résumé":"Enrollment can be done remotely (e-KYC), with a payment agent or in a branch"
+            },
+            { 
+                "titre":"Q04: What are the services offered by MillimePay?",
+                "ancre":"Article4",
+                "résumé":"MillimePay allows you to initiate and/or receive on us and off us payment orders"
+            },
+            { 
+                "titre":"Q05: Can i make a claim if necessary?",
+                "ancre":"Article5",
+                "résumé":"MillimePay offers you the possibility to formulate claims and the financial institution undertakes to process"
+            },
+            { 
+                "titre":"Q06: What to do if my phone is lost or stolen? ",
+                "ancre":"Article6",
+                "résumé":"MillimePay is an application secured by Login and Password."
+            },
+            { 
+                "titre":"Q07: What to do if you change your phone? ",
+                "ancre":"Article7",
+                "résumé":"With the new smartphone, you install MillimePay application."
+            },
+            { 
+                "titre":"Q08: What to do in case of change of mobile phone number?",
+                "ancre":"Article8",
+                "résumé":"MillimePay offers you a service to change your telephone number."
+            },
+            { 
+                "titre":"Q09: What to do if you forget the password?",
+                "ancre":"Article9",
+                "résumé":"MillimePay allows you to designate, during enrollment, an email address and/or a mobile phone number"
+            },
+            { 
+                "titre":"Q10: Can i use MillimePay application if i don’t have internet access?",
+                "ancre":"Article10",
+                "résumé":"An active internet connection – Wi-Fi, 3G, 4G – "
+            }
+    
+    
+    
+
+        ]
+     }  
+ 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    ],
+     
+     
+     "commented":   
+     {
+        "titre": "FAQ –MillimePay",
+        "file":"faq_en.html",
+        "articles":[
+
+            { 
+                "titre":"A – General Guidelines for Data Collection and Processing",
+                "ancre":"Article1",
+                "résumé":"The payment institution will make every effort to ensure the security and confidentiality of its customers' personal data in compliance with applicable laws, regulations, and the rule of law in place. "
+            },
+            { 
+                "titre":"B – Identity of the Person in Charge of Data Processing",
+                "ancre":"Article2",
+                "résumé":"The Payment institution is a company with a limited eligibility under Tunisian law with a capital of five million Tunisian dinars, having its registered office in ... and is registered in the National Register of Companies (NRC) under the number "
+            },
+            { 
+                "titre":"C – Purposes of Collecting and Processing Personal Data",
+                "ancre":"Article3",
+                "résumé":"Customers' personal data are collected and processed for the purposes of managing the payment account, and the associated means of payment; "
+            },
+            { 
+                "titre":"D – Collection and Processing of Personal Data",
+                "ancre":"Article4",
+                "résumé":"In general, taking into account the level of payment account requested by the natural person customer, the data collected include "
+            },
+            { 
+                "titre":"E – Requests for Information Concerning Suspicious Customer Transactions",
+                "ancre":"Article5",
+                "résumé":"The Payment institution is subject to criminal sanctions that punish money laundering and financing of terrorism. The customer accepts that the Payment "
+            }
+    
+
+        ]
+     }  
+
+    
+}

@@ -47,6 +47,9 @@ class ImageConstant {
   static String imgLogo = '${_basePath}img_logo.svg';
   static String imgLogo2 = '${_basePath}logo2.svg';
 
+  // Login Screen
+  static String imgMillimeLogo = '${_basePath}millime_logo.png';
+
   static String imgEye = '${_basePath}imgEye.png';
   static String imgVectorWhiteA700 = '${_basePath}img_vector_white_a700.svg';
   static String imgWalletoutline = '${_basePath}img_walletoutline.png';
