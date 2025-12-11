@@ -1,4 +1,4 @@
-import 'package:cible/widgets/custum_button.dart';
+import 'package:millime/widgets/custum_button.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/app_export.dart';
@@ -191,12 +191,12 @@ class _AccountLevelSelectionScreenState
       onTap: () => provider.selectAccountLevel(index),
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.all(isNiveau2 ? 8.h : 14.h),
-        margin: EdgeInsets.symmetric(horizontal: isNiveau2 ? 2.h : 4.h),
+        padding: EdgeInsets.all(8.h),
+        margin: EdgeInsets.symmetric(horizontal: 2.h),
         decoration: BoxDecoration(
           color: appTheme.white_A700,
           border: Border.all(
-            color: isSelected ? Color(0xFF156778) : appTheme.blue_gray_100_01,
+            color: isSelected ?appTheme.primaryColor: appTheme.blue_gray_100_01,
             width: 1.h,
           ),
           borderRadius: BorderRadius.circular(14.h),
@@ -204,77 +204,59 @@ class _AccountLevelSelectionScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (isNiveau2) ...[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 22.h, bottom: 2.h),
-                    child: Text(
-                      levelModel?.title ?? 'Niveau 2',
-                      style: TextStyleHelper.instance.body14BoldManrope
-                          .copyWith(height: 1.43),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 22.h, bottom: 2.h),
+                  child: Text(
+                    levelModel?.title ?? (isNiveau2 ? 'Niveau 2' : 'Niveau 1'),
+                    style: TextStyleHelper.instance.body12ExtraBoldManrope
+                        .copyWith(height: 1.43),
+                  ),
+                ),
+                if (isSelected)
+                  Container(
+                    width: 26.h,
+                    height: 24.h,
+                    margin: EdgeInsets.only(bottom: 2.h),
+                    padding: EdgeInsets.all(6.h),
+                    decoration: BoxDecoration(
+                      color: appTheme.primaryColor,
+                      borderRadius: BorderRadius.circular(12.h),
+                    ),
+                    child: CustomImageView(
+                      imagePath: ImageConstant.imgTick,
+                      width: 14.h,
+                      height: 12.h,
                     ),
                   ),
-                  if (isSelected)
-                    Container(
-                      width: 26.h,
-                      height: 24.h,
-                      margin: EdgeInsets.only(bottom: 2.h),
-                      padding: EdgeInsets.all(6.h),
-                      decoration: BoxDecoration(
-                        color: appTheme.cyan_900,
-                        borderRadius: BorderRadius.circular(12.h),
-                      ),
-                      child: CustomImageView(
-                        imagePath: ImageConstant.imgGroup2,
-                        width: 14.h,
-                        height: 12.h,
-                      ),
-                    ),
-                ],
-              ),
-            ] else ...[
-              Text(
-                levelModel?.title ?? 'Niveau 1',
-                style: TextStyleHelper.instance.body14BoldManrope
-                    .copyWith(height: 1.43),
-              ),
-            ],
+              ],
+            ),
             Padding(
               padding: EdgeInsets.only(
                 top: 8.h,
-                left: isNiveau2 ? 22.h : 0,
-                right: isNiveau2 ? 22.h : 0,
+                left: 22.h,
+                right: 22.h,
               ),
               child: Row(
                 spacing: 8.h,
                 children: [
-                  if (!isNiveau2 && isSelected)
-                    Container(
-                      width: 30.h,
-                      height: 26.h,
-                      decoration: BoxDecoration(
-                        color: appTheme.blue_gray_50,
-                        borderRadius: BorderRadius.circular(5.h),
-                      ),
-                    )
-                  else if (isNiveau2)
-                    Container(
-                      width: 30.h,
-                      height: 26.h,
-                      decoration: BoxDecoration(
-                        color: appTheme.blue_gray_50,
-                        borderRadius: BorderRadius.circular(5.h),
-                      ),
-                      child: Center(
-                        child: CustomImageView(
-                          imagePath: ImageConstant.imgTrendingUp,
-                          width: 20.h,
-                          height: 20.h,
-                        ),
+                  Container(
+                    width: 30.h,
+                    height: 26.h,
+                    decoration: BoxDecoration(
+                      color: appTheme.cyan_50_19,
+                      borderRadius: BorderRadius.circular(5.h),
+                    ),
+                    child: Center(
+                      child: CustomImageView(
+                        imagePath: ImageConstant.imgTrendingUp,
+                        width: 20.h,
+                        height: 20.h,
                       ),
                     ),
+                  ),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,9 +279,9 @@ class _AccountLevelSelectionScreenState
             ),
             Padding(
               padding: EdgeInsets.only(
-                left: isNiveau2 ? 22.h : 0,
-                right: isNiveau2 ? 22.h : 0,
-                bottom: isNiveau2 ? 16.h : 8.h,
+                left: 22.h,
+                right: 22.h,
+                bottom: 16.h,
               ),
               child: Row(
                 children: [
@@ -310,15 +292,13 @@ class _AccountLevelSelectionScreenState
                       color: appTheme.blue_gray_50,
                       borderRadius: BorderRadius.circular(5.h),
                     ),
-                    child: isNiveau2
-                        ? Center(
-                            child: CustomImageView(
-                              imagePath: ImageConstant.imgRefresh,
-                              width: 20.h,
-                              height: 20.h,
-                            ),
-                          )
-                        : null,
+                    child: Center(
+                      child: CustomImageView(
+                        imagePath: ImageConstant.imgRefresh,
+                        width: 20.h,
+                        height: 20.h,
+                      ),
+                    ),
                   ),
                   SizedBox(width: 8.h),
                   Column(

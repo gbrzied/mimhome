@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/app_export.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_text_form_field.dart';
@@ -12,10 +13,8 @@ class TermsConditionsScreenV2 extends StatefulWidget {
   const TermsConditionsScreenV2({Key? key}) : super(key: key);
 
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider<TermsConditionsProvider>(
-      create: (context) => TermsConditionsProvider(),
-      child: TermsConditionsScreenV2(),
-    );
+    // Use global TermsConditionsProvider instead of creating new one
+    return TermsConditionsScreenV2();
   }
 
   @override
@@ -27,6 +26,12 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
   bool isLoading = true;
   String errorMessage = '';
 
+  // Form state management
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  bool _isPhoneValid = false;
+  bool _isEmailValid = false;
+
   @override
   void initState() {
     super.initState();
@@ -36,17 +41,77 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
     });
   }
 
-  IconData _getIconFromName(String iconName) {
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  // Validation methods
+  bool _isValidPhoneNumber(String phone) {
+    // Tunisian phone number validation (8 digits starting with 2,5,9)
+    final phoneRegex = RegExp(r'^[2459]\d{7}$');
+    return phoneRegex.hasMatch(phone.replaceAll(' ', ''));
+  }
+
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(email);
+  }
+
+  void _onPhoneChanged(String value) {
+    setState(() {
+      _isPhoneValid = _isValidPhoneNumber(value);
+      // Email field visibility is calculated in build method
+      // Clear email if phone becomes invalid
+      if (!_isPhoneValid) {
+        _emailController.clear();
+        _isEmailValid = false;
+      }
+    });
+  }
+
+  void _onEmailChanged(String value) {
+    setState(() {
+      _isEmailValid = _isValidEmail(value);
+    });
+  }
+
+  Widget _getIconFromName(String iconName, {double? size, Color? color}) {
+    // Handle SVG icons
+    if (iconName.toLowerCase().endsWith('.svg')) {
+      final svgPath = 'assets/images/$iconName';
+      return SvgPicture.asset(
+        svgPath,
+        width: size ?? 20.h,
+        height: size ?? 20.h,
+        color: color ?? appTheme.cyan_900,
+      );
+    }
+    
+    // Handle Material icons
+    IconData iconData;
     switch (iconName.toLowerCase()) {
       case 'description':
-        return Icons.description;
+        iconData = Icons.description;
+        break;
       case 'shield':
-        return Icons.shield;
+        iconData = Icons.shield;
+        break;
       case 'help':
-        return Icons.help_outline;
+        iconData = Icons.help_outline;
+        break;
+      
       default:
-        return Icons.description_outlined; // Fallback
+        iconData = Icons.description_outlined; // Fallback
     }
+    
+    return Icon(
+      iconData,
+      size: size ?? 20.h,
+      color: color ?? appTheme.cyan_900,
+    );
   }
 
   Future<void> loadAllDocuments() async {
@@ -84,12 +149,17 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
   Widget build(BuildContext context) {
     return Consumer<TermsConditionsProvider>(
       builder: (context, provider, child) {
+        // Calculate visibility based on current state (no setState in build)
+        final allDocumentsAccepted = _areAllDocumentsAccepted(provider);
+        final shouldShowPhoneField = allDocumentsAccepted;
+        final shouldShowEmailField = shouldShowPhoneField && _isPhoneValid;
+
         return Scaffold(
-      backgroundColor: appTheme.gray_50_01,
+     // backgroundColor: appTheme.gray_50_01,
       appBar: CustomAppBar(
-        leadingIcon: ImageConstant.imgArrowLeft,
-        onLeadingPressed: () => NavigatorService.goBack(),
-        backgroundColor: appTheme.whiteCustom,
+        //leadingIcon: ImageConstant.imgArrowLeft,
+        //onLeadingPressed: () => NavigatorService.goBack(),
+       // backgroundColor: appTheme.whiteCustom,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.h),
@@ -97,12 +167,17 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Title
-            Text(
-              "Conditions d'utilisation",
-              style: TextStyleHelper.instance.headline30MediumDMSans.copyWith(
-                color: appTheme.black_900,
-                fontSize: 24.fSize,
-                fontWeight: FontWeight.bold,
+            Container(
+              constraints: BoxConstraints(
+                maxWidth: 260.h,
+                minHeight: 24.h,
+              ),
+              child: Text(
+                "Conditions d'utilisation",
+                style: TextStyleHelper.instance.title20SemiBoldQuicksandCentered.copyWith(
+                  color: appTheme.black_900,
+                ),
+                textAlign: TextAlign.left,
               ),
             ),
             SizedBox(height: 12.h),
@@ -110,10 +185,12 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
             // Subtitle
             Text(
               "Veuillez lire et accepter les conditions suivantes",
-              style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+              style: TextStyleHelper.instance.label9BoldManrope.copyWith(
                 color: appTheme.gray_600,
-                fontSize: 12.fSize,
+                fontSize: 14.fSize,
+                fontWeight: FontWeight.w400,
                 height: 1.5,
+                letterSpacing: 0.5, // Added letter spacing
               ),
             ),
             SizedBox(height: 24.h),
@@ -166,10 +243,11 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
             SizedBox(height: 20.h),
 
             // Contact Coordinates Card
+          if (shouldShowPhoneField || shouldShowEmailField)                  
             Container(
               padding: EdgeInsets.all(20.h),
               decoration: BoxDecoration(
-                color: appTheme.whiteCustom,
+                color: appTheme.customLightGray,
                 borderRadius: BorderRadius.circular(16.h),
                 boxShadow: [
                   BoxShadow(
@@ -181,13 +259,13 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+                children: [                                
+                Row(
                     children: [
                       Container(
                         padding: EdgeInsets.all(12.h),
                         decoration: BoxDecoration(
-                          color: appTheme.gray_50_01,
+                          color: appTheme.customLightGray,
                           borderRadius: BorderRadius.circular(12.h),
                         ),
                         child: Icon(
@@ -211,9 +289,8 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
                             SizedBox(height: 4.h),
                             Text(
                               "Pour la récupération de compte",
-                              style: TextStyleHelper.instance.label11MediumManrope.copyWith(
+                              style: TextStyleHelper.instance.label9BoldManrope.copyWith(
                                 color: appTheme.gray_600,
-                                fontSize: 11.fSize,
                               ),
                             ),
                           ],
@@ -223,30 +300,39 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
                   ),
                   SizedBox(height: 20.h),
 
-                  // Phone Number
-                  CustomTextFormField(
-                    controller: TextEditingController(text: '98989898'),
-                    textInputType: TextInputType.phone,
-                    textStyle: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
-                      color: appTheme.black_900,
-                      fontSize: 13.fSize,
+                  // Phone Number - Show only when documents are accepted
+                  if (shouldShowPhoneField) ...[
+                    CustomTextFormField(
+                      controller: _phoneController,
+                      textInputType: TextInputType.phone,
+                      hintText: "Entrez votre numéro de téléphone",
+                      textStyle: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
+                        color: appTheme.black_900,
+                        fontSize: 13.fSize,
+                      ),
+                      fillColor: appTheme.gray_50_01,
+                      contentPadding: EdgeInsets.all(16.h),
+                      onChanged: _onPhoneChanged,
                     ),
-                    fillColor: appTheme.gray_50_01,
-                    contentPadding: EdgeInsets.all(16.h),
-                  ),
-                  SizedBox(height: 12.h),
+                    SizedBox(height: 12.h),
+                  ],
 
-                  // Email
-                  CustomTextFormField(
-                    controller: TextEditingController(text: 'gbrzied@gmail.com'),
-                    textInputType: TextInputType.emailAddress,
-                    textStyle: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
-                      color: appTheme.black_900,
-                      fontSize: 13.fSize,
+                  // Email - Show only when phone is valid
+                  if (shouldShowEmailField) ...[
+                    CustomTextFormField(
+                      controller: _emailController,
+                      textInputType: TextInputType.emailAddress,
+                      hintText: "Entrez votre adresse email",
+                      textStyle: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
+                        color: appTheme.black_900,
+                        fontSize: 13.fSize,
+                      ),
+                      fillColor: appTheme.gray_50_01,
+                      contentPadding: EdgeInsets.all(16.h),
+                      onChanged: _onEmailChanged,
                     ),
-                    fillColor: appTheme.gray_50_01,
-                    contentPadding: EdgeInsets.all(16.h),
-                  ),
+                    SizedBox(height: 12.h),
+                  ],
                 ],
               ),
             ),
@@ -292,9 +378,8 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
                         SizedBox(height: 6.h),
                         Text(
                           "Nous utilisons un cryptage de niveau bancaire pour protéger vos informations personnelles.",
-                          style: TextStyleHelper.instance.body12RegularManrope.copyWith(
+                          style: TextStyleHelper.instance.label9BoldManrope.copyWith(
                             color: appTheme.blue_gray_700,
-                            fontSize: 10.fSize,
                             height: 1.4,
                           ),
                         ),
@@ -323,10 +408,14 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
         child: CustomButton(
           text: 'Valider',
           width: double.maxFinite,
-          onPressed: _areAllDocumentsAccepted(provider)
+          onPressed: (allDocumentsAccepted && _isEmailValid)
               ? () {
-                  // Navigate to OTP screen
-                  NavigatorService.pushNamed(AppRoutes.otpScreen);
+                  // Update provider with user data - exact from old code
+                  provider.termsConditionsModel.phoneNumber = _phoneController.text;
+                  provider.termsConditionsModel.email = _emailController.text;
+
+                  // Use exact handleNextButtonPress method from old login_store.dart
+                  provider.handleNextButtonPress(context, _phoneController.text);
                 }
               : null,
         ),
@@ -342,14 +431,18 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
     final documentIndex = documents.indexOf(document);
     final isAccepted = provider.getDocumentAcceptedState(documentIndex);
     final iconName = document["icon"] ?? "description";
-    final iconData = _getIconFromName(iconName);
+    final iconWidget = _getIconFromName(iconName);
 
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       padding: EdgeInsets.all(16.h),
       decoration: BoxDecoration(
         color: appTheme.whiteCustom,
-        borderRadius: BorderRadius.circular(12.h),
+        borderRadius: BorderRadius.circular(15.h),
+        border: Border.all(
+          color: appTheme.borderColor,
+          width: 1.h,
+        ),
         boxShadow: [
           BoxShadow(
             color: appTheme.black_900.withOpacity(0.05),
@@ -367,14 +460,10 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
               Container(
                 padding: EdgeInsets.all(10.h),
                 decoration: BoxDecoration(
-                  color: appTheme.cyan_900.withOpacity(0.1),
+                  color: appTheme.customLightGray,
                   borderRadius: BorderRadius.circular(8.h),
                 ),
-                child: Icon(
-                  iconData,
-                  color: appTheme.cyan_900,
-                  size: 20.h,
-                ),
+                child: iconWidget,
               ),
               SizedBox(width: 12.h),
               Expanded(
@@ -404,13 +493,25 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
           // Checkbox and Actions
           Row(
             children: [
-              Checkbox(
-                value: isAccepted,
-                onChanged: (value) {
-                  provider.setDocumentAccepted(documentIndex, value ?? false);
-                },
-                activeColor: appTheme.teal_400,
+              SizedBox(
+                width: 24.h,
+                height: 24.h,
+                child: Checkbox(
+                  value: isAccepted,
+                  onChanged: (value) {
+                    provider.setDocumentAccepted(documentIndex, value ?? false);
+                  },
+                  activeColor: appTheme.teal_400,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4.h),
+                  ),
+                  side: BorderSide(
+                    color: appTheme.borderColor,
+                    width: 1.h,
+                  ),
+                ),
               ),
+              SizedBox(width: 12.h),
               Text(
                 'Lu et approuvé',
                 style: TextStyleHelper.instance.body14RegularSyne.copyWith(
@@ -419,19 +520,22 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
                 ),
               ),
               const Spacer(),
-              IconButton(
-                icon: Icon(Icons.download_outlined, size: 18.h),
-                color: appTheme.gray_600,
-                onPressed: () {
-                  // Download logic
-                },
+              Container(
+                padding: EdgeInsets.all(6.h),
+                decoration: BoxDecoration(
+                  color: appTheme.customLightGray,
+                  borderRadius: BorderRadius.circular(6.h),
+                ),
+                child: _getIconFromName('download.svg', size: 12.h, color: appTheme.primaryColor),
               ),
-              IconButton(
-                icon: Icon(Icons.share_outlined, size: 18.h),
-                color: appTheme.gray_600,
-                onPressed: () {
-                  // Share logic
-                },
+              SizedBox(width: 8.h),
+              Container(
+                padding: EdgeInsets.all(6.h),
+                decoration: BoxDecoration(
+                  color: appTheme.customLightGray,
+                  borderRadius: BorderRadius.circular(6.h),
+                ),
+                child: _getIconFromName('share.svg', size: 12.h, color: appTheme.primaryColor),
               ),
             ],
           ),
@@ -453,9 +557,12 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
     final isExpanded = provider.getArticleExpandedState(documentIndex, articleIndex);
 
     return Container(
-      margin: EdgeInsets.only(bottom: 0.h),
+      margin: EdgeInsets.only(bottom:10.h),
+      constraints: BoxConstraints(
+        minHeight: 50.h,
+      ),
       decoration: BoxDecoration(
-        color: appTheme.gray_50_01,
+        color: appTheme.customLightGray,
         borderRadius: BorderRadius.circular(8.h),
         boxShadow: [
           BoxShadow(
@@ -502,9 +609,8 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
                 children: [
                   Text(
                     article["résumé"] ?? "",
-                    style: TextStyleHelper.instance.body12RegularManrope.copyWith(
+                    style: TextStyleHelper.instance.label9BoldManrope.copyWith(
                       color: appTheme.gray_700,
-                      fontSize: 11.fSize,
                       height: 1.5,
                     ),
                   ),
@@ -552,10 +658,8 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
                           SizedBox(width: 6.h),
                           Text(
                             "Lire la suite...",
-                            style: TextStyleHelper.instance.body12RegularManrope.copyWith(
+                            style: TextStyleHelper.instance.label9BoldManrope.copyWith(
                               color: appTheme.cyan_900,
-                              fontSize: 11.fSize,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           SizedBox(width: 4.h),

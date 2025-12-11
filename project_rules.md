@@ -1,7 +1,7 @@
-# Project Coding Rules for "Cible" Flutter App
+# Project Coding Rules for "Millime" Flutter App
 
 ## Overview
-This document defines the coding standards and architectural patterns for the "Cible" Flutter mobile banking application. These rules ensure consistency across AI-generated code sessions and maintain the project's architectural integrity.
+This document defines the coding standards and architectural patterns for the "Millime" Flutter mobile banking application. These rules ensure consistency across AI-generated code sessions and maintain the project's architectural integrity.
 
 ## 1. Project Structure
 
@@ -220,6 +220,13 @@ class AppRoutes {
 - Images in `assets/images/`
 - Subdirectories: `svg/`, `png/`, `empty/`, `Icons/`
 
+### App Icon and Branding
+- **App Name**: "Millime"
+- **App Icon**: `assets/images/millime_logo.png`
+- **Icon Generation**: Uses `flutter_launcher_icons` package
+- **Icon Command**: `flutter pub run flutter_launcher_icons`
+- **Supported Platforms**: Android, iOS, Web
+
 ## 8. Imports
 
 ### App Export
@@ -371,4 +378,4 @@ class AppRoutes {
 
 ---
 
-This document serves as the authoritative guide for maintaining code consistency in the "Cible" project. All AI-generated code must adhere to these rules to ensure homogeneity across development sessions.
+This document serves as the authoritative guide for maintaining code consistency in the "Millime" project. All AI-generated code must adhere to these rules to ensure homogeneity across development sessions.

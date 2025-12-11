@@ -252,4 +252,20 @@ class TextStyleHelper {
         fontFamily: 'Manrope',
         color: appTheme.disabledColor,
       );
+
+  TextStyle get label9BoldManrope => TextStyle(
+        fontSize: 9.fSize,
+        fontWeight: FontWeight.w700,
+        fontFamily: 'Manrope',
+        height: 1.0, // 100% line height
+      );
+
+  TextStyle get title20SemiBoldQuicksandCentered => TextStyle(
+        fontSize: 20.fSize,
+        fontWeight: FontWeight.w500, // Changed from w600 to w400 for thinner appearance
+        fontFamily: 'Quicksand',
+        height: 1.0, // 100% line height
+        letterSpacing: 1.5, // Increased letter spacing for better readability
+
+      );
 }

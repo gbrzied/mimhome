@@ -30,46 +30,11 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: appTheme.white_A700,
-      appBar: AppBar(
-        backgroundColor: appTheme.white_A700,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: appTheme.black_900, size: 20),
-          onPressed: () => NavigatorService.pushNamed(AppRoutes.appNavigationScreen),
-        ),
-        title: Row(
-          children: [
-            Expanded(
-              flex: 3,
-              child: Container(
-                height: 6.h,
-                decoration: BoxDecoration(
-                  color: appTheme.cyan_900,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            ),
-            SizedBox(width: 8.h),
-            Expanded(
-              flex: 7,
-              child: Container(
-                height: 6.h,
-                decoration: BoxDecoration(
-                  color: appTheme.gray_200,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            ),
-            SizedBox(width: 12.h),
-            Text(
-              '3/5',
-              style: TextStyleHelper.instance.body14RegularSyne.copyWith(
-                color: appTheme.gray_600,
-              ),
-            ),
-          ],
-        ),
+      backgroundColor: appTheme.backgroundColor,
+      appBar: CustomProgressAppBar(
+        currentStep: 3,
+        totalSteps: 5,
+        onBackPressed: () => NavigatorService.pushNamed(AppRoutes.appNavigationScreen),
       ),
       body: SafeArea(
         child: Column(
@@ -87,14 +52,14 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                           Text(
                             'Informations personnelles',
                             style: TextStyleHelper.instance.title18SemiBoldSyne.copyWith(
-                              color: appTheme.black_900,
+                              color: appTheme.onBackground,
                             ),
                           ),
                           SizedBox(height: 8.h),
                           Text(
                             'Nous avons besoin de quelques informations pour vérifier votre identité et créer votre compte',
                             style: TextStyleHelper.instance.body14RegularSyne.copyWith(
-                              color: appTheme.gray_700,
+                              color: appTheme.onSurfaceVariant,
                               height: 1.4,
                             ),
                           ),
@@ -148,7 +113,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                           Text(
                             'Type de compte',
                             style: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
-                              color: appTheme.gray_700,
+                              color: appTheme.onSurfaceVariant,
                             ),
                           ),
                           SizedBox(height: 12.h),
@@ -191,7 +156,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                     child: ElevatedButton(
                       onPressed: provider.isLoading ? null : () => provider.onSubmit(context),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: appTheme.cyan_900,
+                        backgroundColor: appTheme.primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(28),
                         ),
@@ -203,13 +168,13 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                               width: 20.h,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(appTheme.white_A700),
+                                valueColor: AlwaysStoppedAnimation<Color>(appTheme.onPrimary),
                               ),
                             )
                           : Text(
                               'Suivant',
                               style: TextStyleHelper.instance.body14BoldManrope.copyWith(
-                                color: appTheme.white_A700,
+                                color: appTheme.onPrimary,
                               ),
                             ),
                     ),
@@ -238,7 +203,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
         Text(
           label,
           style: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
-            color: appTheme.gray_700,
+            color: appTheme.onSurfaceVariant,
           ),
         ),
         SizedBox(height: 8.h),
@@ -248,26 +213,26 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
           readOnly: readOnly,
           onTap: onTap,
           style: TextStyleHelper.instance.body14RegularSyne.copyWith(
-            color: appTheme.black_900,
+            color: appTheme.onBackground,
           ),
           decoration: InputDecoration(
             contentPadding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 16.h),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: appTheme.gray_300,
+                color: appTheme.borderColor,
                 width: 1.5,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(
-                color: appTheme.cyan_900,
+                color: appTheme.primaryColor,
                 width: 2,
               ),
             ),
             filled: true,
-            fillColor: appTheme.white_A700,
+            fillColor: appTheme.backgroundColor,
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -297,7 +262,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: isSelected ? appTheme.cyan_900 : appTheme.gray_400,
+                color: isSelected ? appTheme.primaryColor : appTheme.onSurface,
                 width: 2,
               ),
             ),
@@ -308,7 +273,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                       height: 12.h,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: appTheme.cyan_900,
+                        color: appTheme.primaryColor,
                       ),
                     ),
                   )
@@ -319,7 +284,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
             child: Text(
               label,
               style: TextStyleHelper.instance.body14RegularSyne.copyWith(
-                color: appTheme.gray_700,
+                color: appTheme.onSurfaceVariant,
               ),
             ),
           ),

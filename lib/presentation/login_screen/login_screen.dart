@@ -216,10 +216,11 @@ class _LoginScreenState extends State<LoginScreen> {
               provider.navigateToRegistration(context);
             },
             child: Text(
-              "S'inscrire",
+              "s'inscrire",
               style: TextStyleHelper.instance.body14RegularSyne.copyWith(
                 color: appTheme.breakColor,
                 decoration: TextDecoration.underline,
+                 fontWeight: FontWeight.w500,
               ),
             ),
           ),

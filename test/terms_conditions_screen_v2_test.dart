@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:cible/presentation/accordion_document_screen/terms_conditions_screen_v2.dart';
-import 'package:cible/presentation/accordion_document_screen/provider/terms_conditions_provider.dart';
-import 'package:cible/widgets/custum_button.dart';
-import 'package:cible/core/utils/size_utils.dart';
+import 'package:millime/presentation/accordion_document_screen/terms_conditions_screen_v2.dart';
+import 'package:millime/presentation/accordion_document_screen/provider/terms_conditions_provider.dart';
+import 'package:millime/widgets/custum_button.dart';
+import 'package:millime/core/utils/size_utils.dart';
 
 void main() {
   group('TermsConditionsScreenV2 Tests', () {

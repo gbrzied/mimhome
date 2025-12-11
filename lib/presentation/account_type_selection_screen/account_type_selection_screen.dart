@@ -1,7 +1,7 @@
-import 'package:cible/presentation/account_type_selection_screen/models/account_type_selection_screen_model.dart';
-import 'package:cible/presentation/account_type_selection_screen/provider/account_type_selection_provider.dart';
-import 'package:cible/widgets/custom_progress_app_bar.dart';
-import 'package:cible/widgets/custum_button.dart';
+import 'package:millime/presentation/account_type_selection_screen/models/account_type_selection_screen_model.dart';
+import 'package:millime/presentation/account_type_selection_screen/provider/account_type_selection_provider.dart';
+import 'package:millime/widgets/custom_progress_app_bar.dart';
+import 'package:millime/widgets/custum_button.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/app_export.dart';
@@ -70,7 +70,7 @@ class _AccountTypeSelectionScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeaderSection(context),
-          SizedBox(height: 20.h),
+          SizedBox(height: 10.h),
           _buildAccountTypeSection(context, provider),
         ],
       ),
@@ -86,10 +86,10 @@ class _AccountTypeSelectionScreenState
           child: Text(
             "Demande d'ouvrir un compte",
             style: TextStyleHelper.instance.title18SemiBoldQuicksand
-                .copyWith(height: 1.28),
+                .copyWith(height: 1.67, letterSpacing: 0.5),
           ),
         ),
-        SizedBox(height: 24.h),
+        SizedBox(height: 15.h),
         Container(
           width: double.infinity,
           padding: EdgeInsets.all(18.h),
@@ -175,7 +175,7 @@ class _AccountTypeSelectionScreenState
         decoration: BoxDecoration(
           color: appTheme.whiteCustom,
           border: Border.all(
-            color: isSelected ? Color(0xFF156778) : appTheme.blue_gray_100_01,
+            color: isSelected ? appTheme.primaryColor : appTheme.blue_gray_100_01,
             width: 1.h,
           ),
           borderRadius: BorderRadius.circular(14.h),
@@ -245,8 +245,15 @@ class _AccountTypeSelectionScreenState
                 height: 24.h,
                 margin: EdgeInsets.only(top: isBusinessCard ? 0 : 2.h),
                 decoration: BoxDecoration(
-                  color: appTheme.cyan_900,
+                  color: appTheme.primaryColor,
                   borderRadius: BorderRadius.circular(12.h),
+                ),
+                child: Center(
+                  child: CustomImageView(
+                    imagePath: ImageConstant.imgTick,
+                    width: 14.h,
+                    height: 12.h,
+                  ),
                 ),
               ),
           ],

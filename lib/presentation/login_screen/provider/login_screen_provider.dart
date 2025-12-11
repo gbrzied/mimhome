@@ -1,5 +1,5 @@
-import 'package:cible/core/utils/navigator_service.dart';
-import 'package:cible/routes/app_routes.dart';
+import 'package:millime/core/utils/navigator_service.dart';
+import 'package:millime/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import '../models/login_screen_model.dart';
 

@@ -6,6 +6,9 @@ class TermsConditionsModel {
     this.documentAccepted,
     this.termsAccepted,
     this.privacyAccepted,
+    this.generatedOtp,
+    this.phoneNumber,
+    this.email,
   }) {
     expandedSections = expandedSections ?? {
       'terms_0': false,
@@ -19,6 +22,9 @@ class TermsConditionsModel {
     documentAccepted = documentAccepted ?? {};
     termsAccepted = termsAccepted ?? false;
     privacyAccepted = privacyAccepted ?? false;
+    generatedOtp = generatedOtp ?? '';
+    phoneNumber = phoneNumber ?? '';
+    email = email ?? '';
   }
 
   Map<String, bool>? expandedSections;
@@ -26,4 +32,7 @@ class TermsConditionsModel {
   Map<int, bool>? documentAccepted;
   bool? termsAccepted;
   bool? privacyAccepted;
+  String? generatedOtp;
+  String? phoneNumber;
+  String? email;
 }

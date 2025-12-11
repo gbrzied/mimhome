@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 
 import 'core/app_export.dart';
+import 'presentation/accordion_document_screen/provider/terms_conditions_provider.dart';
 
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 void main() {
@@ -18,9 +20,16 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Sizer(
-      builder: (context, orientation, deviceType) {
-        return MaterialApp(
+    return MultiProvider(
+      providers: [
+        // Global TermsConditionsProvider for OTP validation across screens
+        ChangeNotifierProvider<TermsConditionsProvider>(
+          create: (context) => TermsConditionsProvider(),
+        ),
+      ],
+      child: Sizer(
+        builder: (context, orientation, deviceType) {
+          return MaterialApp(
           title: 'millimes-mobile',
           debugShowCheckedModeBanner: false,
           theme: theme,
@@ -43,8 +52,9 @@ class MyApp extends StatelessWidget {
           supportedLocales: [Locale('en', '')],
           initialRoute: AppRoutes.initialRoute,
           routes: AppRoutes.routes,
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

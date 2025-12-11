@@ -70,6 +70,7 @@ class LightCodeColors {
   Color get teal_300 => Color(0xFF43A0A3);
   Color get gray_50_01 => Color(0xFFFAFBFA);
   Color get gray_400 => Color(0xFFBEBCBC);
+  Color get customLightGray => Color(0xBAEFF0F1);
 
 
   // Additional Colors
@@ -109,7 +110,7 @@ class LightCodeColors {
   Color get color161567 => Color(0x16156778);
   Color get colorFF52D1 => Color(0xFF52D1C6);
 
-  Color get colorF98600 => Color(0xFFF98600);
+  Color get colorF98600 => Color(0xFFF98600);//#F98600
 
   Color get colorFEE2E2 => Color(0xFFFEE2E2);
 

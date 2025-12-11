@@ -7,11 +7,12 @@ class ImageConstant {
   static String imgPlaceholder = '${_basePath}placeholder.png';
 
   // Account Level Selection Screen
-  static String imgGroup2 = '${_basePath}img_group_2.svg';
+  static String imgGroup2 = '${_basePath}refresh.svg';
   static String imgRectangle2 = '${_basePath}img_rectangle_2.svg';
   static String imgRectangle4 = '${_basePath}img_rectangle_4.svg';
-  static String imgRefresh = '${_basePath}img_refresh.svg';
-  static String imgTrendingUp = '${_basePath}img_trending_up.svg';
+  static String imgRefresh = '${_basePath}refresh.svg';
+  static String imgTrendingUp = '${_basePath}trending-up.svg';
+  static String imgTick = '${_basePath}tick.svg';
 
   // Account Type Selection Screen
   static String imgCaptureDCran72x102 =

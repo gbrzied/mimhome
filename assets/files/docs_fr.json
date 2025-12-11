@@ -6,7 +6,7 @@
         "collapseAll":true,
 
         "titre": "Conditions générales d’utilisation",
-        "icon": "description",
+        "icon": "file-document-outline.svg",
         "file":"cgu_fr.html",
         "articles":[
             { 
@@ -89,7 +89,7 @@
      {
         "pdf": "pc_fr.pdf",
         "titre": "Politique de confidentialité",
-        "icon": "shield",
+        "icon": "pc.svg",
         "file":"pc_fr.html",
         "articles":[
 

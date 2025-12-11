@@ -1,10 +1,10 @@
-import 'package:cible/presentation/account_level_selection_screen/account_level_selection_screen.dart';
-import 'package:cible/presentation/account_type_selection_screen/account_type_selection_screen.dart';
-import 'package:cible/presentation/bill_payment_selection_screen/bill_payment_selection_screen.dart';
-import 'package:cible/presentation/identity_verification_screen/identity_verification_screen.dart';
-import 'package:cible/presentation/login_screen/login_screen.dart';
-import 'package:cible/presentation/otp_screen/otp_screen.dart';
-import 'package:cible/presentation/wallet_setup_confirmation_screen/wallet_setup_confirmation_screen.dart';
+import 'package:millime/presentation/account_level_selection_screen/account_level_selection_screen.dart';
+import 'package:millime/presentation/account_type_selection_screen/account_type_selection_screen.dart';
+import 'package:millime/presentation/bill_payment_selection_screen/bill_payment_selection_screen.dart';
+import 'package:millime/presentation/identity_verification_screen/identity_verification_screen.dart';
+import 'package:millime/presentation/login_screen/login_screen.dart';
+import 'package:millime/presentation/otp_screen/otp_screen.dart';
+import 'package:millime/presentation/wallet_setup_confirmation_screen/wallet_setup_confirmation_screen.dart';
 import 'package:flutter/material.dart';
 import '../presentation/account_dashboard_screen/account_dashboard_screen.dart';
 import '../presentation/accordion_document_screen/terms_conditions_screen.dart';
@@ -62,7 +62,7 @@ class AppRoutes {
         accountLevelSelectionScreen: AccountLevelSelectionScreen.builder,
 
         appNavigationScreen: AppNavigationScreen.builder,
-        initialRoute: AppNavigationScreen.builder,
+        initialRoute: LoginScreen.builder,
         termsConditionsScreen: TermsConditionsScreen.builder,
         termsConditionsScreenV2: TermsConditionsScreenV2.builder,
         accordionDocumentScreen: AccordionDocumentWrapperScreen.builder,
