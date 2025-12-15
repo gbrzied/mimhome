@@ -75,7 +75,7 @@ class TermsConditionsProvider extends ChangeNotifier {
   Future<bool?> isValideNumTelGestion(String numTel) async {
     try {
       final response = await http.get(
-          Uri.parse('http://localhost:8081/wallet/public/' + numTel + '/tel'));
+          Uri.parse('http://192.168.1.13:8081/wallet/public/' + numTel + '/tel'));
 
       if (response.statusCode <= 206 && response.contentLength! > 0) {
         return Future.value(false); // Phone already exists
@@ -109,7 +109,7 @@ class TermsConditionsProvider extends ChangeNotifier {
       'suffixe': suffixe
     };
 
-    var uri = Uri.http('localhost:8081', '/wallet/email', queryParameters);
+    var uri = Uri.http('192.168.1.13:8081', '/wallet/email', queryParameters);
 
     var response = await http.get(uri, headers: {
       'Content-Type': 'text/plain; charset=utf-8',

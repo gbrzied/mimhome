@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               size: 30.h,
                             ),
                             onPressed: () {
-                              // TODO: Implement drawer navigation
+                              NavigatorService.pushNamed(AppRoutes.millimeSettingsScreen);
                             },
                           ),
                         ),
@@ -122,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
           SizedBox(height: 8.h),
           // Text(
           //   "MILLIME",
-          //   style: TextStyleHelper.instance.title18SemiBoldQuicksand.copyWith(
+          //   style: TextStyleHelper.instance.title18SemiBoldQuicksand.opyWith(
           //     color: appTheme.black_900,
           //   ),
           // ),

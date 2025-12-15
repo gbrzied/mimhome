@@ -274,6 +274,11 @@ class AppRoutes {
 
 ## 11. Critical Sections
 
+### Directory Restrictions
+- **🚨 CRITICAL**: The `/oldLibFiles` directory is ONLY for demonstration purposes
+- **🚨 CRITICAL**: NEVER import from `/oldLibFiles` directory in production code
+- **🚨 CRITICAL**: Use `/oldLibFiles` only as reference for implementing similar functionality elsewhere
+
 ### Orientation Lock
 - Device orientation MUST be locked to portrait in `main.dart`
 - Comment: `// 🚨 CRITICAL: Device orientation lock - DO NOT REMOVE`
@@ -359,10 +364,12 @@ class AppRoutes {
 ### MUST Rules (Critical)
 1. Follow the exact directory structure in `hierarchy.txt`
 2. Use Provider pattern for state management only when necessary
-3. Use `appTheme` and `TextStyleHelper.instance` for styling
-4. Lock device orientation and disable text scaling
-5. Use `NavigatorService` for navigation
-6. Follow naming conventions strictly
+3. **🎨 COLOR SYSTEM RULE**: Use ONLY semantic color names from `appTheme` (e.g., `appTheme.primaryColor`, `appTheme.onBackground`) - NEVER use raw color names like `cyan_900`, `white_A700`, etc.
+4. Use `appTheme` and `TextStyleHelper.instance` for styling
+5. Lock device orientation and disable text scaling
+6. Use `NavigatorService` for navigation
+7. Follow naming conventions strictly
+8. NEVER import from `/oldLibFiles` directory - it is for demonstration only
 
 ### SHOULD Rules (Recommended)
 1. Use builder pattern for screen constructors

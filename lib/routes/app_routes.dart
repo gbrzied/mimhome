@@ -12,6 +12,7 @@ import '../presentation/accordion_document_screen/terms_conditions_screen_v2.dar
 import '../presentation/accordion_document_screen/accordion_document_wrapper_screen.dart';
 import '../presentation/personal_informations_screen/personal_informations_screen.dart';
 import '../presentation/account_recovery_screen/account_recovery_screen.dart';
+import '../presentation/millime_settings/millime_settings.dart';
 
 import '../presentation/fin_enrol/fin_enrol.dart';
 
@@ -44,6 +45,7 @@ class AppRoutes {
   static const String accountRecoveryScreen = '/account_recovery_screen';
   static const String loginScreen = '/login_screen';
   static const String finEnrolScreen = '/fin_enrol_screen';
+  static const String millimeSettingsScreen = '/millime_settings_screen';
   static const String initialRoute = '/';
 
 //account_dashboard_screen  account_opening_screen  app_navigation_screen  bill_payment_selection_screen  wallet_setup_confirmation_screen
@@ -71,6 +73,7 @@ class AppRoutes {
         accountRecoveryScreen: (context) => AccountRecoveryScreen(),
         loginScreen: LoginScreen.builder,
         finEnrolScreen: (context) => EnrollmentSuccessScreen(),
+        millimeSettingsScreen: MillimeSettings.builder,
 
        // accountOpeningPage: (context) => AccountOpeningPage(),
         accountDashboardScreen: AccountDashboardScreen.builder,

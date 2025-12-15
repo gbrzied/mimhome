@@ -7,7 +7,10 @@ class PersonalInformationsModel {
     this.adresse,
     this.numeroTelephone,
     this.email,
+    this.typePiece,
+    this.numeroPiece,
     this.typeCompte,
+    this.isPhysicalPerson,
   }) {
     nom = nom ?? '';
     prenom = prenom ?? '';
@@ -15,7 +18,10 @@ class PersonalInformationsModel {
     adresse = adresse ?? '';
     numeroTelephone = numeroTelephone ?? '';
     email = email ?? '';
+    typePiece = typePiece ?? '';
+    numeroPiece = numeroPiece ?? '';
     typeCompte = typeCompte ?? AccountType.titulaireEtSignataire;
+    isPhysicalPerson = isPhysicalPerson ?? true;
   }
 
   String? nom;
@@ -24,7 +30,10 @@ class PersonalInformationsModel {
   String? adresse;
   String? numeroTelephone;
   String? email;
+  String? typePiece;
+  String? numeroPiece;
   AccountType? typeCompte;
+  bool? isPhysicalPerson;
 }
 
 enum AccountType {

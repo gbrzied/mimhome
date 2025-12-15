@@ -121,6 +121,12 @@ class AppNavigationScreenState extends State<AppNavigationScreen> {
                          onTapScreenTitle: () => onTapScreenTitle(
                              context, AppRoutes.finEnrolScreen),
                        ),
+                       _buildScreenTitle(
+                         context,
+                         screenTitle: "millimeSettingsScreen",
+                         onTapScreenTitle: () => onTapScreenTitle(
+                             context, AppRoutes.millimeSettingsScreen),
+                       ),
                     ],
                   ),
                 ),

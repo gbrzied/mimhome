@@ -19,6 +19,7 @@ class CustomTextFormField extends StatelessWidget {
     this.textInputAction = TextInputAction.next,
     this.textInputType = TextInputType.text,
     this.maxLines,
+    this.maxLength,
     this.hintText,
     this.hintStyle,
     this.prefix,
@@ -32,6 +33,7 @@ class CustomTextFormField extends StatelessWidget {
     this.validator,
     this.onChanged,
     this.inputFormatters,
+    this.autovalidateMode,
     this.enabled = true,
     this.readOnly = false,
     this.labelText,
@@ -40,6 +42,8 @@ class CustomTextFormField extends StatelessWidget {
     this.floatingLabelStyle,
     this.helperText,
     this.helperStyle,
+    this.errorText,
+    this.onTap,
   }) : super(key: key);
 
   /// How the text field should be aligned horizontally
@@ -74,6 +78,9 @@ class CustomTextFormField extends StatelessWidget {
 
   /// The maximum number of lines to show at one time, wrapping if necessary
   final int? maxLines;
+
+  /// The maximum number of characters to allow in the text field
+  final int? maxLength;
 
   /// Text that suggests what sort of input the field accepts
   final String? hintText;
@@ -114,6 +121,9 @@ class CustomTextFormField extends StatelessWidget {
   /// Optional input validation and formatting overrides
   final List<TextInputFormatter>? inputFormatters;
 
+  /// When to validate the input
+  final AutovalidateMode? autovalidateMode;
+
   /// Whether the text field is enabled
   final bool? enabled;
 
@@ -137,6 +147,12 @@ class CustomTextFormField extends StatelessWidget {
 
   /// The style to use for the helper text
   final TextStyle? helperStyle;
+
+  /// Text that appears below the field when there's an error
+  final String? errorText;
+
+  /// Called when the field is tapped
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -174,10 +190,13 @@ class CustomTextFormField extends StatelessWidget {
         textInputAction: textInputAction,
         keyboardType: textInputType,
         maxLines: maxLines ?? 1,
+        maxLength: maxLength,
         decoration: _buildDecoration(),
         validator: validator,
         onChanged: onChanged,
         inputFormatters: inputFormatters,
+        autovalidateMode: autovalidateMode,
+        onTap: onTap,
         enabled: enabled,
         readOnly: readOnly ?? false,
         ),
@@ -275,6 +294,8 @@ class CustomTextFormField extends StatelessWidget {
             color: appTheme.gray_600,
             fontSize: 12.fSize,
           ),
+      errorText: errorText,
+      counter: SizedBox.shrink(),
     );
   }
 }

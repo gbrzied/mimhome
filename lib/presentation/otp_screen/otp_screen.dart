@@ -99,14 +99,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: appTheme.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: appTheme.backgroundColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: appTheme.onBackground),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+   
       body: SafeArea(
         child: Column(
           children: [
@@ -122,9 +115,9 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                         color: appTheme.onBackground,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                     Text(
-                      'Entrer le code reçu par sms sur le numéro',
+                      'Entrer le code reçu par Sms sur le numéro',
                       style: TextStyleHelper.instance.body14RegularSyne.copyWith(
                         color: appTheme.onSurface,
                       ),
@@ -137,7 +130,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                         color: appTheme.onBackground,
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: List.generate(
@@ -188,7 +181,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                         ),
                       ),
                     ),
-                    Visibility(
+                    const SizedBox(height: 20),
+                     Visibility(
                       visible: !inkwellvisible,
                       child: NeonCircularTimer(
                         onComplete: () {
@@ -200,7 +194,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                             }
                           });
                         },
-                        width: 60,
+                        width: 50,
                         duration: 30,
                         controller: ctrTimerControler,
                         isTimerTextShown: true,

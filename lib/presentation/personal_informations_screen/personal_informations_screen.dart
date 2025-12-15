@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../core/app_export.dart';
+import '../../../widgets/custom_text_form_field.dart';
 import 'models/personal_informations_model.dart';
 import 'provider/personal_informations_provider.dart';
 
@@ -34,14 +36,14 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
       appBar: CustomProgressAppBar(
         currentStep: 3,
         totalSteps: 5,
-        onBackPressed: () => NavigatorService.pushNamed(AppRoutes.appNavigationScreen),
+        showBackButton: false,
       ),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.all(24.h),
+                padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 10.h),
                 child: Consumer<PersonalInformationsProvider>(
                   builder: (context, provider, child) {
                     return Form(
@@ -55,7 +57,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                               color: appTheme.onBackground,
                             ),
                           ),
-                          SizedBox(height: 8.h),
+                          SizedBox(height: 6.h),
                           Text(
                             'Nous avons besoin de quelques informations pour vérifier votre identité et créer votre compte',
                             style: TextStyleHelper.instance.body14RegularSyne.copyWith(
@@ -63,60 +65,170 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                               height: 1.4,
                             ),
                           ),
-                          SizedBox(height: 32.h),
+                          SizedBox(height: 8.h),
+                         //  SizedBox(height: 6.h),
+                          _buildDocumentTypeDropdown(context, provider),
+                          SizedBox(height: 6.h),
+                          _buildTextField(
+                            context: context,
+                            label: 'N° Pièce *',
+                            controller: provider.numeroPieceController,
+                            hintText: 'Entrez le numéro de votre pièce',
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Ce champ est requis';
+                              }
+
+                              // Validate based on selected document type
+                              final selectedType = provider.typePieceController.text;
+                              if (selectedType.isNotEmpty) {
+                                final validation = provider.validateDocumentNumber(selectedType, value);
+                                if (!validation.isValid) {
+                                  return validation.errorMessage ?? 'Format invalide';
+                                }
+                              }
+
+                              return null;
+                            },
+                          ),
                           _buildTextField(
                             context: context,
                             label: 'Nom',
                             controller: provider.nomController,
-                            provider: provider,
+                          //  provider: provider,
+                            hintText: 'Entrez votre nom',
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Ce champ est requis';
+                              }
+                              if (value.length == 1) {
+                                return 'Le nom doit contenir au moins 2 caractères';
+                              }
+                              return null;
+                            },
                           ),
-                          SizedBox(height: 20.h),
+                          SizedBox(height: 10.h),
                           _buildTextField(
                             context: context,
                             label: 'Prénom',
                             controller: provider.prenomController,
-                            provider: provider,
+                           // provider: provider,
+                            hintText: 'Entrez votre prénom',
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Ce champ est requis';
+                              }
+                              if (value.length == 1) {
+                                return 'Le prénom doit contenir au moins 2 caractères';
+                              }
+                              return null;
+                            },
                           ),
-                          SizedBox(height: 20.h),
+                          SizedBox(height: 10.h),
                           _buildTextField(
                             context: context,
                             label: 'Date de naissance',
                             controller: provider.dateController,
                             readOnly: true,
                             onTap: () => provider.selectDate(context),
-                            provider: provider,
+                         //   provider: provider,
+                            hintText: 'Sélectionnez votre date de naissance',
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Ce champ est requis';
+                              }
+                              // Parse the date in DD-MM-YYYY format and check if person is at least 18 years old
+                              try {
+                                final parts = value.split('-');
+                                if (parts.length != 3) throw FormatException('Invalid format');
+                                final day = int.parse(parts[0]);
+                                final month = int.parse(parts[1]);
+                                final year = int.parse(parts[2]);
+                                final date = DateTime(year, month, day);
+                                final now = DateTime.now();
+                                final age = now.difference(date).inDays / 365;
+                                if (age < 18) {
+                                  return 'Vous devez avoir au moins 18 ans';
+                                }
+                              } catch (e) {
+                                return 'Date invalide';
+                              }
+                              return null;
+                            },
                           ),
-                          SizedBox(height: 20.h),
+                          SizedBox(height: 10.h),
                           _buildTextField(
                             context: context,
                             label: 'Adresse',
                             controller: provider.adresseController,
-                            provider: provider,
+                          //  provider: provider,
+                            hintText: 'Entrez votre adresse',
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Ce champ est requis';
+                              }
+                              if (value.length == 1) {
+                                return 'L\'adresse doit contenir au moins 2 caractères';
+                              }
+                              return null;
+                            },
                           ),
-                          SizedBox(height: 20.h),
+                          SizedBox(height: 10.h),
                           _buildTextField(
                             context: context,
                             label: 'Numéro de téléphone',
                             controller: provider.phoneController,
                             keyboardType: TextInputType.phone,
-                            provider: provider,
+                          //  provider: provider,
+                            hintText: 'Entrez votre numéro de téléphone',
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Ce champ est requis';
+                              }
+                              if (value.length != 8) {
+                                return 'Le numéro de téléphone doit contenir exactement 8 chiffres';
+                              }
+                              if (value == '00000000') {
+                                return 'Numéro de téléphone invalide';
+                              }
+                              return null;
+                            },
                           ),
-                          SizedBox(height: 20.h),
+                          SizedBox(height: 6.h),
                           _buildTextField(
                             context: context,
                             label: 'Email',
                             controller: provider.emailController,
                             keyboardType: TextInputType.emailAddress,
-                            provider: provider,
+                          //  provider: provider,
+                            hintText: 'Entrez votre email',
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Ce champ est requis';
+                              }
+                              final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+                              if (!emailRegex.hasMatch(value)) {
+                                return 'Adresse email invalide';
+                              }
+                              return null;
+                            },
                           ),
-                          SizedBox(height: 24.h),
+                         
+                          SizedBox(height: 12.h),
                           Text(
                             'Type de compte',
                             style: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
                               color: appTheme.onSurfaceVariant,
                             ),
                           ),
-                          SizedBox(height: 12.h),
+                          SizedBox(height: 10.h),
                           Row(
                             children: [
                               Expanded(
@@ -138,7 +250,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                               ),
                             ],
                           ),
-                          SizedBox(height: 32.h),
+                          SizedBox(height: 5.h),
                         ],
                       ),
                     );
@@ -192,10 +304,14 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
     required BuildContext context,
     required String label,
     required TextEditingController controller,
-    required PersonalInformationsProvider provider,
+
     TextInputType? keyboardType,
     bool readOnly = false,
     VoidCallback? onTap,
+    String? hintText,
+    String? Function(String?)? validator,
+    List<TextInputFormatter>? inputFormatters,
+    AutovalidateMode? autovalidateMode,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,40 +322,105 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
             color: appTheme.onSurfaceVariant,
           ),
         ),
-        SizedBox(height: 8.h),
-        TextFormField(
+        SizedBox(height: 4.h),
+        CustomTextFormField(
           controller: controller,
-          keyboardType: keyboardType,
+          textInputType: keyboardType,
           readOnly: readOnly,
+          hintText: hintText,
+          contentPadding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 12.h),
+          inputFormatters: inputFormatters,
+          autovalidateMode: autovalidateMode,
           onTap: onTap,
-          style: TextStyleHelper.instance.body14RegularSyne.copyWith(
-            color: appTheme.onBackground,
-          ),
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 16.h),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: appTheme.borderColor,
-                width: 1.5,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: appTheme.primaryColor,
-                width: 2,
-              ),
-            ),
-            filled: true,
-            fillColor: appTheme.backgroundColor,
-          ),
-          validator: (value) {
+          validator: validator ?? (value) {
             if (value == null || value.isEmpty) {
               return 'Ce champ est requis';
             }
             return null;
           },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDocumentTypeDropdown(
+    BuildContext context,
+    PersonalInformationsProvider provider,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Type de pièce *',
+          style: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
+            color: appTheme.onSurfaceVariant,
+          ),
+        ),
+        SizedBox(height: 4.h),
+        Container(
+          height: 48.h, // Same height as CustomTextFormField
+          padding: EdgeInsets.symmetric(horizontal: 16.h),
+          decoration: BoxDecoration(
+            color: appTheme.whiteCustom,
+            border: Border.all(
+              color: appTheme.gray_400,
+              width: 1.h,
+            ),
+            borderRadius: BorderRadius.circular(12.h),
+          ),
+          child: provider.isLoadingDocumentTypes
+              ? Center(
+                  child: SizedBox(
+                    height: 20.h,
+                    width: 20.h,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(appTheme.primaryColor),
+                    ),
+                  ),
+                )
+              : DropdownButtonFormField<String>(
+                  value: provider.typePieceController.text.isNotEmpty
+                      ? provider.typePieceController.text
+                      : null,
+                  hint: Center(
+                    child: Text(
+                      'Sélectionnez le type de pièce',
+                      style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+                        color: appTheme.gray_600,
+                      ),
+                    ),
+                  ),
+                  items: provider.documentTypes.map((type) {
+                    return DropdownMenuItem<String>(
+                      value: type['code'],
+                      child: Center(
+                        child: Text(
+                          type['label']!,
+                          style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+                            color: appTheme.black_900,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      provider.typePieceController.text = value;
+                      provider.updateTypePiece(value);
+                    }
+                  },
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Ce champ est requis';
+                    }
+                    return null;
+                  },
+                ),
         ),
       ],
     );

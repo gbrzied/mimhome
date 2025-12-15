@@ -1,5 +1,6 @@
 import 'package:millime/widgets/custum_button.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/app_export.dart';
 import '../../widgets/custom_image_view.dart';
@@ -24,11 +25,22 @@ class AccountLevelSelectionScreen extends StatefulWidget {
 
 class _AccountLevelSelectionScreenState
     extends State<AccountLevelSelectionScreen> {
+  String? selectedAccountType;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AccountLevelSelectionProvider>().initialize();
+    _loadSelectedAccountType();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<AccountLevelSelectionProvider>().initialize();
+    });
+  }
+
+  Future<void> _loadSelectedAccountType() async {
+    // Load selected account type from shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      selectedAccountType = prefs.getString('selected_account_type');
     });
   }
 
@@ -39,46 +51,48 @@ class _AccountLevelSelectionScreenState
       appBar: CustomProgressAppBar(
         currentStep: 2,
         totalSteps: 5,
-        onBackPressed: () => Navigator.pop(context),
+        showBackButton: false,
       ),
       body: Consumer<AccountLevelSelectionProvider>(
         builder: (context, provider, child) {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32.h),
-              child: Column(
-                spacing: 36.h,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 2.h),
-                  Padding(
-                    padding: EdgeInsets.only(left: 20.h),
-                    child: Text(
-                      'Choisir le niveau du compte',
-                      style: TextStyleHelper.instance.title18SemiBoldQuicksand
-                          .copyWith(height: 1.28),
+          return Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 32.h),
+                    child: Column(
+                      spacing: 20.h,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 2.h),
+                        Padding(
+                          padding: EdgeInsets.only(left: 20.h),
+                          child: Text(
+                            'Choisir le niveau du compte',
+                            style: TextStyleHelper.instance.title18SemiBoldQuicksand
+                                .copyWith(height: 1.28),
+                          ),
+                        ),
+                        _buildAccountTypeCard(context),
+                        _buildAccountLevelsList(context, provider),
+                      ],
                     ),
                   ),
-                  _buildAccountTypeCard(context),
-                  _buildAccountLevelsList(context, provider),
-                ],
+                ),
               ),
-            ),
-          );
-        },
-      ),
-      bottomNavigationBar: Consumer<AccountLevelSelectionProvider>(
-        builder: (context, provider, child) {
-          return Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 34.h, vertical: 24.h),
-            child: CustomButton(
-              width: double.infinity,
-              text: 'Suivant',
-              onPressed: () {
-                provider.onNextPressed(context);
-              },
-            ),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 34.h, vertical: 24.h),
+                child: CustomButton(
+                  width: double.infinity,
+                  text: 'Suivant',
+                  onPressed: () {
+                    provider.onNextPressed(context);
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),
@@ -86,6 +100,13 @@ class _AccountLevelSelectionScreenState
   }
 
   Widget _buildAccountTypeCard(BuildContext context) {
+    bool isIndividual = selectedAccountType == 'individual';
+    String imagePath = isIndividual ? ImageConstant.imgPP : ImageConstant.imgPM;
+    String title = isIndividual ? 'Personne Physique' : 'Personne Morale';
+    String subtitle = isIndividual
+        ? 'Compte personnel pour particuliers'
+        : 'Compte professionnel pour entreprises';
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 14.h),
       child: Stack(
@@ -125,19 +146,19 @@ class _AccountLevelSelectionScreenState
                     spacing: 2.h,
                     children: [
                       CustomImageView(
-                        imagePath: ImageConstant.imgPP,
+                        imagePath: imagePath,
                         width: 78.h,
                         height: 66.h,
                       ),
                       Text(
-                        'Personne Physique',
+                        title,
                         style: TextStyleHelper.instance.body14BoldManrope
                             .copyWith(height: 1.43),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: 16.h),
                         child: Text(
-                          'Compte personnel pour particuliers',
+                          subtitle,
                           style: TextStyleHelper.instance.body12RegularManrope
                               .copyWith(height: 1.42),
                         ),
@@ -158,22 +179,19 @@ class _AccountLevelSelectionScreenState
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 6.h),
       margin: EdgeInsets.only(bottom: 32.h),
-      child: Column(
-        spacing: 14.h,
-        children: [
-          _buildAccountLevelCard(
+      child: ListView.separated(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: provider.accountLevelSelectionModel.levels?.length ?? 0,
+        separatorBuilder: (context, index) => SizedBox(height: 14.h),
+        itemBuilder: (context, index) {
+          return _buildAccountLevelCard(
             context,
             provider,
-            provider.accountLevelSelectionModel.niveau1,
-            0,
-          ),
-          _buildAccountLevelCard(
-            context,
-            provider,
-            provider.accountLevelSelectionModel.niveau2,
-            1,
-          ),
-        ],
+            provider.accountLevelSelectionModel.levels?[index],
+            index,
+          );
+        },
       ),
     );
   }
@@ -185,7 +203,6 @@ class _AccountLevelSelectionScreenState
     int index,
   ) {
     bool isSelected = provider.selectedLevelIndex == index;
-    bool isNiveau2 = index == 1;
 
     return GestureDetector(
       onTap: () => provider.selectAccountLevel(index),
@@ -210,7 +227,7 @@ class _AccountLevelSelectionScreenState
                 Padding(
                   padding: EdgeInsets.only(left: 22.h, bottom: 2.h),
                   child: Text(
-                    levelModel?.title ?? (isNiveau2 ? 'Niveau 2' : 'Niveau 1'),
+                    levelModel?.title ?? 'Niveau ${index + 1}',
                     style: TextStyleHelper.instance.body12ExtraBoldManrope
                         .copyWith(height: 1.43),
                   ),

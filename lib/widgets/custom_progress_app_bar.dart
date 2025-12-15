@@ -34,6 +34,7 @@ class CustomProgressAppBar extends StatelessWidget
     this.progressBackgroundColor,
     this.textColor,
     this.backIconPath,
+    this.showBackButton = true,
   }) : super(key: key);
 
   /// Current step number (1-based indexing)
@@ -60,6 +61,9 @@ class CustomProgressAppBar extends StatelessWidget
   /// Path to the back arrow icon
   final String? backIconPath;
 
+  /// Whether to show the back button
+  final bool showBackButton;
+
   @override
   Size get preferredSize => Size.fromHeight(48.h);
 
@@ -82,8 +86,10 @@ class CustomProgressAppBar extends StatelessWidget
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildBackButton(context),
-              SizedBox(width: 18.h),
+              if (showBackButton) ...[
+                _buildBackButton(context),
+                SizedBox(width: 18.h),
+              ],
               _buildProgressBar(),
               SizedBox(width: 24.h),
               _buildStepText(),

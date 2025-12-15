@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/app_export.dart';
 import '../models/account_type_selection_screen_model.dart';
@@ -18,8 +19,11 @@ class AccountTypeSelectionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selectAccountType(AccountType accountType) {
+  void selectAccountType(AccountType accountType) async {
     accountTypeSelectionModel.selectedAccountType = accountType;
+    // Save to shared preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selected_account_type', accountType == AccountType.individual ? 'individual' : 'business');
     notifyListeners();
   }
 

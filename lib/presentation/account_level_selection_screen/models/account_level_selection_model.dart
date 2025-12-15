@@ -3,12 +3,10 @@
 // ignore_for_file: must_be_immutable
 class AccountLevelSelectionModel {
   AccountLevelSelectionModel({
-    this.niveau1,
-    this.niveau2,
+    this.levels,
   });
 
-  AccountLevelModel? niveau1;
-  AccountLevelModel? niveau2;
+  List<AccountLevelModel>? levels;
 }
 
 // ignore_for_file: must_be_immutable
