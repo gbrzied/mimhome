@@ -23,6 +23,14 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
 
   // État pour déterminer si le bouton "Confirmer" doit être activé
   bool _canConfirm = false;
+  
+  // États pour les messages d'erreur de validation
+  String? _phoneError;
+  String? _emailError;
+  
+  // Stockage des valeurs de référence
+  String? _storedPhoneNumber;
+  String? _storedEmail;
 
   @override
   void initState() {
@@ -35,19 +43,57 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
       exportPenColor: Colors.black,
     );
 
-    // Écouter les changements dans les champs de texte
+    // Charger les valeurs stockées et configurer les écouteurs
+    _loadStoredValues();
     _phoneController.addListener(_checkConfirmationStatus);
     _emailController.addListener(_checkConfirmationStatus);
   }
+  
+  // Charger les valeurs stockées dans les préférences
+  Future<void> _loadStoredValues() async {
+    final prefs = await SharedPreferences.getInstance();
+    _storedPhoneNumber = prefs.getString('terms_phone_number');
+    _storedEmail = prefs.getString('terms_email');
+    
+    // Vérifier la validation initiale
+    _validateInputs();
+  }
 
-  // Fonction pour vérifier si au moins un des champs n'est pas vide
+  // Fonction pour vérifier si au moins un des champs n'est pas vide et valider les entrées
   void _checkConfirmationStatus() {
+    _validateInputs();
+    
     final bool hasInput = _phoneController.text.isNotEmpty || _emailController.text.isNotEmpty;
-    if (hasInput != _canConfirm) {
+    final bool isValid = (_phoneError == null || _phoneController.text.isEmpty) && 
+                        (_emailError == null || _emailController.text.isEmpty);
+    
+    if (hasInput && isValid != _canConfirm) {
       setState(() {
-        _canConfirm = hasInput;
+        _canConfirm = hasInput && isValid;
       });
     }
+  }
+  
+  // Fonction pour valider les entrées par rapport aux valeurs stockées
+  void _validateInputs() {
+    setState(() {
+      _phoneError = null;
+      _emailError = null;
+      
+      // Validation du téléphone
+      if (_phoneController.text.isNotEmpty && _storedPhoneNumber != null) {
+        if (_phoneController.text.trim() == _storedPhoneNumber!.trim()) {
+          _phoneError = 'Le numéro de téléphone doit être différent de celui utilisé dans les conditions générales';
+        }
+      }
+      
+      // Validation de l'email
+      if (_emailController.text.isNotEmpty && _storedEmail != null) {
+        if (_emailController.text.trim().toLowerCase() == _storedEmail!.trim().toLowerCase()) {
+          _emailError = 'L\'adresse email doit être différente de celle utilisée dans les conditions générales';
+        }
+      }
+    });
   }
 
   @override
@@ -136,6 +182,7 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
             ),
             const SizedBox(height: 4),
             TextField(
+              maxLength: 8,
               controller: _phoneController,
               keyboardType: TextInputType.phone, // Clavier numérique pour téléphone
               decoration: InputDecoration(
@@ -144,6 +191,8 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
+                errorText: _phoneError,
+                errorMaxLines: 2,
               ),
             ),
             const SizedBox(height: 20),
@@ -163,49 +212,51 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
+                errorText: _emailError,
+                errorMaxLines: 2,
               ),
             ),
             const SizedBox(height: 20),
 
             // Signature section
-            const Text(
-              'Signature',
-              style: TextStyle(fontSize: 14, color: Colors.black),
-            ),
-            const SizedBox(height: 4),
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Signature(
-                controller: _signatureController,
-                height: 200,
-                width: double.infinity,
-                backgroundColor: Colors.transparent,
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.undo),
-                  onPressed: () => _signatureController.undo(),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.redo),
-                  onPressed: () => _signatureController.redo(),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () => _signatureController.clear(),
-                ),
-              ],
-            ),
+            // const Text(
+            //   'Signature',
+            //   style: TextStyle(fontSize: 14, color: Colors.black),
+            // ),
+            // const SizedBox(height: 4),
+            // Container(
+            //   height: 200,
+            //   decoration: BoxDecoration(
+            //     border: Border.all(color: Colors.grey),
+            //     borderRadius: BorderRadius.circular(8.0),
+            //   ),
+            //   child: Signature(
+            //     controller: _signatureController,
+            //     height: 200,
+            //     width: double.infinity,
+            //     backgroundColor: Colors.transparent,
+            //   ),
+            // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     IconButton(
+            //       icon: const Icon(Icons.undo),
+            //       onPressed: () => _signatureController.undo(),
+            //     ),
+            //     IconButton(
+            //       icon: const Icon(Icons.redo),
+            //       onPressed: () => _signatureController.redo(),
+            //     ),
+            //     IconButton(
+            //       icon: const Icon(Icons.clear),
+            //       onPressed: () => _signatureController.clear(),
+            //     ),
+            //   ],
+            // ),
 
-            // Espace pour pousser les boutons vers le bas
-            const Spacer(),
+            // // Espace pour pousser les boutons vers le bas
+            // const Spacer(),
           ],
         ),
       ),
@@ -250,26 +301,26 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
                   child: ElevatedButton(
                     onPressed: _canConfirm ? () async {
                       // Check if signature is provided
-                      if (_signatureController.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Veuillez signer avant de confirmer')),
-                        );
-                        return;
-                      }
+                      // if (_signatureController.isEmpty) {
+                      //   ScaffoldMessenger.of(context).showSnackBar(
+                      //     const SnackBar(content: Text('Veuillez signer avant de confirmer')),
+                      //   );
+                      //   return;
+                      // }
 
                       // Export signature
-                      final signatureBytes = await _signatureController.toPngBytes();
-                      if (signatureBytes == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Erreur lors de l\'export de la signature')),
-                        );
-                        return;
-                      }
+                      // final signatureBytes = await _signatureController.toPngBytes();
+                      // if (signatureBytes == null) {
+                      //   ScaffoldMessenger.of(context).showSnackBar(
+                      //     const SnackBar(content: Text('Erreur lors de l\'export de la signature')),
+                      //   );
+                      //   return;
+                      // }
 
                       // Save signature to file
                       final dir = await getApplicationDocumentsDirectory();
                       final signatureFile = File('${dir.path}/signature.png');
-                      await signatureFile.writeAsBytes(signatureBytes);
+                    //  await signatureFile.writeAsBytes(signatureBytes);
 
                       // Save recovery phone, email and signature path to SharedPreferences
                       SharedPreferences prefs = await SharedPreferences.getInstance();

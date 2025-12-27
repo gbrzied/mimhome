@@ -392,6 +392,10 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
   }
 
   Widget _buildDocumentPreview(BuildContext context, IdentityVerificationProvider provider, int index, String displayName, String imagePath) {
+
+                              final docCode = provider.identityVerificationModel.docManquants![index];
+                          final isEnabled = provider.identityVerificationModel.enableDocButton?[docCode] ?? false;
+
     return Container(
       margin: EdgeInsets.only(top: 16.h),
       padding: EdgeInsets.all(16.h),
@@ -448,11 +452,9 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
             children: [
               Expanded(
                 child: ElevatedButton(
+                  
                   onPressed: () {
-                    // Clear current image and reopen camera
-                    provider.identityVerificationModel.tituimages?[index] = null;
-                    provider.togglePreview(index); // Hide preview
-                    provider.getImage(index); // Reopen camera
+                    _handleRetakePhoto(context, provider, index);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: appTheme.colorF98600,
@@ -496,6 +498,100 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
         ],
       ),
     );
+  }
+
+  void _handleRetakePhoto(BuildContext context, IdentityVerificationProvider provider, int index) async {
+    final docCode = provider.identityVerificationModel.docManquants![index];
+    
+    try {
+
+
+                                final docCode = provider.identityVerificationModel.docManquants![index];
+                          final isEnabled = provider.identityVerificationModel.enableDocButton?[docCode] ?? false;
+                          final imagePath = provider.identityVerificationModel.tituimages?[index];
+      // Clear current image
+      provider.identityVerificationModel.tituimages?[index] = null;
+      
+      // Reset validation states for the document being retaken
+      _resetDocumentValidation(provider, index);
+      
+      // Hide preview
+      provider.togglePreview(index);
+      
+
+       _getOnPressedHandler(isEnabled, provider, index, imagePath);
+      // // Handle different document types appropriately
+      // if (docCode == 'SELFIE' || docCode == 'PREUVEIE') {
+      //   // Use CleanSelfiePage for selfie documents
+      //   _navigateToCleanSelfiePage(context, provider, index);
+      // } else {
+      //   // Use regular image picker for other documents
+      //   await provider.getImage(index);
+      // }
+      
+      debugPrint('✅ Retake photo completed for document: $docCode at index: $index');
+    } catch (e) {
+      debugPrint('❌ Error during retake photo: $e');
+      
+      // Show error to user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors de la reprise de la photo: $e'),
+          backgroundColor: appTheme.colorF98600,
+        ),
+      );
+    }
+  }
+
+  void _resetDocumentValidation(IdentityVerificationProvider provider, int index) {
+    final docCode = provider.identityVerificationModel.docManquants![index];
+    
+    // Reset validation states based on document type
+    switch (docCode) {
+      case 'CINR':
+        provider.cinValidationPassed = false;
+        provider.identityVerificationModel.cinr = null;
+        provider.identityVerificationModel.disableCINV = true;
+        provider.identityVerificationModel.disableSELFIE = true;
+        provider.identityVerificationModel.disablePreuveDeVie = true;
+        
+        // Disable all subsequent documents
+        if (index + 1 < (provider.identityVerificationModel.docManquants?.length ?? 0)) {
+          for (var i = index + 1; i < provider.identityVerificationModel.docManquants!.length; i++) {
+            final subsequentDoc = provider.identityVerificationModel.docManquants![i];
+            if (provider.identityVerificationModel.enableDocButton != null) {
+              provider.identityVerificationModel.enableDocButton![subsequentDoc] = false;
+            }
+          }
+        }
+        break;
+        
+      case 'CINV':
+        provider.identityVerificationModel.pieceIdVerifiee = false;
+        provider.identityVerificationModel.disableSELFIE = true;
+        provider.identityVerificationModel.disablePreuveDeVie = true;
+        
+        // Disable all subsequent documents
+        if (index + 1 < (provider.identityVerificationModel.docManquants?.length ?? 0)) {
+          for (var i = index + 1; i < provider.identityVerificationModel.docManquants!.length; i++) {
+            final subsequentDoc = provider.identityVerificationModel.docManquants![i];
+            if (provider.identityVerificationModel.enableDocButton != null) {
+              provider.identityVerificationModel.enableDocButton![subsequentDoc] = false;
+            }
+          }
+        }
+        break;
+        
+      case 'SELFIE':
+      case 'PREUVEIE':
+      case 'SIGN':
+        // No special validation to reset for these document types
+        break;
+    }
+    
+    // Update document button states
+    provider.updateDocumentButtonStates();
+    provider.notifyListeners();
   }
 
   VoidCallback? _getOnPressedHandler(

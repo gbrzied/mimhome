@@ -270,7 +270,7 @@ class DemOuvNewCompteNewMand {
       mandPpGenre: json['mandPpGenre'],
       mandPpAdresse: json['mandPpAdresse'],
       mandPpEmail: json['mandPpEmail'],
-      mandPpBoolTun: json['mandPpBoolTun'],
+      mandPpBoolTun: json['mandPpBoolTun']=='O',
       mandPpBoolResiden: json['mandPpBoolResiden'],
       walletNoTelGestion: json['walletNoTelGestion'],
       walletEmailGestion: json['walletEmailGestion'],

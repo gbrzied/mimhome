@@ -21,6 +21,8 @@ class ImageConstant {
   static String imgTrendingUp = '${basePath}trending-up.svg';
   static String imgTick = '${basePath}tick.svg';
 
+   static String imghand = '${basePath}hand.svg';
+
   // Account Type Selection Screen
   static String imgCaptureDCran72x102 =
       '${basePath}img_capture_d_cran_72x102.png';

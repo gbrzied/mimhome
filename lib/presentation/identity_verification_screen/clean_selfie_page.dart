@@ -261,8 +261,6 @@ class _CleanSelfiePageState extends State<CleanSelfiePage> with WidgetsBindingOb
           ),
         ),
         body: _buildBody(),
-        floatingActionButton: _showImagePreview ? null : _buildCaptureButton(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }
@@ -298,6 +296,9 @@ class _CleanSelfiePageState extends State<CleanSelfiePage> with WidgetsBindingOb
 
         // Selfie Overlay
         _buildSelfieOverlay(),
+
+        // Capture Button - Positioned at bottom of circle
+        if (!_showImagePreview) _buildCaptureButton(),
 
         // Status Information
         _buildStatusInfo(),
@@ -374,10 +375,15 @@ class _CleanSelfiePageState extends State<CleanSelfiePage> with WidgetsBindingOb
                       ),
                       elevation: 4.h,
                     ),
-                    child: Icon(
-                      Icons.close,
-                      size: 32.h,
-                      color: appTheme.white_A700,
+                    child: Center(
+                      child: Text(
+                        '❌',
+                        style: TextStyle(
+                          fontSize: 32.h,
+                          color: appTheme.white_A700,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ),
@@ -395,10 +401,15 @@ class _CleanSelfiePageState extends State<CleanSelfiePage> with WidgetsBindingOb
                       ),
                       elevation: 4.h,
                     ),
-                    child: Icon(
-                      Icons.check,
-                      size: 32.h,
-                      color: appTheme.onPrimary,
+                    child: Center(
+                      child: Text(
+                        '✅',
+                        style: TextStyle(
+                          fontSize: 32.h,
+                          color: appTheme.onPrimary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ),
@@ -579,81 +590,44 @@ class _CleanSelfiePageState extends State<CleanSelfiePage> with WidgetsBindingOb
     final canStart = _captureState == SelfieCaptureState.idle || 
                     _captureState == SelfieCaptureState.waitingForFace;
 
-    return Container(
-      margin: EdgeInsets.only(bottom: 32.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Manual capture button
-          SizedBox(
-            width: 80.h,
-            height: 80.h,
-            child: ElevatedButton(
-              onPressed: canStart ? _manualCapture : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: canStart ? appTheme.colorF98600 : appTheme.gray_600,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40.h),
+    return Positioned(
+      top: 170.h, // Positioned at bottom of the circle
+      left: 0,
+      right: 0,
+      child: Center(
+        child: SizedBox(
+          width: 80.h,
+          height: 80.h,
+          child: ElevatedButton(
+            onPressed: canStart ? _startCapture : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: canStart ? appTheme.primaryColor : appTheme.gray_600,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(40.h),
+              ),
+              elevation: 8.h,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.face,
+                  color: appTheme.white_A700,
+                  size: 32.h,
                 ),
-                elevation: 8.h,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.camera_alt,
+                SizedBox(height: 2.h),
+                Text(
+                  'AUTO',
+                  style: TextStyle(
+                    fontSize: 10.h,
+                    fontWeight: FontWeight.w600,
                     color: appTheme.white_A700,
-                    size: 32.h,
                   ),
-                  SizedBox(height: 2.h),
-                  Text(
-                    'MANUAL',
-                    style: TextStyle(
-                      fontSize: 10.h,
-                      fontWeight: FontWeight.w600,
-                      color: appTheme.white_A700,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          SizedBox(width: 20.h),
-          // Auto capture button
-          SizedBox(
-            width: 80.h,
-            height: 80.h,
-            child: ElevatedButton(
-              onPressed: canStart ? _startCapture : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: canStart ? appTheme.primaryColor : appTheme.gray_600,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40.h),
-                ),
-                elevation: 8.h,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.face,
-                    color: appTheme.white_A700,
-                    size: 32.h,
-                  ),
-                  SizedBox(height: 2.h),
-                  Text(
-                    'AUTO',
-                    style: TextStyle(
-                      fontSize: 10.h,
-                      fontWeight: FontWeight.w600,
-                      color: appTheme.white_A700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

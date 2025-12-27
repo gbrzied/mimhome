@@ -78,41 +78,42 @@ class _EnrollmentSuccessScreenState extends State<EnrollmentSuccessScreen> {
                               color: Color(0xFFF0F0F0),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
-                              Icons.check_circle,
-                              size: 80,
-                              color: Colors.green,
-                            ),
+                            child:CustomImageView(imagePath: ImageConstant.imghand,)
                           ),
                           const SizedBox(height: 30),
                           Text(
-                            'Félicitations',
+                            'Merci',
                             textAlign: TextAlign.center,
                             style: TextStyleHelper.instance.title38BoldQuicksand,
                           ),
                           const SizedBox(height: 15),
                           Text(
-                            provider.submissionMessage ?? 'Votre demande d\'ouverture de compte a été déposée avec succès.',
+                            provider.submissionMessage ?? 'votre inscription est faite avec succée.',
                             textAlign: TextAlign.center,
                             style: TextStyleHelper.instance.title20RegularQuicksand,
                           ),
-                          const SizedBox(height: 30),
-                          ElevatedButton(
-                            onPressed: () => provider.navigateToDashboard(context),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: appTheme.primaryColor,
-                              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                            ),
-                            child: Text(
-                              'Continuer',
-                              style: TextStyleHelper.instance.title16MediumSyne.copyWith(
-                                color: appTheme.onPrimary,
-                              ),
-                            ),
+                             Text(
+                            provider.submissionMessage ?? 'Votre demande est encours d’études.',
+                            textAlign: TextAlign.center,
+                            style: TextStyleHelper.instance.title20RegularQuicksand,
                           ),
+                          const SizedBox(height: 15),
+                          // ElevatedButton(
+                          //   onPressed: () => provider.navigateToDashboard(context),
+                          //   style: ElevatedButton.styleFrom(
+                          //     backgroundColor: appTheme.primaryColor,
+                          //     padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                          //     shape: RoundedRectangleBorder(
+                          //       borderRadius: BorderRadius.circular(25),
+                          //     ),
+                          //   ),
+                          //   child: Text(
+                          //     'Terminer',
+                          //     style: TextStyleHelper.instance.title16MediumSyne.copyWith(
+                          //       color: appTheme.onPrimary,
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       )
                     else
