@@ -21,12 +21,64 @@ class PersonalInformationsScreen extends StatefulWidget {
 }
 
 class _PersonalInformationsScreenState extends State<PersonalInformationsScreen> {
+  // Add focus node for phone field
+  final FocusNode _phoneFocusNode = FocusNode();
+  
+  // Add focus node for email field
+  final FocusNode _emailFocusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
+    
+    // Add listener for phone field focus changes
+    _phoneFocusNode.addListener(() {
+      if (!_phoneFocusNode.hasFocus) {
+        // Phone field lost focus - validate phone number
+        _validatePhoneNumberOnBlur();
+      }
+    });
+    
+    // Add listener for email field focus changes
+    _emailFocusNode.addListener(() {
+      if (!_emailFocusNode.hasFocus) {
+        // Email field lost focus - validate email
+        _validateEmailOnBlur();
+      }
+    });
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<PersonalInformationsProvider>().initialize();
     });
+  }
+
+  // Method to validate phone number when field loses focus
+  void _validatePhoneNumberOnBlur() {
+    final provider = context.read<PersonalInformationsProvider>();
+    final phoneNumber = provider.phoneController.text;
+    
+    // Only validate if phone number is not empty and has 8 digits
+    if (phoneNumber.isNotEmpty && phoneNumber.length == 8) {
+      provider.validatePhoneNumberMatch(phoneNumber);
+    }
+  }
+  
+  // Method to validate email when field loses focus
+  void _validateEmailOnBlur() {
+    final provider = context.read<PersonalInformationsProvider>();
+    final email = provider.emailController.text;
+    
+    // Only validate if email is not empty and is valid format
+    if (email.isNotEmpty && RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email)) {
+      provider.validateEmailMatch(email);
+    }
+  }
+
+  @override
+  void dispose() {
+    _phoneFocusNode.dispose();
+    _emailFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -179,24 +231,34 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                           ),
                           SizedBox(height: 10.h),
                           _buildTextField(
+                            maxLength: 8,
                             context: context,
                             label: 'Numéro de téléphone',
                             controller: provider.phoneController,
+                            focusNode: _phoneFocusNode,
                             keyboardType: TextInputType.phone,
                           //  provider: provider,
                             hintText: 'Entrez votre numéro de téléphone',
                             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                             autovalidateMode: AutovalidateMode.onUserInteraction,
                             validator: (value) {
+                              final provider = context.read<PersonalInformationsProvider>();
+                              
                               if (value == null || value.isEmpty) {
                                 return 'Ce champ est requis';
                               }
                               if (value.length != 8) {
-                                return 'Le numéro de téléphone doit contenir exactement 8 chiffres';
+                                return 'Longeur incorrecte';
                               }
                               if (value == '00000000') {
                                 return 'Numéro de téléphone invalide';
                               }
+                              
+                              // Check for phone number mismatch error
+                              if (provider.phoneNumberMismatchError != null) {
+                                return provider.phoneNumberMismatchError;
+                              }
+                              
                               return null;
                             },
                           ),
@@ -205,6 +267,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                             context: context,
                             label: 'Email',
                             controller: provider.emailController,
+                            focusNode: _emailFocusNode,
                             keyboardType: TextInputType.emailAddress,
                           //  provider: provider,
                             hintText: 'Entrez votre email',
@@ -217,6 +280,12 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                               if (!emailRegex.hasMatch(value)) {
                                 return 'Adresse email invalide';
                               }
+                              
+                              // Check for email mismatch error
+                              if (provider.emailMismatchError != null) {
+                                return provider.emailMismatchError;
+                              }
+                              
                               return null;
                             },
                           ),
@@ -304,7 +373,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
     required BuildContext context,
     required String label,
     required TextEditingController controller,
-
+    FocusNode? focusNode,
     TextInputType? keyboardType,
     bool readOnly = false,
     VoidCallback? onTap,
@@ -312,6 +381,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
     String? Function(String?)? validator,
     List<TextInputFormatter>? inputFormatters,
     AutovalidateMode? autovalidateMode,
+    int maxLength=35
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,7 +394,9 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
         ),
         SizedBox(height: 4.h),
         CustomTextFormField(
+          maxLength: maxLength,
           controller: controller,
+          focusNode: focusNode,
           textInputType: keyboardType,
           readOnly: readOnly,
           hintText: hintText,

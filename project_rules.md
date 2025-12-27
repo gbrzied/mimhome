@@ -370,6 +370,7 @@ class AppRoutes {
 6. Use `NavigatorService` for navigation
 7. Follow naming conventions strictly
 8. NEVER import from `/oldLibFiles` directory - it is for demonstration only
+9. **🔍 BUSINESS LOGIC RULE**: If business logic is missing or incomplete in the current implementation, reference the old app located in `/data/mime/mobile3` for the correct implementation patterns and requirements
 
 ### SHOULD Rules (Recommended)
 1. Use builder pattern for screen constructors

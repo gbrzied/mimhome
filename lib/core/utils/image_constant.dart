@@ -6,6 +6,13 @@ class ImageConstant {
   // Placeholder image for fallback
   static String imgPlaceholder = '${basePath}placeholder.png';
 
+
+//onboardingData
+  static String imgOnbording1 = '${basePath}onboarding1.png';
+  static String imgOnbording2 = '${basePath}onboarding2.svg';
+  static String imgOnbording3 = '${basePath}onboarding3.svg';
+
+
   // Account Level Selection Screen
   static String imgGroup2 = '${basePath}refresh.svg';
   static String imgRectangle2 = '${basePath}img_rectangle_2.svg';

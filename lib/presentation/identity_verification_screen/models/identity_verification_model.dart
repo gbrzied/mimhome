@@ -32,6 +32,8 @@ class IdentityVerificationModel {
     this.backendError = false,
     this.backendErrorMessage = '',
     this.documentsRequis,
+    this.showPreview,
+    this.selectedPieceType,
   }) {
     showCard = showCard ?? false;
     docManquants = docManquants ?? [];
@@ -94,6 +96,12 @@ class IdentityVerificationModel {
 
   // Document management
   List<DocumentRequis>? documentsRequis;
+
+  // Preview state management
+  Map<int, bool>? showPreview;
+
+  // Piece type filtering
+  String? selectedPieceType;
 }
 
 // DocumentRequis model to represent required documents from backend

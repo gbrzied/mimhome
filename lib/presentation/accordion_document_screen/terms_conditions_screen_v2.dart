@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:printing/printing.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/app_export.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_text_form_field.dart';
@@ -710,10 +711,15 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
           text: 'Valider',
           width: double.maxFinite,
           onPressed: (allDocumentsAccepted && _isEmailServerValid && _isPhoneServerValid)
-              ? () {
+              ? () async {
                   // Update provider with user data - exact from old code
                   provider.termsConditionsModel.phoneNumber = _phoneController.text;
                   provider.termsConditionsModel.email = _emailController.text;
+
+                  // Store phone number and email in SharedPreferences
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  await prefs.setString('terms_phone_number', _phoneController.text);
+                  await prefs.setString('terms_email', _emailController.text);
 
                   // Use exact handleNextButtonPress method from old login_store.dart
                   provider.handleNextButtonPress(context, _phoneController.text);

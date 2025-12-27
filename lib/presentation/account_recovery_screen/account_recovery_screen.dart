@@ -1,4 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:signature/signature.dart';
+import '../../core/app_export.dart';
 
 // Définition de la classe de l'écran (Widget d'état)
 class AccountRecoveryScreen extends StatefulWidget {
@@ -13,12 +18,23 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
+  // Signature controller
+  late SignatureController _signatureController;
+
   // État pour déterminer si le bouton "Confirmer" doit être activé
   bool _canConfirm = false;
 
   @override
   void initState() {
     super.initState();
+    // Initialize signature controller
+    _signatureController = SignatureController(
+      penStrokeWidth: 3,
+      penColor: Colors.black,
+      exportBackgroundColor: Colors.transparent,
+      exportPenColor: Colors.black,
+    );
+
     // Écouter les changements dans les champs de texte
     _phoneController.addListener(_checkConfirmationStatus);
     _emailController.addListener(_checkConfirmationStatus);
@@ -39,6 +55,7 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
     // Nettoyer les contrôleurs lorsqu'ils ne sont plus nécessaires
     _phoneController.dispose();
     _emailController.dispose();
+    _signatureController.dispose();
     super.dispose();
   }
 
@@ -148,9 +165,47 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+
+            // Signature section
+            const Text(
+              'Signature',
+              style: TextStyle(fontSize: 14, color: Colors.black),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Signature(
+                controller: _signatureController,
+                height: 200,
+                width: double.infinity,
+                backgroundColor: Colors.transparent,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.undo),
+                  onPressed: () => _signatureController.undo(),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.redo),
+                  onPressed: () => _signatureController.redo(),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () => _signatureController.clear(),
+                ),
+              ],
+            ),
 
             // Espace pour pousser les boutons vers le bas
-            const Spacer(), 
+            const Spacer(),
           ],
         ),
       ),
@@ -193,18 +248,46 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
                 child: SizedBox(
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: _canConfirm ? () {
-                      // Logique 'Confirmer' (actif)
-                      print('Téléphone: ${_phoneController.text}, Email: ${_emailController.text}');
+                    onPressed: _canConfirm ? () async {
+                      // Check if signature is provided
+                      if (_signatureController.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Veuillez signer avant de confirmer')),
+                        );
+                        return;
+                      }
+
+                      // Export signature
+                      final signatureBytes = await _signatureController.toPngBytes();
+                      if (signatureBytes == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Erreur lors de l\'export de la signature')),
+                        );
+                        return;
+                      }
+
+                      // Save signature to file
+                      final dir = await getApplicationDocumentsDirectory();
+                      final signatureFile = File('${dir.path}/signature.png');
+                      await signatureFile.writeAsBytes(signatureBytes);
+
+                      // Save recovery phone, email and signature path to SharedPreferences
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      await prefs.setString('recovery_phone', _phoneController.text);
+                      await prefs.setString('recovery_email', _emailController.text);
+                      await prefs.setString('signature_path', signatureFile.path);
+
+                      // Navigate to EnrollmentSuccessScreen
+                      NavigatorService.pushNamed(AppRoutes.finEnrolScreen);
                     } : null, // null désactive le bouton
                     style: ElevatedButton.styleFrom(
                       // Couleur de fond selon l'état
-                      backgroundColor: _canConfirm ? disabledButtonColor : disabledButtonColor, 
+                      backgroundColor: _canConfirm ? disabledButtonColor : disabledButtonColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100),
                       ),
                       // Pas d'ombre
-                      elevation: 0, 
+                      elevation: 0,
                     ),
                     child: Text(
                       'Confirmer',
@@ -212,7 +295,7 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         // Couleur du texte selon l'état
-                        color: _canConfirm ? Colors.black : disabledTextColor, 
+                        color: _canConfirm ? Colors.black : disabledTextColor,
                       ),
                     ),
                   ),

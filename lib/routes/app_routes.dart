@@ -15,6 +15,7 @@ import '../presentation/account_recovery_screen/account_recovery_screen.dart';
 import '../presentation/millime_settings/millime_settings.dart';
 
 import '../presentation/fin_enrol/fin_enrol.dart';
+import '../presentation/onboarding/on_boarding.dart';
 
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
 
@@ -46,6 +47,7 @@ class AppRoutes {
   static const String loginScreen = '/login_screen';
   static const String finEnrolScreen = '/fin_enrol_screen';
   static const String millimeSettingsScreen = '/millime_settings_screen';
+  static const String onboardingScreen = '/onboarding_screen';
   static const String initialRoute = '/';
 
 //account_dashboard_screen  account_opening_screen  app_navigation_screen  bill_payment_selection_screen  wallet_setup_confirmation_screen
@@ -64,7 +66,10 @@ class AppRoutes {
         accountLevelSelectionScreen: AccountLevelSelectionScreen.builder,
 
         appNavigationScreen: AppNavigationScreen.builder,
-        initialRoute: LoginScreen.builder,
+        // initialRoute: LoginScreen.builder,
+        
+        initialRoute: IdentityVerificationScreen.builder,
+
         termsConditionsScreen: TermsConditionsScreen.builder,
         termsConditionsScreenV2: TermsConditionsScreenV2.builder,
         accordionDocumentScreen: AccordionDocumentWrapperScreen.builder,
@@ -74,9 +79,9 @@ class AppRoutes {
         loginScreen: LoginScreen.builder,
         finEnrolScreen: (context) => EnrollmentSuccessScreen(),
         millimeSettingsScreen: MillimeSettings.builder,
+        onboardingScreen: (context) => OnboardingScreen(),
 
        // accountOpeningPage: (context) => AccountOpeningPage(),
         accountDashboardScreen: AccountDashboardScreen.builder,
       };
 }
-

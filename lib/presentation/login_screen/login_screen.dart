@@ -201,31 +201,63 @@ class _LoginScreenState extends State<LoginScreen> {
 
   /// Section Widget: Registration Link
   Widget _buildRegistrationLink(LoginScreenProvider provider) {
-    return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Vous n'avez pas de compte ? ",
-            style: TextStyleHelper.instance.body14RegularSyne.copyWith(
-              color: appTheme.black_900,
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              provider.navigateToRegistration(context);
-            },
-            child: Text(
-              "s'inscrire",
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Registration Link
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Vous n'avez pas de compte ? ",
               style: TextStyleHelper.instance.body14RegularSyne.copyWith(
-                color: appTheme.breakColor,
-                decoration: TextDecoration.underline,
-                 fontWeight: FontWeight.w500,
+                color: appTheme.black_900,
               ),
             ),
-          ),
-        ],
-      ),
+            GestureDetector(
+              onTap: () {
+                provider.navigateToRegistration(context);
+              },
+              child: Text(
+                "s'inscrire",
+                style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+                  color: appTheme.breakColor,
+                  decoration: TextDecoration.underline,
+                   fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+        
+        SizedBox(height: 16.h),
+        
+        // Onboarding Link
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Vous voulez découvrir l'application ? ",
+              style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+                color: appTheme.black_900,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                NavigatorService.pushNamed(AppRoutes.onboardingScreen);
+              },
+              child: Text(
+                "Découvrir",
+                style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+                  color: appTheme.primaryColor,
+                  decoration: TextDecoration.underline,
+                   fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

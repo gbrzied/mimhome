@@ -109,7 +109,7 @@ class LightCodeColors {
   Color get redCustom => Colors.red;
   Color get color161567 => Color(0x16156778);
   Color get colorFF52D1 => Color(0xFF52D1C6);
-
+  Color get colorFCFFCF9 => Color(0xFFCFFCF9); //CFFCF9
   Color get colorF98600 => Color(0xFFF98600);//#F98600
 
   Color get colorFEE2E2 => Color(0xFFFEE2E2);
@@ -150,6 +150,8 @@ class LightCodeColors {
   // Transparency - Overlay effects
   Color get overlayLight => color7FFFFF; // Light overlays (50% white)
   Color get overlayDark => color190000; // Dark overlays (10% black)
-  Color get transparent => transparentCustom; // Full transparency
+  Color get transparent => transparentCustom; 
+  
+  // Color get colorOrag= accentColor;// Full transparency
 
 }
