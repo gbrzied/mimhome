@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/app_export.dart';
+import '../../localizationMillime/localization/app_localization.dart';
 import '../../widgets/custom_image_view.dart';
 import '../../widgets/custom_progress_app_bar.dart';
 import './provider/account_level_selection_provider.dart';
@@ -25,22 +26,22 @@ class AccountLevelSelectionScreen extends StatefulWidget {
 
 class _AccountLevelSelectionScreenState
     extends State<AccountLevelSelectionScreen> {
-  String? selectedAccountType;
+  String? selectedAccountTypePPPM;
 
   @override
   void initState() {
     super.initState();
-    _loadSelectedAccountType();
+    _loadSelectedAccountTypePPPM();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await context.read<AccountLevelSelectionProvider>().initialize();
     });
   }
 
-  Future<void> _loadSelectedAccountType() async {
+  Future<void> _loadSelectedAccountTypePPPM() async {
     // Load selected account type from shared preferences
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      selectedAccountType = prefs.getString('selected_account_type');
+      selectedAccountTypePPPM = prefs.getString('selected_account_typePPPM');
     });
   }
 
@@ -69,7 +70,7 @@ class _AccountLevelSelectionScreenState
                         Padding(
                           padding: EdgeInsets.only(left: 20.h),
                           child: Text(
-                            'Choisir le niveau du compte',
+                            'key_choose_account_level'.tr,
                             style: TextStyleHelper.instance.title18SemiBoldQuicksand
                                 .copyWith(height: 1.28),
                           ),
@@ -86,7 +87,7 @@ class _AccountLevelSelectionScreenState
                 padding: EdgeInsets.symmetric(horizontal: 34.h, vertical: 24.h),
                 child: CustomButton(
                   width: double.infinity,
-                  text: 'Suivant',
+                  text: 'key_next'.tr,
                   onPressed: () {
                     provider.onNextPressed(context);
                   },
@@ -100,12 +101,12 @@ class _AccountLevelSelectionScreenState
   }
 
   Widget _buildAccountTypeCard(BuildContext context) {
-    bool isIndividual = selectedAccountType == 'individual';
+    bool isIndividual = (selectedAccountTypePPPM ?? 'individual') == 'individual' ;
     String imagePath = isIndividual ? ImageConstant.imgPP : ImageConstant.imgPM;
-    String title = isIndividual ? 'Personne Physique' : 'Personne Morale';
+    String title = isIndividual ? 'key_individual_account'.tr : 'key_business_account'.tr;
     String subtitle = isIndividual
-        ? 'Compte personnel pour particuliers'
-        : 'Compte professionnel pour entreprises';
+        ? 'key_personal_account_description'.tr
+        : 'key_business_account_description'.tr;
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 14.h),
@@ -227,7 +228,7 @@ class _AccountLevelSelectionScreenState
                 Padding(
                   padding: EdgeInsets.only(left: 22.h, bottom: 2.h),
                   child: Text(
-                    levelModel?.title ?? 'Niveau ${index + 1}',
+                    levelModel?.title ?? 'key_level'.tr + ' ${index + 1}',
                     style: TextStyleHelper.instance.body12ExtraBoldManrope
                         .copyWith(height: 1.43),
                   ),
@@ -279,7 +280,7 @@ class _AccountLevelSelectionScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Solde maximal',
+                          'key_max_balance'.tr,
                           style: TextStyleHelper.instance.label10SemiBoldManrope
                               .copyWith(color: appTheme.gray_400, height: 1.4),
                         ),
@@ -322,7 +323,7 @@ class _AccountLevelSelectionScreenState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Cumul mensuel',
+                        'key_monthly_cumulative'.tr,
                         style: TextStyleHelper.instance.label10SemiBoldManrope
                             .copyWith(color: appTheme.gray_400, height: 1.4),
                       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:millime/core/build_info.dart';
 import 'dart:convert';
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,9 +14,10 @@ class AccountLevelSelectionProvider extends ChangeNotifier {
 
   int selectedLevelIndex = 0; // Default to first level
   bool isLoading = false;
+  late SharedPreferences prefs;
 
+  bool isIndividual = true; // true for PP, false for PM
   // Backend server URL - adjust as needed
-  final String backendServer = '192.168.1.13'; // Replace with actual backend URL
 
   // Currency decimal places
   final int deviseNbrDec = 3;
@@ -104,9 +106,9 @@ class AccountLevelSelectionProvider extends ChangeNotifier {
 
     try {
       // Get selected account type from shared preferences
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? accountTypeString = prefs.getString('selected_account_type');
-      bool isIndividual = accountTypeString == 'individual'; // true for PP, false for PM
+       prefs = await SharedPreferences.getInstance();
+      String? accountTypePPPMString = prefs.getString('selected_account_typePPPM') ;
+      isIndividual = (accountTypePPPMString ?? 'individual')  == 'individual'; // true for PP, false for PM
 
       var nivsIndics = await getNivCptIndicCpt();
       if (nivsIndics.isNotEmpty) {
@@ -173,22 +175,42 @@ class AccountLevelSelectionProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+    // Get the selected level and save its code
+    _saveSelectedLevelCode();
+
     // Simulate form processing
     Future.delayed(Duration(milliseconds: 500), () {
       isLoading = false;
       notifyListeners();
 
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Niveau de compte sélectionné avec succès'),
-          backgroundColor: appTheme.cyan_900,
-        ),
-      );
+      // Navigate to personal/buiness informations screen
+      if (isIndividual) {
+        NavigatorService.pushNamed(AppRoutes.personalInformationsScreen);
+      } else {
+        NavigatorService.pushNamed(AppRoutes.pmInformationsScreen);
+      }
 
-      // Navigate to personal informations screen
-      NavigatorService.pushNamed(AppRoutes.personalInformationsScreen);
     });
+  }
+
+  Future<void> _saveSelectedLevelCode() async {
+    try {
+      prefs = await SharedPreferences.getInstance();
+      
+      // Get the selected level data
+      if (accountLevelSelectionModel.levels != null && 
+          selectedLevelIndex < accountLevelSelectionModel.levels!.length) {
+        final selectedLevel = accountLevelSelectionModel.levels![selectedLevelIndex];
+        final levelCode = selectedLevel.title ?? '';
+        
+        // Save the niveau_compte_code
+        await prefs.setString('niveau_compte_code', levelCode);
+        
+        debugPrint('✅ Saved niveau_compte_code: $levelCode');
+      }
+    } catch (e) {
+      debugPrint('❌ Error saving niveau_compte_code: $e');
+    }
   }
 
   @override

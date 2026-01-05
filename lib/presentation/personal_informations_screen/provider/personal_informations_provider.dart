@@ -5,25 +5,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/app_export.dart';
 import '../models/personal_informations_model.dart';
+import 'package:millime/core/build_info.dart';
 
 // Constants from old version
 final Map<String, Map<String, String>> codePieceToLabelMapper = {
-  'fr': {
-    'TNCIN': 'CIN',
-    'TNPASS': 'PS',
-    'TNRNE': 'RNE',
-    'CIN': 'CIN',
-  },
-  'en': {
-    'TNCIN': 'CIN',
-    'TNPASS': 'PS',
-    'TNRNE': 'RNE'
-  },
-  'ar': {
-    'TNCIN': 'CIN',
-    'TNPASS': 'PS',
-    'TNRNE': 'RNE'
-  },
+  'fr': {'TNCIN': 'CIN', 'TNPASS': 'PS', 'TNRNE': 'RNE', 'CIN': 'CIN'},
+  'en': {'TNCIN': 'CIN', 'TNPASS': 'PS', 'TNRNE': 'RNE'},
+  'ar': {'TNCIN': 'CIN', 'TNPASS': 'PS', 'TNRNE': 'RNE'},
 };
 
 class RegexInfo {
@@ -64,7 +52,10 @@ ValidationResult doesValueMatchRegex(String key, String value) {
   if (regexInfo.regEx.hasMatch(value)) {
     return ValidationResult(isValid: true);
   } else {
-    return ValidationResult(isValid: false, errorMessage: regexInfo.errorMessage);
+    return ValidationResult(
+      isValid: false,
+      errorMessage: regexInfo.errorMessage,
+    );
   }
 }
 
@@ -72,27 +63,37 @@ const int tncinLength = 8;
 const int tnpassLength = 7;
 
 class PersonalInformationsProvider extends ChangeNotifier {
-  PersonalInformationsModel personalInformationsModel = PersonalInformationsModel();
+  PersonalInformationsModel personalInformationsModel =
+      PersonalInformationsModel();
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   // Controllers
-  late final TextEditingController nomController =TextEditingController();//= TextEditingController(text: 'Ben foulen');
-  late  final TextEditingController prenomController =TextEditingController();//= TextEditingController(text: 'Foulen');
-  late final TextEditingController dateController =TextEditingController() ;//= TextEditingController(text: '06-10-2005');
-  late final TextEditingController adresseController=TextEditingController() ;//= TextEditingController(text: 'Nabeul');
-  late final TextEditingController phoneController =TextEditingController();//= TextEditingController(text: '98989898');
-  late final TextEditingController emailController =TextEditingController();//= TextEditingController(text: 'foulenbenfoulen@gmail.com');
-  late final TextEditingController typePieceController = TextEditingController();
-  late final TextEditingController numeroPieceController = TextEditingController();
+  late final TextEditingController nomController =
+      TextEditingController(); //= TextEditingController(text: 'Ben foulen');
+  late final TextEditingController prenomController =
+      TextEditingController(); //= TextEditingController(text: 'Foulen');
+  late final TextEditingController dateController =
+      TextEditingController(); //= TextEditingController(text: '06-10-2005');
+  late final TextEditingController adresseController =
+      TextEditingController(); //= TextEditingController(text: 'Nabeul');
+  late final TextEditingController phoneController =
+      TextEditingController(); //= TextEditingController(text: '98989898');
+  late final TextEditingController emailController =
+      TextEditingController(); //= TextEditingController(text: 'foulenbenfoulen@gmail.com');
+  late final TextEditingController typePieceController =
+      TextEditingController();
+  late final TextEditingController numeroPieceController =
+      TextEditingController();
 
-  AccountType selectedAccountType = AccountType.titulaireEtSignataire;
+  AccountType selectedAccountTypeTituSignataire =
+      AccountType.titulaireEtSignataire;
 
   bool isLoading = false;
-  
+
   // Add state for phone number mismatch error
   String? phoneNumberMismatchError;
-  
+
   // Add state for email mismatch error
   String? emailMismatchError;
 
@@ -104,52 +105,56 @@ class PersonalInformationsProvider extends ChangeNotifier {
   bool isLoadingDocumentTypes = false;
 
   void initialize() async {
-   // Read person type from SharedPreferences
-   SharedPreferences prefs = await SharedPreferences.getInstance();
-   String? accountType = prefs.getString('selected_account_type');
-   isPhysicalPerson = accountType == 'individual'; // individual = physical person
+    // Read person type from SharedPreferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? accountTypePPPM = prefs.getString('selected_account_typePPPM');
+    isPhysicalPerson =
+        accountTypePPPM == 'individual'; // individual = physical person
 
-   // Retrieve stored phone number and email from TermsConditionsScreenV2
-   String? storedPhoneNumber = prefs.getString('terms_phone_number');
-   String? storedEmail = prefs.getString('terms_email');
+    // Retrieve stored phone number and email from TermsConditionsScreenV2
+    String? storedPhoneNumber = prefs.getString('terms_phone_number');
+    String? storedEmail = prefs.getString('terms_email');
 
-   // Initialize with default values or stored values
-   personalInformationsModel = PersonalInformationsModel(
-     nom: nomController.text,
-     prenom: prenomController.text,
-     dateNaissance: dateController.text,
-     adresse: adresseController.text,
-     numeroTelephone: storedPhoneNumber ?? phoneController.text,
-     email: storedEmail ?? emailController.text,
-     typePiece: typePieceController.text,
-     numeroPiece: numeroPieceController.text,
-     typeCompte: selectedAccountType,
-     isPhysicalPerson: isPhysicalPerson,
-   );
+    // Initialize with default values or stored values
+    personalInformationsModel = PersonalInformationsModel(
+      nom: nomController.text,
+      prenom: prenomController.text,
+      dateNaissance: dateController.text,
+      adresse: adresseController.text,
+      numeroTelephone: storedPhoneNumber ?? phoneController.text,
+      email: storedEmail ?? emailController.text,
+      typePiece: typePieceController.text,
+      numeroPiece: numeroPieceController.text,
+      typeCompte: selectedAccountTypeTituSignataire,
+      isPhysicalPerson: isPhysicalPerson,
+    );
 
-   // Set the stored values to the controllers
-  //  if (storedPhoneNumber != null) {
-  //    phoneController.text = storedPhoneNumber;
-  //  }
-  //  if (storedEmail != null) {
-  //    emailController.text = storedEmail;
-  //  }
+    // Set the stored values to the controllers
+    //  if (storedPhoneNumber != null) {
+    //    phoneController.text = storedPhoneNumber;
+    //  }
+    //  if (storedEmail != null) {
+    //    emailController.text = storedEmail;
+    //  }
 
-   // Load dynamic document types
-   loadDocumentTypes();
+    // Load dynamic document types
+    loadDocumentTypes();
 
-   notifyListeners();
- }
+    notifyListeners();
+  }
 
   Future<void> loadDocumentTypes() async {
     isLoadingDocumentTypes = true;
     notifyListeners();
 
     try {
-      final types = await chargerListePiece(isPhysicalPerson); // Use the person type
+      final types = await chargerListePiece(
+        isPhysicalPerson,
+      ); // Use the person type
       documentTypes = types.map((type) {
         final code = type['pieceIdentiteCode'] as String;
-        final label = codePieceToLabelMapper['fr']?[code] ?? code; // Default to French
+        final label =
+            codePieceToLabelMapper['fr']?[code] ?? code; // Default to French
         return {'code': code, 'label': label};
       }).toList();
     } catch (e) {
@@ -166,15 +171,21 @@ class PersonalInformationsProvider extends ChangeNotifier {
   }
 
   Future<List<dynamic>> chargerListePiece(bool physique) async {
-    final response = await http.get(Uri.parse('http://192.168.1.13:8081/pieceIdentite/'));
+    final response = await http.get(
+      Uri.parse('http://${backendServer}:8081/pieceIdentite/'),
+    );
 
     if (response.statusCode <= 206 && response.contentLength! > 0) {
       final listePieces = jsonDecode(response.body) as List<dynamic>;
       List<dynamic> filtrelistePieces;
       if (physique) {
-        filtrelistePieces = listePieces.where((e) => !e['pieceIdentiteBoolPmTun']).toList();
+        filtrelistePieces = listePieces
+            .where((e) => !e['pieceIdentiteBoolPmTun'])
+            .toList();
       } else {
-        filtrelistePieces = listePieces.where((e) => e['pieceIdentiteBoolPmTun']).toList();
+        filtrelistePieces = listePieces
+            .where((e) => e['pieceIdentiteBoolPmTun'])
+            .toList();
       }
       return filtrelistePieces;
     } else {
@@ -188,9 +199,15 @@ class PersonalInformationsProvider extends ChangeNotifier {
     } catch (e) {
       // If regex not found, check length
       if (documentType == 'TNCIN' && value.length != tncinLength) {
-        return ValidationResult(isValid: false, errorMessage: 'La CIN doit contenir $tncinLength chiffres');
+        return ValidationResult(
+          isValid: false,
+          errorMessage: 'La CIN doit contenir $tncinLength chiffres',
+        );
       } else if (documentType == 'TNPASS' && value.length != tnpassLength) {
-        return ValidationResult(isValid: false, errorMessage: 'Le passeport doit contenir $tnpassLength caractères');
+        return ValidationResult(
+          isValid: false,
+          errorMessage: 'Le passeport doit contenir $tnpassLength caractères',
+        );
       }
       return ValidationResult(isValid: true);
     }
@@ -228,45 +245,31 @@ class PersonalInformationsProvider extends ChangeNotifier {
     personalInformationsModel.numeroTelephone = value;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('personal_numero_telephone', value);
-    
+
     // Verify against stored phone number from TermsConditionsScreenV2
     String? storedPhoneNumber = prefs.getString('terms_phone_number');
     if (storedPhoneNumber != null && value != storedPhoneNumber) {
       // Phone number doesn't match - show error or handle accordingly
       // For now, we'll just log it, but you could show a snackbar or dialog
-      debugPrint('Phone number mismatch: entered=$value, stored=$storedPhoneNumber');
+      debugPrint(
+        'Phone number mismatch: entered=$value, stored=$storedPhoneNumber',
+      );
     }
-    
+
     notifyListeners();
   }
 
-  // New method to validate phone number against stored value
-  Future<bool> validatePhoneNumberMatch(String phoneNumber) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? storedPhoneNumber = prefs.getString('terms_phone_number');
-    
-    if (storedPhoneNumber != null && phoneNumber != storedPhoneNumber) {
-      phoneNumberMismatchError = 'utiliser le tél de gestion'; // err_numero_different
-      notifyListeners();
-      return false; // Phone numbers don't match
-    }
-    
-    phoneNumberMismatchError = null;
-    notifyListeners();
-    return true; // Phone numbers match or no stored number
-  }
-  
   // New method to validate email against stored value
   Future<bool> validateEmailMatch(String email) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? storedEmail = prefs.getString('terms_email');
-    
+
     if (storedEmail != null && email != storedEmail) {
       emailMismatchError = 'utiliser le mail de gestion'; //err_email_different
       notifyListeners();
       return false; // Emails don't match
     }
-    
+
     emailMismatchError = null;
     notifyListeners();
     return true; // Emails match or no stored email
@@ -276,14 +279,14 @@ class PersonalInformationsProvider extends ChangeNotifier {
     personalInformationsModel.email = value;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('personal_email', value);
-    
+
     // Verify against stored email from TermsConditionsScreenV2
     String? storedEmail = prefs.getString('terms_email');
     if (storedEmail != null && value != storedEmail) {
       // Email doesn't match - show error or handle accordingly
       debugPrint('Email mismatch: entered=$value, stored=$storedEmail');
     }
-    
+
     notifyListeners();
   }
 
@@ -299,12 +302,12 @@ class PersonalInformationsProvider extends ChangeNotifier {
     personalInformationsModel.numeroPiece = value;
     // Save to SharedPreferences for global access
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('entered_cin_number', value);
+    await prefs.setString('entered_id_number', value);
     notifyListeners();
   }
 
   void selectAccountType(AccountType type) {
-    selectedAccountType = type;
+    selectedAccountTypeTituSignataire = type;
     personalInformationsModel.typeCompte = type;
     notifyListeners();
   }
@@ -326,16 +329,15 @@ class PersonalInformationsProvider extends ChangeNotifier {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: appTheme.cyan_900,
-            ),
+            colorScheme: ColorScheme.light(primary: appTheme.cyan_900),
           ),
           child: child!,
         );
       },
     );
     if (picked != null) {
-      final formattedDate = '${picked.day.toString().padLeft(2, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.year}';
+      final formattedDate =
+          '${picked.day.toString().padLeft(2, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.year}';
       dateController.text = formattedDate;
       updateDateNaissance(formattedDate);
       // Validate immediately after date selection
@@ -345,13 +347,35 @@ class PersonalInformationsProvider extends ChangeNotifier {
     }
   }
 
+
   void onSubmit(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool tituOnly =
+        selectedAccountTypeTituSignataire.toString() == 'AccountType.titulaire';
+    String? storedPhoneNumber = prefs.getString('terms_phone_number');
+    String? storedEmail = prefs.getString('terms_email');
+    phoneNumberMismatchError = null;
+    emailMismatchError=null;
+    if (storedPhoneNumber != null &&phoneController.text != storedPhoneNumber && !tituOnly) {
+      phoneNumberMismatchError ='utiliser le tél de gestion'; // err_numero_different
+      notifyListeners();
+      isLoading = false;
+      return;
+    }
+    if (storedEmail != null && emailController.text != storedEmail && !tituOnly) {
+      emailMismatchError ='utiliser le mail de gestion'; 
+      notifyListeners();
+      isLoading = false;
+
+      return;
+    }
+
+
+
     if (formKey.currentState!.validate()) {
       isLoading = true;
       notifyListeners();
-
       // Save all form data to SharedPreferences
-      SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('personal_nom', nomController.text);
       await prefs.setString('personal_prenom', prenomController.text);
       await prefs.setString('personal_date_naissance', dateController.text);
@@ -359,8 +383,14 @@ class PersonalInformationsProvider extends ChangeNotifier {
       await prefs.setString('personal_numero_telephone', phoneController.text);
       await prefs.setString('personal_email', emailController.text);
       await prefs.setString('personal_type_piece', typePieceController.text);
-      await prefs.setString('personal_numero_piece', numeroPieceController.text);
-      await prefs.setString('personal_selected_account_type', selectedAccountType.toString());
+      await prefs.setString(
+        'personal_numero_piece',
+        numeroPieceController.text,
+      );
+      await prefs.setString(
+        'personal_selected_account_type',
+        selectedAccountTypeTituSignataire.toString(),
+      );
       await prefs.setBool('personal_is_physical_person', isPhysicalPerson);
 
       // Simulate form processing
@@ -368,18 +398,8 @@ class PersonalInformationsProvider extends ChangeNotifier {
         isLoading = false;
         notifyListeners();
 
-        // Show success message
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Informations personnelles enregistrées avec succès'),
-            backgroundColor: appTheme.cyan_900,
-          ),
-        );
-
         // Navigate to next screen
         NavigatorService.pushNamed(AppRoutes.identityVerificationScreen);
-
       });
     }
   }

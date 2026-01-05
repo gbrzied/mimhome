@@ -29,7 +29,8 @@ class ImageConstant {
 
 
 
-
+static String imgmask = '${basePath}nomask.png';
+static String imgnoglass = '${basePath}noglasses.png';
 
   // Common Images
   static String imgPP= '${basePath}img_pp.png';

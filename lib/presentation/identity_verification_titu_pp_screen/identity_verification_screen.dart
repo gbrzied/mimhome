@@ -2,15 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:millime/plugins/rightleft/right_left_face_view.dart';
 import 'package:signature/signature.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../core/app_export.dart';
-import './provider/identity_verification_provider.dart';
-import './clean_selfie_page.dart';
+import 'provider/identity_verification_titu_pp_provider.dart';
+import 'clean_selfie_page.dart';
+import '../../localizationMillime/localization/app_localization.dart';
 
 class IdentityVerificationScreen extends StatefulWidget {
-  const IdentityVerificationScreen({Key? key}) : super(key: key);
+  const IdentityVerificationScreen({super.key});
 
   static Widget builder(BuildContext context) {
     return ChangeNotifierProvider<IdentityVerificationProvider>(
@@ -20,10 +22,12 @@ class IdentityVerificationScreen extends StatefulWidget {
   }
 
   @override
-  State<IdentityVerificationScreen> createState() => _IdentityVerificationScreenState();
+  State<IdentityVerificationScreen> createState() =>
+      _IdentityVerificationScreenState();
 }
 
-class _IdentityVerificationScreenState extends State<IdentityVerificationScreen> {
+class _IdentityVerificationScreenState
+    extends State<IdentityVerificationScreen> {
   late SignatureController _signatureController;
 
   @override
@@ -53,10 +57,15 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
         // Show backend error message if any
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (provider.identityVerificationModel.backendError == true &&
-              provider.identityVerificationModel.backendErrorMessage!.isNotEmpty) {
+              provider
+                  .identityVerificationModel
+                  .backendErrorMessage!
+                  .isNotEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(provider.identityVerificationModel.backendErrorMessage!),
+                content: Text(
+                  provider.identityVerificationModel.backendErrorMessage!,
+                ),
                 backgroundColor: Colors.orange,
                 duration: const Duration(seconds: 5),
                 action: SnackBarAction(
@@ -78,22 +87,21 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
           backgroundColor: appTheme.white_A700,
           appBar: CustomProgressAppBar(
             currentStep: 4,
-            totalSteps: 5,
+            totalSteps: provider.signataireEtTitulaire ? 5 : 7,
             onBackPressed: () => NavigatorService.goBack(),
           ),
           body: Column(
             children: [
               // Progress Bar
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.h),
-                child: LinearProgressIndicator(
-                  value: 0.8,
-                  backgroundColor: appTheme.gray_200,
-                  valueColor: AlwaysStoppedAnimation<Color>(appTheme.primaryColor),
-                  minHeight: 6.h,
-                ),
-              ),
-
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 16.h),
+              //   child: LinearProgressIndicator(
+              //     value: 0.8,
+              //     backgroundColor: appTheme.gray_200,
+              //     valueColor: AlwaysStoppedAnimation<Color>(appTheme.primaryColor),
+              //     minHeight: 6.h,
+              //   ),
+              // ),
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.all(24.h),
@@ -102,7 +110,7 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
                     children: [
                       // Title
                       Text(
-                        "Vérification d'identité",
+                        'key_identity_verification'.tr,
                         style: TextStyleHelper.instance.title18SemiBoldQuicksand
                             .copyWith(height: 1.28),
                       ),
@@ -110,46 +118,65 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
 
                       // Description
                       Text(
-                        "Veuillez téléverser des photos claires de votre CIN, votre signature et un selfie pour vérifier votre identité",
+                        'key_identity_verification_description'.tr,
                         style: TextStyleHelper.instance.body12RegularManrope
                             .copyWith(height: 1.5, color: appTheme.gray_600),
                       ),
                       SizedBox(height: 24.h),
 
-
                       // Dynamic Document List
                       ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: provider.identityVerificationModel.docManquants?.length ?? 0,
+                        itemCount:
+                            provider
+                                .identityVerificationModel
+                                .docManquants
+                                ?.length ??
+                            0,
                         itemBuilder: (context, index) {
-                          final docCode = provider.identityVerificationModel.docManquants![index];
-                          final isEnabled = provider.identityVerificationModel.enableDocButton?[docCode] ?? false;
-                          final imagePath = provider.identityVerificationModel.tituimages?[index];
+                          final docCode = provider
+                              .identityVerificationModel
+                              .docManquants![index];
+                          final isEnabled =
+                              provider
+                                  .identityVerificationModel
+                                  .enableDocButton?[docCode] ??
+                              false;
+                          final imagePath = provider
+                              .identityVerificationModel
+                              .tituimages?[index];
 
                           String displayName;
                           switch (docCode) {
                             case 'CINR':
-                              displayName = 'CIN Recto';
+                              displayName = 'key_cin_recto'.tr;
                               break;
                             case 'CINV':
-                              displayName = 'CIN Verso';
+                              displayName = 'key_cin_verso'.tr;
                               break;
                             case 'SELFIE':
-                              displayName = 'Selfie';
+                              displayName = 'key_selfie'.tr;
                               break;
                             case 'PREUVEIE':
-                              displayName = 'Preuve de vie';
+                              displayName = 'key_proof_of_life'.tr;
                               break;
                             case 'SIGN':
-                              displayName = 'Signature';
+                              displayName = 'key_signature'.tr;
                               break;
                             default:
                               displayName = docCode;
                           }
 
-                          final isProcessingThisDocument = provider.identityVerificationModel.isProcessingImage == true &&
-                              provider.identityVerificationModel.processingDocumentIndex == index;
+                          final isProcessingThisDocument =
+                              provider
+                                      .identityVerificationModel
+                                      .isProcessingImage ==
+                                  true &&
+                              provider
+                                      .identityVerificationModel
+                                      .processingDocumentIndex ==
+                                  index;
 
                           return Container(
                             margin: EdgeInsets.only(bottom: 12.h),
@@ -160,83 +187,136 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
                                     // Document Button
                                     Expanded(
                                       child: ElevatedButton(
-                  onPressed: _getOnPressedHandler(isEnabled, provider, index, imagePath),
-                                                      //     onTap: () => provider.togglePreview(index),            provider.togglePreview(index)
-                                                      //(imagePath != null && imagePath.isNotEmpty && provider.canPreviewDocument(index))
+                                        onPressed: _getOnPressedHandler(
+                                          isEnabled,
+                                          provider,
+                                          index,
+                                          imagePath,
+                                        ),
 
+                                        //     onTap: () => provider.togglePreview(index),            provider.togglePreview(index)
+                                        //(imagePath != null && imagePath.isNotEmpty && provider.canPreviewDocument(index))
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: isEnabled && !provider.identityVerificationModel.isProcessingImage! ? appTheme.primaryColor : appTheme.gray_300,
+                                          backgroundColor:
+                                              isEnabled &&
+                                                  !provider
+                                                      .identityVerificationModel
+                                                      .isProcessingImage!
+                                              ? appTheme.primaryColor
+                                              : appTheme.gray_300,
                                           foregroundColor: appTheme.white_A700,
-                                          minimumSize: Size(double.infinity, 48.h),
+                                          minimumSize: Size(
+                                            double.infinity,
+                                            48.h,
+                                          ),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8.h),
+                                            borderRadius: BorderRadius.circular(
+                                              8.h,
+                                            ),
                                           ),
                                         ),
                                         child: isProcessingThisDocument
                                             ? Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                SizedBox(
-                                                  width: 20.h,
-                                                  height: 20.h,
-                                                  child: CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                    valueColor: AlwaysStoppedAnimation<Color>(appTheme.white_A700),
-                                                  ),
-                                                ),
-                                                SizedBox(width: 8.h),
-                                                Expanded(
-                                                  child: Text(
-                                                    displayName,
-                                                    style: TextStyleHelper.instance.title16MediumSyne
-                                                        .copyWith(height: 1.25, color: appTheme.white_A700),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                            : _isDocumentValidated(provider, index)
-                                                ? Row(
-                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                    children: [
-                                                      SizedBox(
-                                                        width: 24.h,
-                                                        child: Icon(
-                                                          Icons.check_circle,
-                                                          color: appTheme.white_A700,
-                                                          size: 20.h,
-                                                        ),
-                                                      ),
-                                                      SizedBox(width: 8.h),
-                                                      Expanded(
-                                                        child: Padding(
-                                                          padding: EdgeInsets.symmetric(vertical: 8.h),
-                                                          child: Text(
-                                                            displayName,
-                                                            style: TextStyleHelper.instance.title16MediumSyne
-                                                                .copyWith(height: 1.25, color: appTheme.white_A700),
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(
+                                                    width: 20.h,
+                                                    height: 20.h,
+                                                    child: CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                      valueColor:
+                                                          AlwaysStoppedAnimation<
+                                                            Color
+                                                          >(
+                                                            appTheme.white_A700,
                                                           ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )
-                                                : Row(
-                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                    children: [
-                                                      SizedBox(width: 24.h),
-                                                      SizedBox(width: 8.h),
-                                                      Expanded(
-                                                        child: Padding(
-                                                          padding: EdgeInsets.symmetric(vertical: 8.h),
-                                                          child: Text(
-                                                            displayName,
-                                                            style: TextStyleHelper.instance.title16MediumSyne
-                                                                .copyWith(height: 1.25, color: appTheme.white_A700),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
+                                                    ),
                                                   ),
+                                                  SizedBox(width: 8.h),
+                                                  Expanded(
+                                                    child: Text(
+                                                      displayName,
+                                                      style: TextStyleHelper
+                                                          .instance
+                                                          .title16MediumSyne
+                                                          .copyWith(
+                                                            height: 1.25,
+                                                            color: appTheme
+                                                                .white_A700,
+                                                          ),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            : _isDocumentValidated(
+                                                provider,
+                                                index,
+                                              )
+                                            ? Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(
+                                                    width: 24.h,
+                                                    child: Icon(
+                                                      Icons.check_circle,
+                                                      color:
+                                                          appTheme.white_A700,
+                                                      size: 20.h,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 8.h),
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            vertical: 8.h,
+                                                          ),
+                                                      child: Text(
+                                                        displayName,
+                                                        style: TextStyleHelper
+                                                            .instance
+                                                            .title16MediumSyne
+                                                            .copyWith(
+                                                              height: 1.25,
+                                                              color: appTheme
+                                                                  .white_A700,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            : Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(width: 24.h),
+                                                  SizedBox(width: 8.h),
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            vertical: 8.h,
+                                                          ),
+                                                      child: Text(
+                                                        displayName,
+                                                        style: TextStyleHelper
+                                                            .instance
+                                                            .title16MediumSyne
+                                                            .copyWith(
+                                                              height: 1.25,
+                                                              color: appTheme
+                                                                  .white_A700,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                       ),
                                     ),
                                     // SizedBox(width: 12.h),
@@ -275,20 +355,40 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
                                 ),
 
                                 // Processing Message
-                                if (isProcessingThisDocument && provider.identityVerificationModel.processingMessage!.isNotEmpty)
+                                if (isProcessingThisDocument &&
+                                    provider
+                                        .identityVerificationModel
+                                        .processingMessage!
+                                        .isNotEmpty)
                                   Padding(
                                     padding: EdgeInsets.only(top: 8.h),
                                     child: Text(
-                                      provider.identityVerificationModel.processingMessage!,
-                                      style: TextStyleHelper.instance.body12RegularManrope
-                                          .copyWith(height: 1.5, color: appTheme.primaryColor),
+                                      provider
+                                          .identityVerificationModel
+                                          .processingMessage!.tr,
+                                      style: TextStyleHelper
+                                          .instance
+                                          .body12RegularManrope
+                                          .copyWith(
+                                            height: 1.5,
+                                            color: appTheme.primaryColor,
+                                          ),
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
 
                                 // Document Preview
-                                if (provider.identityVerificationModel.showPreview?[index] ?? false)
-                                  _buildDocumentPreview(context, provider, index, displayName, imagePath!),
+                                if (provider
+                                        .identityVerificationModel
+                                        .showPreview?[index] ??
+                                    false)
+                                  _buildDocumentPreview(
+                                    context,
+                                    provider,
+                                    index,
+                                    displayName,
+                                    imagePath!,
+                                  ),
                               ],
                             ),
                           );
@@ -318,7 +418,7 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
                       padding: EdgeInsets.symmetric(vertical: 16.h),
                     ),
                     child: Text(
-                      'Précédent',
+                      'key_previous'.tr,
                       style: TextStyleHelper.instance.title16MediumSyne
                           .copyWith(height: 1.25, color: appTheme.onPrimary),
                     ),
@@ -331,17 +431,26 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
                       provider.navigateToNextScreen(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: provider.allDocumentsCaptured ? appTheme.primaryColor : appTheme.gray_200,
-                      foregroundColor: provider.allDocumentsCaptured ? appTheme.onPrimary : appTheme.gray_600,
+                      backgroundColor: provider.allDocumentsCaptured
+                          ? appTheme.primaryColor
+                          : appTheme.gray_200,
+                      foregroundColor: provider.allDocumentsCaptured
+                          ? appTheme.onPrimary
+                          : appTheme.gray_600,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25.h),
                       ),
                       padding: EdgeInsets.symmetric(vertical: 16.h),
                     ),
                     child: Text(
-                      'Suivant',
+                      'key_next'.tr,
                       style: TextStyleHelper.instance.title16MediumSyne
-                          .copyWith(height: 1.25, color: provider.allDocumentsCaptured ? appTheme.onPrimary : appTheme.gray_600),
+                          .copyWith(
+                            height: 1.25,
+                            color: provider.allDocumentsCaptured
+                                ? appTheme.onPrimary
+                                : appTheme.gray_600,
+                          ),
                     ),
                   ),
                 ),
@@ -353,9 +462,13 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
     );
   }
 
-  void _showImageSourceDialog(BuildContext context, IdentityVerificationProvider provider, int index) {
+  void _showImageSourceDialog(
+    BuildContext context,
+    IdentityVerificationProvider provider,
+    int index,
+  ) {
     final docCode = provider.identityVerificationModel.docManquants![index];
-    
+
     if (docCode == 'SIGN') {
       _showSignatureDialog(context, provider, index);
       return;
@@ -370,7 +483,7 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
             children: [
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text('Appareil photo'),
+                title: Text('key_camera'.tr),
                 onTap: () {
                   Navigator.of(context).pop();
                   provider.getImage(index);
@@ -378,7 +491,7 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text('Galerie'),
+                title: Text('key_gallery'.tr),
                 onTap: () {
                   Navigator.of(context).pop();
                   provider.getImageFromGallery(index);
@@ -391,20 +504,23 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
     );
   }
 
-  Widget _buildDocumentPreview(BuildContext context, IdentityVerificationProvider provider, int index, String displayName, String imagePath) {
-
-                              final docCode = provider.identityVerificationModel.docManquants![index];
-                          final isEnabled = provider.identityVerificationModel.enableDocButton?[docCode] ?? false;
+  Widget _buildDocumentPreview(
+    BuildContext context,
+    IdentityVerificationProvider provider,
+    int index,
+    String displayName,
+    String imagePath,
+  ) {
+    final docCode = provider.identityVerificationModel.docManquants![index];
+    final isEnabled =
+        provider.identityVerificationModel.enableDocButton?[docCode] ?? false;
 
     return Container(
       margin: EdgeInsets.only(top: 16.h),
       padding: EdgeInsets.all(16.h),
       decoration: BoxDecoration(
         color: appTheme.white_A700,
-        border: Border.all(
-          color: appTheme.gray_300,
-          width: 1.h,
-        ),
+        border: Border.all(color: appTheme.gray_300, width: 1.h),
         borderRadius: BorderRadius.circular(12.h),
       ),
       child: Column(
@@ -415,7 +531,7 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
           //   style: TextStyleHelper.instance.title16MediumSyne
           //       .copyWith(height: 1.25, color: appTheme.primaryColor),
           // ),
-        //  SizedBox(height: 16.h),
+          //  SizedBox(height: 16.h),
 
           // Full-size Image with Zoom
           Container(
@@ -452,7 +568,6 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
             children: [
               Expanded(
                 child: ElevatedButton(
-                  
                   onPressed: () {
                     _handleRetakePhoto(context, provider, index);
                   },
@@ -463,7 +578,7 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
                     ),
                   ),
                   child: Text(
-                    'Reprendre la photo',
+                    'key_retake_photo'.tr,
                     style: TextStyleHelper.instance.body12RegularManrope
                         .copyWith(color: appTheme.white_A700),
                     softWrap: false,
@@ -485,7 +600,7 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
                     ),
                   ),
                   child: Text(
-                    'Confirmer la photo',
+                    'key_confirm_photo'.tr,
                     style: TextStyleHelper.instance.body12RegularManrope
                         .copyWith(color: Colors.black),
                     softWrap: false,
@@ -500,26 +615,28 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
     );
   }
 
-  void _handleRetakePhoto(BuildContext context, IdentityVerificationProvider provider, int index) async {
+  void _handleRetakePhoto(
+    BuildContext context,
+    IdentityVerificationProvider provider,
+    int index,
+  ) async {
     final docCode = provider.identityVerificationModel.docManquants![index];
-    
+
     try {
-
-
-                                final docCode = provider.identityVerificationModel.docManquants![index];
-                          final isEnabled = provider.identityVerificationModel.enableDocButton?[docCode] ?? false;
-                          final imagePath = provider.identityVerificationModel.tituimages?[index];
+      final docCode = provider.identityVerificationModel.docManquants![index];
+      final isEnabled =
+          provider.identityVerificationModel.enableDocButton?[docCode] ?? false;
+      final imagePath = provider.identityVerificationModel.tituimages?[index];
       // Clear current image
       provider.identityVerificationModel.tituimages?[index] = null;
-      
+
       // Reset validation states for the document being retaken
       _resetDocumentValidation(provider, index);
-      
+
       // Hide preview
       provider.togglePreview(index);
-      
 
-       _getOnPressedHandler(isEnabled, provider, index, imagePath);
+      _getOnPressedHandler(isEnabled, provider, index, imagePath);
       // // Handle different document types appropriately
       // if (docCode == 'SELFIE' || docCode == 'PREUVEIE') {
       //   // Use CleanSelfiePage for selfie documents
@@ -528,11 +645,13 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
       //   // Use regular image picker for other documents
       //   await provider.getImage(index);
       // }
-      
-      debugPrint('✅ Retake photo completed for document: $docCode at index: $index');
+
+      debugPrint(
+        '✅ Retake photo completed for document: $docCode at index: $index',
+      );
     } catch (e) {
       debugPrint('❌ Error during retake photo: $e');
-      
+
       // Show error to user
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -543,9 +662,12 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
     }
   }
 
-  void _resetDocumentValidation(IdentityVerificationProvider provider, int index) {
+  void _resetDocumentValidation(
+    IdentityVerificationProvider provider,
+    int index,
+  ) {
     final docCode = provider.identityVerificationModel.docManquants![index];
-    
+
     // Reset validation states based on document type
     switch (docCode) {
       case 'CINR':
@@ -554,41 +676,59 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
         provider.identityVerificationModel.disableCINV = true;
         provider.identityVerificationModel.disableSELFIE = true;
         provider.identityVerificationModel.disablePreuveDeVie = true;
-        
+
         // Disable all subsequent documents
-        if (index + 1 < (provider.identityVerificationModel.docManquants?.length ?? 0)) {
-          for (var i = index + 1; i < provider.identityVerificationModel.docManquants!.length; i++) {
-            final subsequentDoc = provider.identityVerificationModel.docManquants![i];
+        if (index + 1 <
+            (provider.identityVerificationModel.docManquants?.length ?? 0)) {
+          for (
+            var i = index + 1;
+            i < provider.identityVerificationModel.docManquants!.length;
+            i++
+          ) {
+            final subsequentDoc =
+                provider.identityVerificationModel.docManquants![i];
             if (provider.identityVerificationModel.enableDocButton != null) {
-              provider.identityVerificationModel.enableDocButton![subsequentDoc] = false;
+              provider
+                      .identityVerificationModel
+                      .enableDocButton![subsequentDoc] =
+                  false;
             }
           }
         }
         break;
-        
+
       case 'CINV':
         provider.identityVerificationModel.pieceIdVerifiee = false;
         provider.identityVerificationModel.disableSELFIE = true;
         provider.identityVerificationModel.disablePreuveDeVie = true;
-        
+
         // Disable all subsequent documents
-        if (index + 1 < (provider.identityVerificationModel.docManquants?.length ?? 0)) {
-          for (var i = index + 1; i < provider.identityVerificationModel.docManquants!.length; i++) {
-            final subsequentDoc = provider.identityVerificationModel.docManquants![i];
+        if (index + 1 <
+            (provider.identityVerificationModel.docManquants?.length ?? 0)) {
+          for (
+            var i = index + 1;
+            i < provider.identityVerificationModel.docManquants!.length;
+            i++
+          ) {
+            final subsequentDoc =
+                provider.identityVerificationModel.docManquants![i];
             if (provider.identityVerificationModel.enableDocButton != null) {
-              provider.identityVerificationModel.enableDocButton![subsequentDoc] = false;
+              provider
+                      .identityVerificationModel
+                      .enableDocButton![subsequentDoc] =
+                  false;
             }
           }
         }
         break;
-        
+
       case 'SELFIE':
       case 'PREUVEIE':
       case 'SIGN':
         // No special validation to reset for these document types
         break;
     }
-    
+
     // Update document button states
     provider.updateDocumentButtonStates();
     provider.notifyListeners();
@@ -601,29 +741,36 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
     String? imagePath,
   ) {
     final docCode = provider.identityVerificationModel.docManquants![index];
-    
+
     if (isEnabled &&
         !provider.identityVerificationModel.isProcessingImage! &&
         imagePath == null) {
       // Use CleanSelfiePage for SELFIE documents (like old app)
-      if (docCode == 'SELFIE' || docCode == 'PREUVEIE') {
+      if (docCode == 'SELFIE') {
         return () => _navigateToCleanSelfiePage(context, provider, index);
+      }
+
+      if (docCode == 'PREUVEIE') {
+        return () => _navigateToPreuveViePage(context, provider, index);
       }
       // Use regular image picker for other documents
       return () => _showImageSourceDialog(context, provider, index);
     } else if (imagePath != null &&
-               imagePath.isNotEmpty &&
-               provider.canPreviewDocument(index)) {
+        imagePath.isNotEmpty &&
+        provider.canPreviewDocument(index)) {
       return () => provider.togglePreview(index);
     } else {
       if (isEnabled) {
         // Use CleanSelfiePage for SELFIE documents
-        if (docCode == 'SELFIE' || docCode == 'PREUVEIE') {
+        if (docCode == 'SELFIE') {
           return () => _navigateToCleanSelfiePage(context, provider, index);
-        }
-        return () => _showImageSourceDialog(context, provider, index);
-      }
+        } else if (docCode == 'PREUVEIE')
+          return () => _navigateToPreuveViePage(context, provider, index);
+      
+      return () => _showImageSourceDialog(context, provider, index);
     }
+    }
+    return null;
   }
 
   bool _isDocumentValidated(IdentityVerificationProvider provider, int index) {
@@ -634,18 +781,64 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
       return provider.identityVerificationModel.pieceIdVerifiee ?? false;
     } else {
       return provider.identityVerificationModel.tituimages?[index] != null &&
-             provider.identityVerificationModel.tituimages![index]!.isNotEmpty;
+          provider.identityVerificationModel.tituimages![index]!.isNotEmpty;
     }
   }
 
-  void _navigateToCleanSelfiePage(BuildContext context, IdentityVerificationProvider provider, int index) async {
+  void _navigateToPreuveViePage(
+    BuildContext context,
+    IdentityVerificationProvider provider,
+    int index,
+  ) async {
+
+    // provider.identityVerificationModel.tituimages
+    final File? capturedImage = await Navigator.of(context).push<File>(
+      MaterialPageRoute(
+        builder: (context) => RightLeftFaceDetectorView(
+          onAcceptedImage: (imagepath) async {
+            if (index < provider.identityVerificationModel.tituimages!.length) {
+              provider.identityVerificationModel.tituimages![index] = imagepath;
+            } else {
+              num n =
+                  index -
+                  provider.identityVerificationModel.tituimages!.length +
+                  1;
+              for (int j = 0; j < n; j++) {
+                provider.identityVerificationModel.tituimages!.add('');
+              }
+              provider.identityVerificationModel.tituimages![index] = imagepath;
+            }
+ if (index + 1 <
+            provider.identityVerificationModel.docManquants!.length) {
+          final nextDoc =
+              provider.identityVerificationModel.docManquants![index + 1];
+          if (provider.identityVerificationModel.enableDocButton != null) {
+            provider.identityVerificationModel.enableDocButton![nextDoc] = true;
+          }
+                provider.notifyListeners();
+
+        }
+
+
+          },
+        ),
+      ),
+    );
+  }
+
+  void _navigateToCleanSelfiePage(
+    BuildContext context,
+    IdentityVerificationProvider provider,
+    int index,
+  ) async {
     // Get document code
     final docCode = provider.identityVerificationModel.docManquants![index];
-    
+
     // Set processing state
     provider.identityVerificationModel.isProcessingImage = true;
     provider.identityVerificationModel.processingDocumentIndex = index;
-    provider.identityVerificationModel.processingMessage = 'Préparation de la capture de selfie...';
+    provider.identityVerificationModel.processingMessage =
+        'key_preparing_selfie_capture'.tr;
     provider.notifyListeners();
 
     try {
@@ -653,7 +846,7 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
       final File? capturedImage = await Navigator.of(context).push<File>(
         MaterialPageRoute(
           builder: (context) => CleanSelfiePage(
-            title: docCode == 'SELFIE' ? 'Prendre un selfie' : 'Preuve de vie',
+            title: docCode == 'SELFIE' ? 'key_take_selfie'.tr : 'key_proof_of_life'.tr,
             onImageCaptured: (File imageFile) {
               debugPrint('Selfie captured: ${imageFile.path}');
             },
@@ -664,38 +857,48 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
       if (capturedImage != null) {
         // Handle the returned image (like old app logic)
         final docCode = provider.identityVerificationModel.docManquants![index];
-        
+
         // Store image path
         if (index < provider.identityVerificationModel.tituimages!.length) {
-          provider.identityVerificationModel.tituimages![index] = capturedImage.path;
+          provider.identityVerificationModel.tituimages![index] =
+              capturedImage.path;
         } else {
           // Expand array if needed
-          while (provider.identityVerificationModel.tituimages!.length <= index) {
+          while (provider.identityVerificationModel.tituimages!.length <=
+              index) {
             provider.identityVerificationModel.tituimages!.add(null);
           }
-          provider.identityVerificationModel.tituimages![index] = capturedImage.path;
+          provider.identityVerificationModel.tituimages![index] =
+              capturedImage.path;
         }
 
         // Enable next document after successful capture (like old app)
-        if (index + 1 < provider.identityVerificationModel.docManquants!.length) {
-          final nextDoc = provider.identityVerificationModel.docManquants![index + 1];
+        if (index + 1 <
+            provider.identityVerificationModel.docManquants!.length) {
+          final nextDoc =
+              provider.identityVerificationModel.docManquants![index + 1];
           if (provider.identityVerificationModel.enableDocButton != null) {
             provider.identityVerificationModel.enableDocButton![nextDoc] = true;
           }
         }
 
         // For SELFIE and PREUVEIE, mark as validated immediately (like old app)
-        provider.identityVerificationModel.processingMessage = 'Selfie capturé avec succès !';
-        
-        debugPrint('✅ Selfie integrated successfully at index $index: ${capturedImage.path}');
+        provider.identityVerificationModel.processingMessage =
+            'key_photo_captured_successfully'.tr;
+
+        debugPrint(
+          '✅ Selfie integrated successfully at index $index: ${capturedImage.path}',
+        );
       } else {
         debugPrint('❌ No selfie captured or user cancelled');
-        provider.identityVerificationModel.processingMessage = 'Capture annulée';
+        provider.identityVerificationModel.processingMessage =
+            'key_capture_cancelled'.tr;
       }
     } catch (e) {
       debugPrint('❌ Error during selfie capture: $e');
-      provider.identityVerificationModel.processingMessage = 'Erreur lors de la capture: $e';
-      
+      provider.identityVerificationModel.processingMessage =
+          'key_photo_capture_error'.tr;
+
       // Show error to user
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -711,12 +914,16 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
     }
   }
 
-  void _showSignatureDialog(BuildContext context, IdentityVerificationProvider provider, int index) {
+  void _showSignatureDialog(
+    BuildContext context,
+    IdentityVerificationProvider provider,
+    int index,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Signature'),
+          title: Text('key_signature'.tr),
           content: Container(
             height: 300,
             child: Column(
@@ -752,12 +959,14 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Annuler'),
+              child: Text('key_cancel'.tr),
             ),
             TextButton(
               onPressed: () async {
                 if (_signatureController.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Veuillez signer')));
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('key_please_sign'.tr)));
                   return;
                 }
                 final bytes = await _signatureController.toPngBytes();
@@ -765,20 +974,28 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
                   final dir = await getApplicationDocumentsDirectory();
                   final file = File('${dir.path}/SIGN_$index.png');
                   await file.writeAsBytes(bytes);
-                  provider.identityVerificationModel.tituimages?[index] = file.path;
-                  
+                  provider.identityVerificationModel.tituimages?[index] =
+                      file.path;
+
                   // Enable next document
-                  if (index + 1 < provider.identityVerificationModel.docManquants!.length) {
-                    final nextDoc = provider.identityVerificationModel.docManquants![index + 1];
-                    if (provider.identityVerificationModel.enableDocButton != null) {
-                      provider.identityVerificationModel.enableDocButton![nextDoc] = true;
+                  if (index + 1 <
+                      provider.identityVerificationModel.docManquants!.length) {
+                    final nextDoc = provider
+                        .identityVerificationModel
+                        .docManquants![index + 1];
+                    if (provider.identityVerificationModel.enableDocButton !=
+                        null) {
+                      provider
+                              .identityVerificationModel
+                              .enableDocButton![nextDoc] =
+                          true;
                     }
                   }
                   provider.notifyListeners();
                 }
                 Navigator.of(context).pop();
               },
-              child: Text('Confirmer'),
+              child: Text('key_confirm'.tr),
             ),
           ],
         );
@@ -786,4 +1003,3 @@ class _IdentityVerificationScreenState extends State<IdentityVerificationScreen>
     );
   }
 }
-

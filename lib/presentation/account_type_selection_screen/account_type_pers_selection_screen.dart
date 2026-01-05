@@ -5,25 +5,26 @@ import 'package:millime/widgets/custum_button.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/app_export.dart';
+import '../../localizationMillime/localization/app_localization.dart';
 import '../../widgets/custom_image_view.dart';
 
-class AccountTypeSelectionScreen extends StatefulWidget {
-  AccountTypeSelectionScreen({Key? key}) : super(key: key);
+class AccountTypePersSelectionScreen extends StatefulWidget {
+  AccountTypePersSelectionScreen({Key? key}) : super(key: key);
 
   static Widget builder(BuildContext context) {
     return ChangeNotifierProvider<AccountTypeSelectionProvider>(
       create: (context) => AccountTypeSelectionProvider(),
-      child: AccountTypeSelectionScreen(),
+      child: AccountTypePersSelectionScreen(),
     );
   }
 
   @override
-  State<AccountTypeSelectionScreen> createState() =>
-      _AccountTypeSelectionScreenState();
+  State<AccountTypePersSelectionScreen> createState() =>
+      _AccountTypePersSelectionScreenState();
 }
 
-class _AccountTypeSelectionScreenState
-    extends State<AccountTypeSelectionScreen> {
+class _AccountTypePersSelectionScreenState
+    extends State<AccountTypePersSelectionScreen> {
   @override
   void initState() {
     super.initState();
@@ -84,7 +85,7 @@ class _AccountTypeSelectionScreenState
         Padding(
           padding: EdgeInsets.only(left: 10.h),
           child: Text(
-            "Demande d'ouvrir un compte",
+            'key_account_opening_request'.tr,
             style: TextStyleHelper.instance.title18SemiBoldQuicksand
                 .copyWith(height: 1.67, letterSpacing: 0.5),
           ),
@@ -98,7 +99,7 @@ class _AccountTypeSelectionScreenState
             borderRadius: BorderRadius.circular(14.h),
           ),
           child: Text(
-            "L'ouverture de votre compte s'effectue en 4 étapes. Entrez les informations nécessaires pour assurer votre sécurité et la confidentialité de vos données.",
+            'key_account_opening_description'.tr,
             textAlign: TextAlign.center,
             style: TextStyleHelper.instance.label10RegularManrope
                 .copyWith(height: 3.0),
@@ -116,7 +117,7 @@ class _AccountTypeSelectionScreenState
         Padding(
           padding: EdgeInsets.only(left: 10.h),
           child: Text(
-            "Choisir Type du compte",
+            'key_choose_account_type'.tr,
             style: TextStyleHelper.instance.body14SemiBoldManrope
                 .copyWith(height: 1.43),
           ),
@@ -131,23 +132,23 @@ class _AccountTypeSelectionScreenState
                 context,
                 provider,
                 imagePath: ImageConstant.imgPP,
-                title: "Personne Physique",
-                subtitle: "Compte personnel pour particuliers",
+                title: 'key_individual_person'.tr,
+                subtitle: 'key_personal_account_description'.tr,
                 isSelected:
-                    provider.accountTypeSelectionModel.selectedAccountType ==
-                        AccountType.individual,
-                onTap: () => provider.selectAccountType(AccountType.individual),
+                    provider.accountTypeSelectionModel.selectedAccountTypePMPP ==
+                        AccountTypePMPP.individual,
+                onTap: () => provider.selectAccountTypePMPP(AccountTypePMPP.individual),
               ),
               _buildAccountTypeCard(
                 context,
                 provider,
                 imagePath: ImageConstant.imgPM,
-                title: "Personne Morale",
-                subtitle: "Compte professionnel pour entreprises",
+                title: 'key_legal_entity'.tr,
+                subtitle: 'key_business_account_description'.tr,
                 isSelected:
-                    provider.accountTypeSelectionModel.selectedAccountType ==
-                        AccountType.business,
-                onTap: () => provider.selectAccountType(AccountType.business),
+                    provider.accountTypeSelectionModel.selectedAccountTypePMPP ==
+                        AccountTypePMPP.business,
+                onTap: () => provider.selectAccountTypePMPP(AccountTypePMPP.business),
                 isBusinessCard: true,
               ),
             ],
@@ -268,9 +269,10 @@ class _AccountTypeSelectionScreenState
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 35.h, vertical: 24.h),
       child: CustomButton(
-        text: "Suivant",
+        text: "key_next".tr,
         width: double.infinity,
         onPressed: () {
+  provider.selectAccountTypePMPP(provider.accountTypeSelectionModel.selectedAccountTypePMPP ?? AccountTypePMPP.individual);
           provider.navigateToNextScreen(context);
         },
       ),

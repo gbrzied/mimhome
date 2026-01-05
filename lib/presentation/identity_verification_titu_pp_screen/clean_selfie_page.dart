@@ -362,57 +362,52 @@ class _CleanSelfiePageState extends State<CleanSelfiePage> with WidgetsBindingOb
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Reject button
-                SizedBox(
-                  width: 64.h,
-                  height: 64.h,
-                  child: ElevatedButton(
-                    onPressed: _rejectImage,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: appTheme.colorF98600,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(32.h),
-                      ),
-                      elevation: 4.h,
-                    ),
-                    child: Center(
-                      child: Text(
-                        '❌',
-                        style: TextStyle(
-                          fontSize: 32.h,
-                          color: appTheme.white_A700,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ),
+              // Reject button
+SizedBox(
+  width: 64.h,
+  height: 64.h,
+  child: ElevatedButton(
+    onPressed: _rejectImage,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: appTheme.colorF98600,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(32.h),
+      ),
+      elevation: 4.h,
+      padding: EdgeInsets.zero, // IMPORTANT
+    ),
+    child: Icon(
+      Icons.close,
+      size: 32.h,
+      color: appTheme.white_A700,
+    ),
+  ),
+),
 
-                // Accept button
-                SizedBox(
-                  width: 64.h,
-                  height: 64.h,
-                  child: ElevatedButton(
-                    onPressed: _acceptImage,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: appTheme.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(32.h),
-                      ),
-                      elevation: 4.h,
-                    ),
-                    child: Center(
-                      child: Text(
-                        '✅',
-                        style: TextStyle(
-                          fontSize: 32.h,
-                          color: appTheme.onPrimary,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ),
+// Accept button
+SizedBox(
+  width: 64.h,
+  height: 64.h,
+  child: ElevatedButton(
+    onPressed: _acceptImage,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: appTheme.primaryColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(32.h),
+      ),
+      elevation: 4.h,
+      padding: EdgeInsets.zero, // IMPORTANT
+    ),
+    child: Text(
+      '✅',
+      style: TextStyle(
+        fontSize: 32.h,
+        color: appTheme.onPrimary,
+      ),
+    ),
+  ),
+),
+
               ],
             ),
           ),

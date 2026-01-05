@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:millime/core/utils/functions.dart';
+import 'package:millime/localizationMillime/localization/app_localization.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:printing/printing.dart';
@@ -14,6 +16,7 @@ import '../../widgets/custum_button.dart';
 import './provider/terms_conditions_provider.dart';
 import './widgets/accordion_document_web_view_widget.dart';
 import '../gen_dialogues/gen_dialogues.dart';
+import '../../providers/app_language_provider.dart';
 
 // Import PDF constants
 import '../../core/utils/image_constant.dart';
@@ -22,8 +25,10 @@ class TermsConditionsScreenV2 extends StatefulWidget {
   const TermsConditionsScreenV2({Key? key}) : super(key: key);
 
   static Widget builder(BuildContext context) {
-    // Use global TermsConditionsProvider instead of creating new one
-    return TermsConditionsScreenV2();
+    return ChangeNotifierProvider<TermsConditionsProvider>(
+      create: (context) => TermsConditionsProvider(),
+      child: TermsConditionsScreenV2(),
+    );
   }
 
   @override
@@ -49,12 +54,23 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
   String? _phoneError;
   String? _emailError;
 
+  // Language change listener
+  VoidCallback? _languageChangeListener;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<TermsConditionsProvider>().initialize();
       loadAllDocuments();
+      
+      // Create and store listener for language changes
+      _languageChangeListener = () {
+        loadAllDocuments();
+      };
+      
+      // Add listener to reload documents when language changes
+      context.read<AppLanguageProvider>().addListener(_languageChangeListener!);
     });
   }
 
@@ -62,6 +78,17 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
   void dispose() {
     _phoneController.dispose();
     _emailController.dispose();
+    
+    // Remove language change listener
+    if (_languageChangeListener != null) {
+      try {
+        context.read<AppLanguageProvider>().removeListener(_languageChangeListener!);
+      } catch (e) {
+        // Provider might not be available during dispose
+      }
+      _languageChangeListener = null;
+    }
+    
     super.dispose();
   }
 
@@ -95,34 +122,134 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
     });
   }
 
+  // Language selector widget
+  Widget _buildLanguageSelector(AppLanguageProvider languageProvider) {
+    return Container(
+      padding: EdgeInsets.all(12.h),
+      decoration: BoxDecoration(
+        color: appTheme.customLightGray,
+        borderRadius: BorderRadius.circular(12.h),
+        border: Border.all(
+          color: appTheme.borderColor,
+          width: 1.h,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.language,
+            color: appTheme.primaryColor,
+            size: 20.h,
+          ),
+          SizedBox(width: 12.h),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'key_language'.tr,
+                  style: TextStyleHelper.instance.body14BoldManrope.copyWith(
+                    color: appTheme.black_900,
+                    fontSize: 12.fSize,
+                  ),
+                  textAlign: languageProvider.isRTL ? TextAlign.right : TextAlign.left,
+                ),
+                SizedBox(height: 2.h),
+                Text(
+                  'key_select_language'.tr,
+                  style: TextStyleHelper.instance.label9BoldManrope.copyWith(
+                    color: appTheme.gray_600,
+                    fontSize: 10.fSize,
+                  ),
+                  textAlign: languageProvider.isRTL ? TextAlign.right : TextAlign.left,
+                ),
+              ],
+            ),
+          ),
+          PopupMenuButton<String>(
+            icon: Icon(
+              Icons.arrow_drop_down,
+              color: appTheme.primaryColor,
+              size: 20.h,
+            ),
+            onSelected: (String language) {
+              languageProvider.setLanguage(language);
+              // Documents will be automatically reloaded by the language change listener
+            },
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem<String>(
+                value: 'fr',
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Français',
+                      style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+                        color: appTheme.black_900,
+                      ),
+                    ),
+                    if (languageProvider.currentLanguage == 'fr')
+                      Icon(
+                        Icons.check_circle,
+                        color: appTheme.primaryColor,
+                        size: 16.h,
+                      ),
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'en',
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'English',
+                      style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+                        color: appTheme.black_900,
+                      ),
+                    ),
+                    if (languageProvider.currentLanguage == 'en')
+                      Icon(
+                        Icons.check_circle,
+                        color: appTheme.primaryColor,
+                        size: 16.h,
+                      ),
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'ar',
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'العربية',
+                      style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+                        color: appTheme.black_900,
+                      ),
+                    ),
+                    if (languageProvider.currentLanguage == 'ar')
+                      Icon(
+                        Icons.check_circle,
+                        color: appTheme.primaryColor,
+                        size: 16.h,
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   // PDF Download Methods
   Future<Uint8List> _loadPdfFromAssets(String pdfFilename) async {
     try {
       // Use PdfConstant to get the correct path
-      String pdfPath;
-      switch (pdfFilename) {
-        case 'cgu_fr.pdf':
-          pdfPath = PdfConstant.pdfCguFr;
-          break;
-        case 'cgu_en.pdf':
-          pdfPath = PdfConstant.pdfCguEn;
-          break;
-        case 'cgu_ar.pdf':
-          pdfPath = PdfConstant.pdfCguAr;
-          break;
-        case 'pc_fr.pdf':
-          pdfPath = PdfConstant.pdfPcFr;
-          break;
-        case 'pc_en.pdf':
-          pdfPath = PdfConstant.pdfPcEn;
-          break;
-        case 'pc_ar.pdf':
-          pdfPath = PdfConstant.pdfPcAr;
-          break;
-        default:
-          // Fallback to direct path construction
-          pdfPath = 'assets/files/pdfs/$pdfFilename';
-      }
+      // Use direct path construction for all PDFs
+      String pdfPath = 'assets/files/pdfs/$pdfFilename';
 
       final ByteData data = await rootBundle.load(pdfPath);
       return data.buffer.asUint8List();
@@ -196,7 +323,7 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
         directory = await getApplicationDocumentsDirectory();
         filePath = '${directory.path}/$documentTitle.pdf';
       } else {
-        throw Exception('Plateforme non supportée');
+        throw Exception('key_unsupported_platform'.tr);
       }
 
       // Save the PDF file
@@ -208,27 +335,24 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
         String locationMessage;
         if (Platform.isAndroid) {
           locationMessage = savedToExternalStorage
-              ? 'Le fichier est téléchargé sous le dossier Téléchargements'
-              : 'Téléchargé dans les documents de l\'application\n(Allez dans Paramètres > Applications > Millime > Stockage pour accéder au fichier)';
-        
+              ? 'key_downloaded_to_downloads_folder'.tr
+              : 'key_downloaded_to_app_documents_android'.tr;
         } else {
-          locationMessage = 'le fichier Téléchargé sous  les documents de l\'application';
+          locationMessage = 'key_downloaded_to_app_documents'.tr;
         }
 
         showDialog(
           context: context,
           builder: (context) => GenDialogues(
             iconPath: "${ImageConstant.basePath}success-icon.svg",
-            title: "Félicitations",
-             message: ' $locationMessage',
-           // message: '"$documentTitle" $locationMessage',
+            title: 'key_congratulations'.tr,
+            message: ' $locationMessage',
             width: 335.h,
             height: 264.h,
             buttons: [
               CustomButton(
-                text: "Fermer",
+                text: 'key_close'.tr,
                 width: double.infinity,
-                
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],
@@ -243,22 +367,19 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
           context: context,
           builder: (context) => GenDialogues(
             iconPath: "${ImageConstant.basePath}fail-icon.svg",
-            title: "Erreur",
-            message: 'Erreur lors du téléchargement: ${e.toString()}',
+            title: 'key_error'.tr,
+            message: '${'key_download_error'.tr}: ${e.toString()}',
             width: 335.h,
             height: 264.h,
             buttons: [
               CustomButton(
-                text: "Fermer",
+                text: 'key_close'.tr,
                 width: double.infinity,
-
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],
           ),
         );
-
-           
       }
     } finally {
       if (mounted) {
@@ -286,7 +407,7 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur lors du partage du PDF: ${e.toString()}'),
+            content: Text('${'key_share_pdf_error'.tr}: ${e.toString()}'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 5),
           ),
@@ -319,7 +440,6 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
       case 'help':
         iconData = Icons.help_outline;
         break;
-      
       default:
         iconData = Icons.description_outlined; // Fallback
     }
@@ -331,14 +451,26 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
     );
   }
 
-  Future<void> loadAllDocuments() async {
+  Future<void> loadAllDocuments([AppLanguageProvider? languageProvider]) async {
     try {
       setState(() {
         isLoading = true;
         errorMessage = '';
       });
 
-      final String response = await rootBundle.loadString('assets/files/docs_fr.json');
+      // Get language provider from context if not provided
+      AppLanguageProvider? provider = languageProvider;
+      if (provider == null) {
+        try {
+          provider = context.read<AppLanguageProvider>();
+        } catch (e) {
+          // Provider not available in context, use fallback
+          provider = null;
+        }
+      }
+
+      final currentLanguage = provider?.currentLanguage ?? 'fr';
+      final String response = await rootBundle.loadString('assets/files/docs_$currentLanguage.json');
       final data = json.decode(response);
 
       if (data["documents"] != null && data["documents"].isEmpty == false) {
@@ -350,13 +482,13 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
         });
       } else {
         setState(() {
-          errorMessage = 'Aucun document trouvé';
+          errorMessage = 'key_no_documents_found'.tr;
           isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        errorMessage = 'Erreur de chargement: $e';
+        errorMessage = '${'key_loading_error'.tr}: $e';
         isLoading = false;
       });
     }
@@ -364,376 +496,379 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TermsConditionsProvider>(
-      builder: (context, provider, child) {
+    return Consumer2<TermsConditionsProvider, AppLanguageProvider>(
+      builder: (context, provider, languageProvider, child) {
         // Calculate visibility based on current state (no setState in build)
         final allDocumentsAccepted = _areAllDocumentsAccepted(provider);
         final shouldShowPhoneField = allDocumentsAccepted;
         final shouldShowEmailField = shouldShowPhoneField && _isPhoneServerValid;
 
         return Scaffold(
-     // backgroundColor: appTheme.gray_50_01,
-      appBar: CustomAppBar(
-        //leadingIcon: ImageConstant.imgArrowLeft,
-        //onLeadingPressed: () => NavigatorService.goBack(),
-       // backgroundColor: appTheme.whiteCustom,
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title
-            Container(
-              constraints: BoxConstraints(
-                maxWidth: 260.h,
-                minHeight: 24.h,
-              ),
-              child: Text(
-                "Conditions d'utilisation",
-                style: TextStyleHelper.instance.title20SemiBoldQuicksandCentered.copyWith(
-                  color: appTheme.black_900,
-                ),
-                textAlign: TextAlign.left,
-              ),
-            ),
-            SizedBox(height: 12.h),
-
-            // Subtitle
-            Text(
-              "Veuillez lire et accepter les conditions suivantes",
-              style: TextStyleHelper.instance.label9BoldManrope.copyWith(
-                color: appTheme.gray_600,
-                fontSize: 14.fSize,
-                fontWeight: FontWeight.w400,
-                height: 1.5,
-                letterSpacing: 0.5, // Added letter spacing
-              ),
-            ),
-            SizedBox(height: 24.h),
-
-            // Documents Content
-            if (isLoading)
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(appTheme.cyan_900),
-                    ),
-                    SizedBox(height: 16.h),
-                    Text(
-                      'Chargement des documents...',
-                      style: TextStyleHelper.instance.body14RegularSyne.copyWith(
-                        color: appTheme.gray_600,
-                        fontSize: 12.fSize,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            else if (errorMessage.isNotEmpty)
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      size: 64.h,
-                      color: appTheme.gray_400,
-                    ),
-                    SizedBox(height: 16.h),
-                    Text(
-                      errorMessage,
-                      style: TextStyleHelper.instance.body14RegularSyne.copyWith(
-                        color: appTheme.gray_600,
-                        fontSize: 12.fSize,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              )
-            else
-              ...documents.map((document) => _buildDocumentSection(document, provider)),
-
-            SizedBox(height: 20.h),
-
-            // Contact Coordinates Card
-          if (shouldShowPhoneField || shouldShowEmailField) ...[
-            Container(
-              padding: EdgeInsets.all(20.h),
-              decoration: BoxDecoration(
-                color: appTheme.customLightGray,
-                borderRadius: BorderRadius.circular(16.h),
-                boxShadow: [
-                  BoxShadow(
-                    color: appTheme.black_900.withOpacity(0.05),
-                    blurRadius: 10.h,
-                    offset: Offset(0, 2.h),
+          appBar: CustomAppBar(),
+          body: SingleChildScrollView(
+            padding: EdgeInsets.all(20.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title
+                Container(
+                  constraints: BoxConstraints(
+                    maxWidth: 260.h,
+                    minHeight: 24.h,
                   ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(12.h),
-                        decoration: BoxDecoration(
-                          color: appTheme.customLightGray,
-                          borderRadius: BorderRadius.circular(12.h),
+                  child: Text(
+                    'key_terms_conditions_title'.tr,
+                    style: TextStyleHelper.instance.title20SemiBoldQuicksandCentered.copyWith(
+                      color: appTheme.black_900,
+                    ),
+                    textAlign: languageProvider.isRTL ? TextAlign.right : TextAlign.left,
+                  ),
+                ),
+                SizedBox(height: 12.h),
+
+                // Subtitle
+                Text(
+                  'key_terms_conditions_subtitle'.tr,
+                  style: TextStyleHelper.instance.label9BoldManrope.copyWith(
+                    color: appTheme.gray_600,
+                    fontSize: 14.fSize,
+                    fontWeight: FontWeight.w400,
+                    height: 1.5,
+                    letterSpacing: 0.5,
+                  ),
+                  textAlign: languageProvider.isRTL ? TextAlign.right : TextAlign.left,
+                ),
+              //  SizedBox(height: 4.h),
+                
+                // Language Selector
+               // _buildLanguageSelector(languageProvider),
+                
+                SizedBox(height: 24.h),
+
+                // Documents Content
+                if (isLoading)
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(appTheme.cyan_900),
                         ),
-                        child: Icon(
-                          Icons.lock_outline,
-                          color: appTheme.teal_400,
-                          size: 24.h,
+                        SizedBox(height: 16.h),
+                        Text(
+                          'key_loading_documents'.tr,
+                          style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+                            color: appTheme.gray_600,
+                            fontSize: 12.fSize,
+                          ),
+                          textAlign: languageProvider.isRTL ? TextAlign.right : TextAlign.left,
                         ),
-                      ),
-                      SizedBox(width: 12.h),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      ],
+                    ),
+                  )
+                else if (errorMessage.isNotEmpty)
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          size: 64.h,
+                          color: appTheme.gray_400,
+                        ),
+                        SizedBox(height: 16.h),
+                        Text(
+                          errorMessage,
+                          style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+                            color: appTheme.gray_600,
+                            fontSize: 12.fSize,
+                          ),
+                          textAlign: languageProvider.isRTL ? TextAlign.right : TextAlign.left,
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  ...documents.map((document) => _buildDocumentSection(document, provider)),
+
+                SizedBox(height: 20.h),
+
+                // Contact Coordinates Card
+                if (shouldShowPhoneField || shouldShowEmailField) ...[
+                  Container(
+                    padding: EdgeInsets.all(20.h),
+                    decoration: BoxDecoration(
+                      color: appTheme.customLightGray,
+                      borderRadius: BorderRadius.circular(16.h),
+                      boxShadow: [
+                        BoxShadow(
+                          color: appTheme.black_900.withOpacity(0.05),
+                          blurRadius: 10.h,
+                          offset: Offset(0, 2.h),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            Text(
-                              "Coordonnées de contact",
-                              style: TextStyleHelper.instance.body14BoldManrope.copyWith(
-                                color: appTheme.black_900,
-                                fontSize: 14.fSize,
+                            Container(
+                              padding: EdgeInsets.all(12.h),
+                              decoration: BoxDecoration(
+                                color: appTheme.customLightGray,
+                                borderRadius: BorderRadius.circular(12.h),
+                              ),
+                              child: Icon(
+                                Icons.lock_outline,
+                                color: appTheme.teal_400,
+                                size: 24.h,
                               ),
                             ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              "Pour la récupération de compte",
-                              style: TextStyleHelper.instance.label9BoldManrope.copyWith(
-                                color: appTheme.gray_600,
+                            SizedBox(width: 12.h),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'key_contact_coordinates_title'.tr,
+                                    style: TextStyleHelper.instance.body14BoldManrope.copyWith(
+                                      color: appTheme.black_900,
+                                      fontSize: 14.fSize,
+                                    ),
+                                    textAlign: languageProvider.isRTL ? TextAlign.right : TextAlign.left,
+                                  ),
+                                  SizedBox(height: 4.h),
+                                  Text(
+                                    'key_contact_coordinates_subtitle'.tr,
+                                    style: TextStyleHelper.instance.label9BoldManrope.copyWith(
+                                      color: appTheme.gray_600,
+                                    ),
+                                    textAlign: languageProvider.isRTL ? TextAlign.right : TextAlign.left,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                        SizedBox(height: 20.h),
+
+                        // Phone Number - Show only when documents are accepted
+                        if (shouldShowPhoneField) ...[
+                          Focus(
+                            onFocusChange: (hasFocus) async {
+                              if (!hasFocus) {
+                                setState(() {
+                                  _phoneError = null; // Clear previous error
+                                });
+                                try {
+                                  if (_phoneController.text.length == 8) {
+                                    if (_phoneController.text == '00000000' || !isValidTunisianMobile(_phoneController.text )) {
+                                      setState(() {
+                                        _phoneError = 'key_invalid_mobile_number'.tr;
+                                        _isPhoneServerValid = false;
+                                      });
+                                      return;
+                                    }
+                                    _isPhoneServerValid = (await context.read<TermsConditionsProvider>().isValideNumTelGestion(_phoneController.text)) ?? false;
+                                  } else {
+                                    setState(() {
+                                      _phoneError = 'key_invalid_number'.tr;
+                                      _isPhoneServerValid = false;
+                                    });
+                                    return;
+                                  }
+                                } catch (e) {
+                                  setState(() {
+                                    _phoneError = 'key_server_error'.tr;
+                                  });
+                                  return;
+                                }
+                                if (!_isPhoneServerValid && _phoneController.text.length == 8) {
+                                  setState(() {
+                                    _phoneError = 'key_phone_number_already_used'.tr;
+                                  });
+                                }
+                                setState(() {});
+                              }
+                            },
+                            child: CustomTextFormField(
+                              controller: _phoneController,
+                              textInputType: TextInputType.phone,
+                              hintText: 'key_phone_number_hint'.tr,
+                              textStyle: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
+                                color: appTheme.black_900,
+                                fontSize: 13.fSize,
+                              ),
+                              fillColor: appTheme.gray_50_01,
+                              contentPadding: EdgeInsets.all(16.h),
+                              onChanged: _onPhoneChanged,
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                              maxLength: 8,
+                              errorText: _phoneError,
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+                        ],
+
+                        // Email - Show only when phone is valid
+                        if (shouldShowEmailField) ...[
+                          Focus(
+                            onFocusChange: (hasFocus) async {
+                              if (!hasFocus) {
+                                setState(() {
+                                  _emailError = null;
+                                });
+                                if (_emailController.text.isEmpty) {
+                                  setState(() {
+                                    _emailError = 'key_email_required'.tr;
+                                    _isEmailServerValid = false;
+                                  });
+                                  return;
+                                }
+                                if (!_isValidEmail(_emailController.text)) {
+                                  setState(() {
+                                    _emailError = 'key_invalid_email'.tr;
+                                    _isEmailServerValid = false;
+                                  });
+                                  return;
+                                }
+                                try {
+                                  _isEmailServerValid = (await context.read<TermsConditionsProvider>().isValideEmailGestion(_emailController.text)) ?? false;
+                                } catch (e) {
+                                  setState(() {
+                                    _emailError = 'key_server_error'.tr;
+                                    _isEmailServerValid = false;
+                                  });
+                                  return;
+                                }
+                                if (!_isEmailServerValid) {
+                                  setState(() {
+                                    _emailError = 'key_email_already_used'.tr;
+                                  });
+                                }
+                                setState(() {});
+                              }
+                            },
+                            child: CustomTextFormField(
+                              controller: _emailController,
+                              textInputType: TextInputType.emailAddress,
+                              hintText: 'key_email_address_hint'.tr,
+                              textStyle: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
+                                color: appTheme.black_900,
+                                fontSize: 13.fSize,
+                              ),
+                              fillColor: appTheme.gray_50_01,
+                              contentPadding: EdgeInsets.all(16.h),
+                              onChanged: _onEmailChanged,
+                              errorText: _emailError,
+                            )
+                          )
+                         // SizedBox(height: 12.h),
+                        ],
+                      ],
+                    ),
                   ),
                   SizedBox(height: 20.h),
 
-                  // Phone Number - Show only when documents are accepted
-                  if (shouldShowPhoneField) ...[
-                    Focus(
-                      onFocusChange: (hasFocus) async {
-                        if (!hasFocus) {
-                          setState(() {
-                            _phoneError = null; // Clear previous error
-                          });
-                          try {
-                            if (_phoneController.text.length == 8) {
-                              if (_phoneController.text == '00000000') {
-                                setState(() {
-                                  _phoneError = 'Numéro invalide';
-                                  _isPhoneServerValid = false;
-                                });
-                                return;
-                              }
-                              _isPhoneServerValid = (await context.read<TermsConditionsProvider>().isValideNumTelGestion(_phoneController.text)) ?? false;
-                            } else {
-                              setState(() {
-                                _phoneError = 'Numéro invalide';
-                                _isPhoneServerValid = false;
-                              });
-                              return;
-                            }
-                          } catch (e) {
-                            setState(() {
-                              _phoneError = 'Erreur serveur';
-                            });
-                            return;
-                          }
-                          if (!_isPhoneServerValid && _phoneController.text.length == 8) {
-                            setState(() {
-                              _phoneError = 'Numéro déjà utilisé';
-                            });
-                          }
-                          setState(() {});
-                        }
-                      },
-                      child: CustomTextFormField(
-                        controller: _phoneController,
-                        textInputType: TextInputType.phone,
-                        hintText: "Entrez votre numéro de téléphone",
-                        textStyle: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
-                          color: appTheme.black_900,
-                          fontSize: 13.fSize,
-                        ),
-                        fillColor: appTheme.gray_50_01,
-                        contentPadding: EdgeInsets.all(16.h),
-                        onChanged: _onPhoneChanged,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        maxLength: 8,
-                        errorText: _phoneError,
-                      ),
-                    ),
-                    SizedBox(height: 12.h),
-                  ],
-
-                  // Email - Show only when phone is valid
-                  if (shouldShowEmailField) ...[
-                    Focus(
-                      onFocusChange: (hasFocus) async {
-                        if (!hasFocus) {
-                          setState(() {
-                            _emailError = null;
-                          });
-                          if (_emailController.text.isEmpty) {
-                            setState(() {
-                              _emailError = 'Email requis';
-                              _isEmailServerValid = false;
-                            });
-                            return;
-                          }
-                          if (!_isValidEmail(_emailController.text)) {
-                            setState(() {
-                              _emailError = 'Email invalide';
-                              _isEmailServerValid = false;
-                            });
-                            return;
-                          }
-                          try {
-                            _isEmailServerValid = (await context.read<TermsConditionsProvider>().isValideEmailGestion(_emailController.text)) ?? false;
-                          } catch (e) {
-                            setState(() {
-                              _emailError = 'Erreur serveur';
-                              _isEmailServerValid = false;
-                            });
-                            return;
-                          }
-                          if (!_isEmailServerValid) {
-                            setState(() {
-                              _emailError = 'Email déjà utilisé';
-                            });
-                          }
-                          setState(() {});
-                        }
-                      },
-                      child: CustomTextFormField(
-                        controller: _emailController,
-                        textInputType: TextInputType.emailAddress,
-                        hintText: "Entrez votre adresse email",
-                        textStyle: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
-                          color: appTheme.black_900,
-                          fontSize: 13.fSize,
-                        ),
-                        fillColor: appTheme.gray_50_01,
-                        contentPadding: EdgeInsets.all(16.h),
-                        onChanged: _onEmailChanged,
-                        errorText: _emailError,
-                      ),
-                    ),
-                    SizedBox(height: 12.h),
-                  ],
-                ],
-              ),
-            ),
-            SizedBox(height: 20.h),
-
-            // Security Info Banner
-            Container(
-              padding: EdgeInsets.all(20.h),
-              decoration: BoxDecoration(
-                color: appTheme.primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16.h),
-                border: Border.all(
-                  color: appTheme.primaryColor,
-                  width: 1.5,
-                ),
-              ),
-              child: Row(
-                children: [
+                  // Security Info Banner
                   Container(
-                    padding: EdgeInsets.all(10.h),
+                    padding: EdgeInsets.all(20.h),
                     decoration: BoxDecoration(
-                      color: appTheme.whiteCustom,
-                      borderRadius: BorderRadius.circular(10.h),
+                      color: appTheme.primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16.h),
+                      border: Border.all(
+                        color: appTheme.primaryColor,
+                        width: 1.5,
+                      ),
                     ),
-                    child: Icon(
-                      Icons.security,
-                      color: appTheme.cyan_900,
-                      size: 28.h,
-                    ),
-                  ),
-                  SizedBox(width: 16.h),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        Text(
-                          "Vos données sont protégées",
-                          style: TextStyleHelper.instance.body14BoldManrope.copyWith(
-                            color: appTheme.primaryColor,
-                            fontSize: 12.fSize,
+                        Container(
+                          padding: EdgeInsets.all(10.h),
+                          decoration: BoxDecoration(
+                            color: appTheme.whiteCustom,
+                            borderRadius: BorderRadius.circular(10.h),
+                          ),
+                          child: Icon(
+                            Icons.security,
+                            color: appTheme.cyan_900,
+                            size: 28.h,
                           ),
                         ),
-                        SizedBox(height: 6.h),
-                        Text(
-                          "Nous utilisons un cryptage de niveau bancaire pour protéger vos informations personnelles.",
-                          style: TextStyleHelper.instance.label9BoldManrope.copyWith(
-                            color: appTheme.gray_600,
-        
-
-                            fontSize: 10.fSize,
-
-                         
+                        SizedBox(width: 16.h),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'key_data_protection_title'.tr,
+                                style: TextStyleHelper.instance.body14BoldManrope.copyWith(
+                                  color: appTheme.primaryColor,
+                                  fontSize: 12.fSize,
+                                ),
+                                textAlign: languageProvider.isRTL ? TextAlign.right : TextAlign.left,
+                              ),
+                              SizedBox(height: 6.h),
+                              Text(
+                                'key_data_protection_description'.tr,
+                                style: TextStyleHelper.instance.label9BoldManrope.copyWith(
+                                  color: appTheme.gray_600,
+                                  fontSize: 10.fSize,
+                                ),
+                                textAlign: languageProvider.isRTL ? TextAlign.right : TextAlign.left,
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
                 ],
-              ),
+                SizedBox(height: 20.h),
+              ],
             ),
-          ],
-          SizedBox(height: 20.h),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.only(left: 20.h, right: 20.h, top: 20.h, bottom: 10.h),
-        decoration: BoxDecoration(
-          color: appTheme.whiteCustom,
-          boxShadow: [
-            BoxShadow(
-              color: appTheme.black_900.withOpacity(0.05),
-              blurRadius: 10.h,
-              offset: Offset(0, -5.h),
+          ),
+          bottomNavigationBar: Container(
+            padding: EdgeInsets.only(left: 20.h, right: 20.h, top: 20.h, bottom: 10.h),
+            decoration: BoxDecoration(
+              color: appTheme.whiteCustom,
+              boxShadow: [
+                BoxShadow(
+                  color: appTheme.black_900.withOpacity(0.05),
+                  blurRadius: 10.h,
+                  offset: Offset(0, -5.h),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: CustomButton(
-          text: 'Valider',
-          width: double.maxFinite,
-          onPressed: (allDocumentsAccepted && _isEmailServerValid && _isPhoneServerValid)
-              ? () async {
-                  // Update provider with user data - exact from old code
-                  provider.termsConditionsModel.phoneNumber = _phoneController.text;
-                  provider.termsConditionsModel.email = _emailController.text;
+            child: CustomButton(
+              text: 'key_validate'.tr,
+              width: double.maxFinite,
+              onPressed: (allDocumentsAccepted && _isEmailServerValid && _isPhoneServerValid)
+                  ? () async {
+                      // Update provider with user data - exact from old code
+                      provider.termsConditionsModel.phoneNumber = _phoneController.text;
+                      provider.termsConditionsModel.email = _emailController.text;
 
-                  // Store phone number and email in SharedPreferences
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  await prefs.setString('terms_phone_number', _phoneController.text);
-                  await prefs.setString('terms_email', _emailController.text);
+                      // Store phone number and email in SharedPreferences
+                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                      await prefs.clear();
+                      await prefs.setString('terms_phone_number', _phoneController.text);
+                      await prefs.setString('terms_email', _emailController.text);
 
-                  // Use exact handleNextButtonPress method from old login_store.dart
-                  provider.handleNextButtonPress(context, _phoneController.text);
-                }
-              : null,
-        ),
-      ),
-    );
+                      // Use exact handleNextButtonPress method from old login_store.dart
+                      provider.handleNextButtonPress(context, _phoneController.text);
+                    }
+                  : null,
+            ),
+          ),
+        );
       },
     );
   }
 
   Widget _buildDocumentSection(dynamic document, TermsConditionsProvider provider) {
-    final documentTitle = document["titre"] ?? "Document sans titre";
+    final documentTitle = document["titre"] ?? 'key_untitled_document'.tr;
     final articles = document["articles"] ?? [];
     final documentIndex = documents.indexOf(document);
     final isAccepted = provider.getDocumentAcceptedState(documentIndex);
@@ -774,11 +909,14 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
               ),
               SizedBox(width: 12.h),
               Expanded(
-                child: Text(
-                  documentTitle,
-                  style: TextStyleHelper.instance.title16SemiBoldManrope.copyWith(
-                    color: appTheme.black_900,
-                    fontSize: 14.fSize,
+                child: Consumer2<TermsConditionsProvider, AppLanguageProvider>(
+                  builder: (context, provider, languageProvider, child) => Text(
+                    documentTitle,
+                    style: TextStyleHelper.instance.title16SemiBoldManrope.copyWith(
+                      color: appTheme.black_900,
+                      fontSize: 14.fSize,
+                    ),
+                    textAlign: languageProvider.isRTL ? TextAlign.right : TextAlign.left,
                   ),
                 ),
               ),
@@ -819,11 +957,14 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
                 ),
               ),
               SizedBox(width: 12.h),
-              Text(
-                'Lu et approuvé',
-                style: TextStyleHelper.instance.body14RegularSyne.copyWith(
-                  color: appTheme.black_900,
-                  fontSize: 12.fSize,
+              Consumer<AppLanguageProvider>(
+                builder: (context, languageProvider, child) => Text(
+                  'key_read_and_approved'.tr,
+                  style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+                    color: appTheme.black_900,
+                    fontSize: 12.fSize,
+                  ),
+                  textAlign: languageProvider.isRTL ? TextAlign.right : TextAlign.left,
                 ),
               ),
               const Spacer(),
@@ -835,8 +976,8 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
                     _downloadPdfLocally(pdfFilename, documentTitle);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Aucun fichier PDF disponible pour ce document'),
+                      SnackBar(
+                        content: Text('key_no_pdf_available'.tr),
                         backgroundColor: Colors.orange,
                       ),
                     );
@@ -871,8 +1012,8 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
                     _sharePdf(pdfFilename, documentTitle);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Aucun fichier PDF disponible pour ce document'),
+                      SnackBar(
+                        content: Text('key_no_pdf_available'.tr),
                         backgroundColor: Colors.orange,
                       ),
                     );
@@ -940,6 +1081,7 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
                         color: appTheme.black_900,
                         fontSize: 12.fSize,
                       ),
+                      textAlign: context.read<AppLanguageProvider>().isRTL ? TextAlign.right : TextAlign.left,
                     ),
                   ),
                   Icon(
@@ -963,6 +1105,7 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
                       color: appTheme.gray_700,
                       height: 1.5,
                     ),
+                    textAlign: context.read<AppLanguageProvider>().isRTL ? TextAlign.right : TextAlign.left,
                   ),
                   SizedBox(height: 12.h),
                   InkWell(
@@ -1007,10 +1150,11 @@ class _TermsConditionsScreenV2State extends State<TermsConditionsScreenV2> {
                           ),
                           SizedBox(width: 6.h),
                           Text(
-                            "Lire la suite...",
+                            'key_read_more'.tr,
                             style: TextStyleHelper.instance.label9BoldManrope.copyWith(
                               color: appTheme.cyan_900,
                             ),
+                            textAlign: context.read<AppLanguageProvider>().isRTL ? TextAlign.right : TextAlign.left,
                           ),
                           SizedBox(width: 4.h),
                           Icon(

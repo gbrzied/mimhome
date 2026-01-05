@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/app_export.dart';
+import '../../../localizationMillime/localization/app_localization.dart';
 import '../../../widgets/custom_text_form_field.dart';
 import 'models/personal_informations_model.dart';
 import 'provider/personal_informations_provider.dart';
@@ -31,48 +32,27 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
   void initState() {
     super.initState();
     
-    // Add listener for phone field focus changes
-    _phoneFocusNode.addListener(() {
-      if (!_phoneFocusNode.hasFocus) {
-        // Phone field lost focus - validate phone number
-        _validatePhoneNumberOnBlur();
-      }
-    });
+    // // Add listener for phone field focus changes
+    // _phoneFocusNode.addListener(() {
+    //   if (!_phoneFocusNode.hasFocus) {
+    //     // Phone field lost focus - validate phone number
+    //     _validatePhoneNumber();
+    //   }
+    // });
     
-    // Add listener for email field focus changes
-    _emailFocusNode.addListener(() {
-      if (!_emailFocusNode.hasFocus) {
-        // Email field lost focus - validate email
-        _validateEmailOnBlur();
-      }
-    });
+    // // Add listener for email field focus changes
+    // _emailFocusNode.addListener(() {
+    //   if (!_emailFocusNode.hasFocus) {
+    //     // Email field lost focus - validate email
+    //     _validateEmail();
+    //   }
+    // });
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<PersonalInformationsProvider>().initialize();
     });
   }
 
-  // Method to validate phone number when field loses focus
-  void _validatePhoneNumberOnBlur() {
-    final provider = context.read<PersonalInformationsProvider>();
-    final phoneNumber = provider.phoneController.text;
-    
-    // Only validate if phone number is not empty and has 8 digits
-    if (phoneNumber.isNotEmpty && phoneNumber.length == 8) {
-      provider.validatePhoneNumberMatch(phoneNumber);
-    }
-  }
-  
-  // Method to validate email when field loses focus
-  void _validateEmailOnBlur() {
-    final provider = context.read<PersonalInformationsProvider>();
-    final email = provider.emailController.text;
-    
-    // Only validate if email is not empty and is valid format
-    if (email.isNotEmpty && RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email)) {
-      provider.validateEmailMatch(email);
-    }
-  }
 
   @override
   void dispose() {
@@ -104,14 +84,14 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Informations personnelles',
+                            'key_personal_information'.tr,
                             style: TextStyleHelper.instance.title18SemiBoldSyne.copyWith(
                               color: appTheme.onBackground,
                             ),
                           ),
                           SizedBox(height: 6.h),
                           Text(
-                            'Nous avons besoin de quelques informations pour vérifier votre identité et créer votre compte',
+                            'key_personal_information_description'.tr,
                             style: TextStyleHelper.instance.body14RegularSyne.copyWith(
                               color: appTheme.onSurfaceVariant,
                               height: 1.4,
@@ -123,13 +103,13 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                           SizedBox(height: 6.h),
                           _buildTextField(
                             context: context,
-                            label: 'N° Pièce *',
+                            label: '${'key_document_number'.tr} *',
                             controller: provider.numeroPieceController,
-                            hintText: 'Entrez le numéro de votre pièce',
+                            hintText: 'key_enter_document_number'.tr,
                             autovalidateMode: AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Ce champ est requis';
+                                return 'key_field_required'.tr;
                               }
 
                               // Validate based on selected document type
@@ -137,7 +117,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                               if (selectedType.isNotEmpty) {
                                 final validation = provider.validateDocumentNumber(selectedType, value);
                                 if (!validation.isValid) {
-                                  return validation.errorMessage ?? 'Format invalide';
+                                  return validation.errorMessage ?? 'key_invalid_document_number_format'.tr;
                                 }
                               }
 
@@ -146,17 +126,17 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                           ),
                           _buildTextField(
                             context: context,
-                            label: 'Nom',
+                            label: 'key_last_name'.tr,
                             controller: provider.nomController,
                           //  provider: provider,
-                            hintText: 'Entrez votre nom',
+                            hintText: 'key_enter_last_name'.tr,
                             autovalidateMode: AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Ce champ est requis';
+                                return 'key_field_required'.tr;
                               }
                               if (value.length == 1) {
-                                return 'Le nom doit contenir au moins 2 caractères';
+                                return 'key_minimum_characters'.tr;
                               }
                               return null;
                             },
@@ -164,17 +144,17 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                           SizedBox(height: 10.h),
                           _buildTextField(
                             context: context,
-                            label: 'Prénom',
+                            label: 'key_first_name'.tr,
                             controller: provider.prenomController,
                            // provider: provider,
-                            hintText: 'Entrez votre prénom',
+                            hintText: 'key_enter_first_name'.tr,
                             autovalidateMode: AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Ce champ est requis';
+                                return 'key_field_required'.tr;
                               }
                               if (value.length == 1) {
-                                return 'Le prénom doit contenir au moins 2 caractères';
+                                return 'key_minimum_characters'.tr;
                               }
                               return null;
                             },
@@ -182,20 +162,20 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                           SizedBox(height: 10.h),
                           _buildTextField(
                             context: context,
-                            label: 'Date de naissance',
+                            label: 'key_date_of_birth'.tr,
                             controller: provider.dateController,
                             readOnly: true,
                             onTap: () => provider.selectDate(context),
                          //   provider: provider,
-                            hintText: 'Sélectionnez votre date de naissance',
+                            hintText: 'key_select_birth_date'.tr,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Ce champ est requis';
+                                return 'key_field_required'.tr;
                               }
                               // Parse the date in DD-MM-YYYY format and check if person is at least 18 years old
                               try {
                                 final parts = value.split('-');
-                                if (parts.length != 3) throw FormatException('Invalid format');
+                                if (parts.length != 3) throw FormatException('Invalid date format');
                                 final day = int.parse(parts[0]);
                                 final month = int.parse(parts[1]);
                                 final year = int.parse(parts[2]);
@@ -203,10 +183,10 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                                 final now = DateTime.now();
                                 final age = now.difference(date).inDays / 365;
                                 if (age < 18) {
-                                  return 'Vous devez avoir au moins 18 ans';
+                                  return 'key_must_be_18_years'.tr;
                                 }
                               } catch (e) {
-                                return 'Date invalide';
+                                return 'key_invalid_date'.tr;
                               }
                               return null;
                             },
@@ -214,17 +194,17 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                           SizedBox(height: 10.h),
                           _buildTextField(
                             context: context,
-                            label: 'Adresse',
+                            label: 'key_address'.tr,
                             controller: provider.adresseController,
                           //  provider: provider,
-                            hintText: 'Entrez votre adresse',
+                            hintText: 'key_enter_address'.tr,
                             autovalidateMode: AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Ce champ est requis';
+                                return 'key_field_required'.tr;
                               }
                               if (value.length == 1) {
-                                return 'L\'adresse doit contenir au moins 2 caractères';
+                                return 'key_minimum_characters'.tr;
                               }
                               return null;
                             },
@@ -233,25 +213,25 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                           _buildTextField(
                             maxLength: 8,
                             context: context,
-                            label: 'Numéro de téléphone',
+                            label: 'key_phone_number'.tr,
                             controller: provider.phoneController,
                             focusNode: _phoneFocusNode,
                             keyboardType: TextInputType.phone,
                           //  provider: provider,
-                            hintText: 'Entrez votre numéro de téléphone',
+                            hintText: 'key_enter_phone_number'.tr,
                             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                             autovalidateMode: AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               final provider = context.read<PersonalInformationsProvider>();
                               
                               if (value == null || value.isEmpty) {
-                                return 'Ce champ est requis';
+                                return 'key_field_required'.tr;
                               }
                               if (value.length != 8) {
-                                return 'Longeur incorrecte';
+                                return 'key_invalid_phone_length'.tr;
                               }
                               if (value == '00000000') {
-                                return 'Numéro de téléphone invalide';
+                                return 'key_invalid_phone_number'.tr;
                               }
                               
                               // Check for phone number mismatch error
@@ -265,20 +245,20 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                           SizedBox(height: 6.h),
                           _buildTextField(
                             context: context,
-                            label: 'Email',
+                            label: 'key_email'.tr,
                             controller: provider.emailController,
                             focusNode: _emailFocusNode,
                             keyboardType: TextInputType.emailAddress,
                           //  provider: provider,
-                            hintText: 'Entrez votre email',
+                            hintText: 'key_enter_email'.tr,
                             autovalidateMode: AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Ce champ est requis';
+                                return 'key_field_required'.tr;
                               }
                               final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
                               if (!emailRegex.hasMatch(value)) {
-                                return 'Adresse email invalide';
+                                return 'key_invalid_email_format'.tr;
                               }
                               
                               // Check for email mismatch error
@@ -292,7 +272,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                          
                           SizedBox(height: 12.h),
                           Text(
-                            'Type de compte',
+                            'key_account_type'.tr,
                             style: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
                               color: appTheme.onSurfaceVariant,
                             ),
@@ -304,7 +284,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                                 child: _buildRadioOption(
                                   context: context,
                                   value: AccountType.titulaire,
-                                  label: 'Titulaire',
+                                  label: 'key_holder_only'.tr,
                                   provider: provider,
                                 ),
                               ),
@@ -313,7 +293,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                                 child: _buildRadioOption(
                                   context: context,
                                   value: AccountType.titulaireEtSignataire,
-                                  label: 'Titulaire et signataire',
+                                  label: 'key_holder_and_signatory'.tr,
                                   provider: provider,
                                 ),
                               ),
@@ -353,7 +333,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                               ),
                             )
                           : Text(
-                              'Suivant',
+                              'key_next'.tr,
                               style: TextStyleHelper.instance.body14BoldManrope.copyWith(
                                 color: appTheme.onPrimary,
                               ),
@@ -406,7 +386,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
           onTap: onTap,
           validator: validator ?? (value) {
             if (value == null || value.isEmpty) {
-              return 'Ce champ est requis';
+              return 'key_field_required'.tr;
             }
             return null;
           },
@@ -423,7 +403,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Type de pièce *',
+          '${'key_document_type'.tr} *',
           style: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
             color: appTheme.onSurfaceVariant,
           ),
@@ -457,7 +437,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                       : null,
                   hint: Center(
                     child: Text(
-                      'Sélectionnez le type de pièce',
+                      'key_select_document_type'.tr,
                       style: TextStyleHelper.instance.body14RegularSyne.copyWith(
                         color: appTheme.gray_600,
                       ),
@@ -488,7 +468,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Ce champ est requis';
+                      return 'key_field_required'.tr;
                     }
                     return null;
                   },
@@ -504,7 +484,7 @@ class _PersonalInformationsScreenState extends State<PersonalInformationsScreen>
     required String label,
     required PersonalInformationsProvider provider,
   }) {
-    final isSelected = provider.selectedAccountType == value;
+    final isSelected = provider.selectedAccountTypeTituSignataire == value;
     return InkWell(
       onTap: () => provider.selectAccountType(value),
       child: Row(

@@ -26,9 +26,9 @@ class IdentityVerificationModel {
     this.tituImages,
     this.docManquantsTitu,
     this.enableDocButtonTitu,
-    this.mandImages,
-    this.docManquantsMand,
-    this.enableDocButtonMand,
+    // this.mandImages,
+    // this.docManquantsMand,
+    // this.enableDocButtonMand,
     this.backendError = false,
     this.backendErrorMessage = '',
     this.documentsRequis,
@@ -53,9 +53,9 @@ class IdentityVerificationModel {
     tituImages = tituImages ?? [];
     docManquantsTitu = docManquantsTitu ?? [];
     enableDocButtonTitu = enableDocButtonTitu ?? {};
-    mandImages = mandImages ?? [];
-    docManquantsMand = docManquantsMand ?? [];
-    enableDocButtonMand = enableDocButtonMand ?? {};
+    // mandImages = mandImages ?? [];
+    // docManquantsMand = docManquantsMand ?? [];
+    // enableDocButtonMand = enableDocButtonMand ?? {};
     backendError = backendError ?? false;
     backendErrorMessage = backendErrorMessage ?? '';
     documentsRequis = documentsRequis ?? [];
@@ -85,10 +85,10 @@ class IdentityVerificationModel {
   List<String>? docManquantsTitu;
   Map<String, bool>? enableDocButtonTitu;
 
-  // Mandatory documents (if different person)
-  List<String?>? mandImages;
-  List<String>? docManquantsMand;
-  Map<String, bool>? enableDocButtonMand;
+  // // Mandatory documents (if different person)
+  // List<String?>? mandImages;
+  // List<String>? docManquantsMand;
+  // Map<String, bool>? enableDocButtonMand;
 
   // Backend connectivity status
   bool? backendError;

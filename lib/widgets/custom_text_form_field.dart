@@ -154,6 +154,8 @@ class CustomTextFormField extends StatelessWidget {
   /// Called when the field is tapped
   final VoidCallback? onTap;
 
+
+
   @override
   Widget build(BuildContext context) {
     return alignment != null
@@ -197,7 +199,7 @@ class CustomTextFormField extends StatelessWidget {
         inputFormatters: inputFormatters,
         autovalidateMode: autovalidateMode,
         onTap: onTap,
-        enabled: enabled,
+        enabled: enabled ?? true,
         readOnly: readOnly ?? false,
         ),
       ),

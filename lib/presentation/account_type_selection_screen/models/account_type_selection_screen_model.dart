@@ -1,6 +1,6 @@
 /// This class is used in the [AccountTypeSelectionScreen] screen.
 
-enum AccountType {
+enum AccountTypePMPP {
   individual,
   business,
 }
@@ -8,13 +8,13 @@ enum AccountType {
 // ignore_for_file: must_be_immutable
 class AccountTypeSelectionModel {
   AccountTypeSelectionModel({
-    this.selectedAccountType,
+    this.selectedAccountTypePMPP,
     this.id,
   }) {
-    selectedAccountType = selectedAccountType ?? AccountType.individual;
+    selectedAccountTypePMPP = selectedAccountTypePMPP ?? AccountTypePMPP.individual;
     id = id ?? "";
   }
 
-  AccountType? selectedAccountType;
+  AccountTypePMPP? selectedAccountTypePMPP;
   String? id;
 }

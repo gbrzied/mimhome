@@ -223,6 +223,13 @@ class TextStyleHelper {
         color: appTheme.onBackground,
       );
 
+  TextStyle get body14MediumManrope => TextStyle(
+        fontSize: 14.fSize,
+        fontWeight: FontWeight.w500,
+        fontFamily: 'Manrope',
+        color: appTheme.onBackground,
+      );
+
   TextStyle get body12RegularManrope => TextStyle(
         fontSize: 12.fSize,
         fontWeight: FontWeight.w400,

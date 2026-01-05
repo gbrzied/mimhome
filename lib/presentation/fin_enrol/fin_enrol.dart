@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../theme/text_style_helper.dart';
 import '../../core/app_export.dart';
+import '../../localizationMillime/localization/app_localization.dart';
 import './provider/enrollment_success_provider.dart';
 
 // Définition de la classe de l'écran de fin d'inscription
@@ -43,7 +42,7 @@ class _EnrollmentSuccessScreenState extends State<EnrollmentSuccessScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Text('5/5', style: TextStyle(fontSize: 14)),
+                  Text('key_progress_5_of_5'.tr, style: const TextStyle(fontSize: 14)),
                 ],
               ),
             ),
@@ -62,7 +61,7 @@ class _EnrollmentSuccessScreenState extends State<EnrollmentSuccessScreen> {
                           ),
                           const SizedBox(height: 20),
                           Text(
-                            'Soumission de votre demande en cours...',
+                            'key_submission_in_progress'.tr,
                             style: TextStyleHelper.instance.title16MediumSyne,
                             textAlign: TextAlign.center,
                           ),
@@ -82,20 +81,23 @@ class _EnrollmentSuccessScreenState extends State<EnrollmentSuccessScreen> {
                           ),
                           const SizedBox(height: 30),
                           Text(
-                            'Merci',
+                            'key_thank_you'.tr,
                             textAlign: TextAlign.center,
                             style: TextStyleHelper.instance.title38BoldQuicksand,
                           ),
                           const SizedBox(height: 15),
                           Text(
-                            provider.submissionMessage ?? 'votre inscription est faite avec succée.',
+                            //provider.submissionMessage ?? 
+                            'key_registration_successful'.tr,
                             textAlign: TextAlign.center,
                             style: TextStyleHelper.instance.title20RegularQuicksand,
                           ),
+                          const SizedBox(height: 8),
                              Text(
-                            provider.submissionMessage ?? 'Votre demande est encours d’études.',
+                            // provider.submissionMessage ?? 
+                            'key_request_under_review'.tr,
                             textAlign: TextAlign.center,
-                            style: TextStyleHelper.instance.title20RegularQuicksand,
+                            style: TextStyleHelper.instance.body12RegularManrope,
                           ),
                           const SizedBox(height: 15),
                           // ElevatedButton(
@@ -134,19 +136,19 @@ class _EnrollmentSuccessScreenState extends State<EnrollmentSuccessScreen> {
                           ),
                           const SizedBox(height: 30),
                           Text(
-                            'Erreur',
+                            'key_error'.tr,
                             textAlign: TextAlign.center,
                             style: TextStyleHelper.instance.title38BoldQuicksand,
                           ),
                           const SizedBox(height: 15),
                           Text(
-                            provider.submissionMessage ?? 'Une erreur s\'est produite lors de la soumission.',
+                            provider.submissionMessage ?? 'key_submission_error'.tr,
                             textAlign: TextAlign.center,
                             style: TextStyleHelper.instance.title20RegularQuicksand,
                           ),
                           const SizedBox(height: 30),
                           ElevatedButton(
-                            onPressed: () => provider.submitAccountOpeningRequest(),
+                            onPressed: () => provider.submit(),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: appTheme.primaryColor,
                               padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
@@ -155,7 +157,7 @@ class _EnrollmentSuccessScreenState extends State<EnrollmentSuccessScreen> {
                               ),
                             ),
                             child: Text(
-                              'Réessayer',
+                              'key_retry'.tr,
                               style: TextStyleHelper.instance.title16MediumSyne.copyWith(
                                 color: appTheme.onPrimary,
                               ),
@@ -173,5 +175,3 @@ class _EnrollmentSuccessScreenState extends State<EnrollmentSuccessScreen> {
     );
   }
 }
-
-

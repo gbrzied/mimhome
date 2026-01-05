@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:millime/core/build_info.dart';
+import 'package:millime/core/utils/functions.dart';
 import 'dart:convert';
 import 'dart:math';
 import '../../../core/app_export.dart';
@@ -12,9 +14,7 @@ import '../models/terms_conditions_model.dart';
 class TermsConditionsProvider extends ChangeNotifier {
   TermsConditionsModel termsConditionsModel = TermsConditionsModel();
 
-  // Backend configuration - same as old login_store.dart
-  String backendServer = '192.168.1.13'
-  ; // Default to localhost, can be configured
+
   String userTel = ''; // User's phone number
 
   void initialize() {
@@ -75,7 +75,7 @@ class TermsConditionsProvider extends ChangeNotifier {
   Future<bool?> isValideNumTelGestion(String numTel) async {
     try {
       final response = await http.get(
-          Uri.parse('http://192.168.1.13:8081/wallet/public/' + numTel + '/tel'));
+          Uri.parse('http://${backendServer}:8081/wallet/public/' + numTel + '/tel'));
 
       if (response.statusCode <= 206 && response.contentLength! > 0) {
         return Future.value(false); // Phone already exists
@@ -109,7 +109,7 @@ class TermsConditionsProvider extends ChangeNotifier {
       'suffixe': suffixe
     };
 
-    var uri = Uri.http('192.168.1.13:8081', '/wallet/email', queryParameters);
+    var uri = Uri.http('${backendServer}:8081', '/wallet/email', queryParameters);
 
     var response = await http.get(uri, headers: {
       'Content-Type': 'text/plain; charset=utf-8',
@@ -223,7 +223,7 @@ class TermsConditionsProvider extends ChangeNotifier {
   late int oneTimePass = 123;
 
   // sendOtp method - EXACT implementation from old login_store.dart (simplified)
-  Future<void> sendOtp(String tel) async {
+  Future<int> sendOtp(String tel) async {
     int otpMax;
     int otpMin;
     otpMin = 100000;
@@ -233,13 +233,13 @@ class TermsConditionsProvider extends ChangeNotifier {
     oneTimePass = otpMin + Random().nextInt(otpMax - otpMin);
 
     ///use back end Api to notify the client
-    print('OTP sent to $tel: $oneTimePass');
+    return oneTimePass;
   }
 
   // handleNextButtonPress method - EXACT logic from old login_store.dart
   Future<void> handleNextButtonPress(BuildContext context, String phoneNumber) async {
     // Validate actions before proceeding - exact from old code
-    if (phoneNumber.isEmpty) {
+    if (phoneNumber.isEmpty ) {
       buildSuccessMessage(context, 'Numéro de téléphone requis', isError: true);
       return;
     }

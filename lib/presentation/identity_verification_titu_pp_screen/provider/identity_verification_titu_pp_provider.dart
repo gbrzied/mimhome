@@ -6,13 +6,16 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:millime/presentation/account_type_selection_screen/models/account_type_selection_screen_model.dart';
+import 'package:millime/presentation/personal_informations_screen/models/personal_informations_model.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:millime/core/build_info.dart';
 
 import '../../../core/app_export.dart';
-import '../models/identity_verification_model.dart';
+import '../models/identity_verification_titu_pp_model.dart';
 
 // Constants for document management
 const String CODE_NIVEAU_COMPTE = 'NVC';
@@ -27,11 +30,13 @@ const String DOC_PREUVE_VIE = 'PREUVEIE';
 
 // Account level and person type constants (to be replaced with dynamic values later)
 const String DEFAULT_ACCOUNT_LEVEL = 'Niveau1'; // Niveau1 or Niveau2
-const bool DEFAULT_IS_PHYSICAL_PERSON = true; // true for physical person, false for legal entity
-const bool DEFAULT_SIGNATAIRE_TITULAIRE = true; // true if signer and holder are the same person
+const bool DEFAULT_IS_PHYSICAL_PERSON =
+    true; // true for physical person, false for legal entity
+const bool DEFAULT_SIGNATAIRE_TITULAIRE =
+    true; // true if signer and holder are the same person
 
 // Backend server configuration (to be moved to environment config)
-const String BACKEND_SERVER = '192.168.1.13'; // Default backend server
+const String BACKEND_SERVER = '${backendServer}'; // Default backend server
 const int BACKEND_PORT = 8081;
 
 // Add piece type constants
@@ -47,6 +52,7 @@ class IdentityVerificationProvider extends ChangeNotifier {
 
   // Track CIN validation status
   bool cinValidationPassed = false;
+  bool signataireEtTitulaire = false;
 
   // Countdown timer for selfie validation (from old app)
   Timer? _selfieCountdownTimer;
@@ -58,19 +64,19 @@ class IdentityVerificationProvider extends ChangeNotifier {
   void startSelfieCountdown() {
     _selfieTimerStarted = true;
     _selfieRemainingTime = SELFIE_COUNTDOWN_DURATION;
-    
+
     _selfieCountdownTimer?.cancel();
     _selfieCountdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _selfieRemainingTime--;
       notifyListeners();
-      
+
       if (_selfieRemainingTime <= 0) {
         timer.cancel();
         _selfieTimerStarted = false;
         notifyListeners();
       }
     });
-    
+
     debugPrint('✅ Selfie countdown started: $_selfieRemainingTime seconds');
     notifyListeners();
   }
@@ -94,35 +100,39 @@ class IdentityVerificationProvider extends ChangeNotifier {
   // Enhanced document enable logic (from old app lines 600-604)
   bool canEnableSelfieDocument() {
     // Selfie can only be enabled if CIN documents are verified (like old app)
-    return (identityVerificationModel.pieceIdVerifiee ?? false) && 
-           (cinValidationPassed) &&
-           (identityVerificationModel.cinr != null && identityVerificationModel.cinr!.isNotEmpty);
+    return (identityVerificationModel.pieceIdVerifiee ?? false) &&
+        (cinValidationPassed) &&
+        (identityVerificationModel.cinr != null &&
+            identityVerificationModel.cinr!.isNotEmpty);
   }
 
   // Enhanced enable document button logic
   void updateDocumentButtonStates() {
     if (identityVerificationModel.enableDocButton == null) return;
-    
+
     final docManquants = identityVerificationModel.docManquants ?? [];
     final enableDocButton = identityVerificationModel.enableDocButton!;
-    
+
     for (var i = 0; i < docManquants.length; i++) {
       final docCode = docManquants[i];
-      
+
       if (docCode == 'SELFIE' || docCode == 'PREUVEIE') {
         // Apply enhanced logic from old app
         enableDocButton[docCode] = canEnableSelfieDocument();
-        
+
         // Also update disable flags (like old app)
         if (docCode == 'SELFIE') {
           identityVerificationModel.disableSELFIE = !canEnableSelfieDocument();
         } else if (docCode == 'PREUVEIE') {
-          identityVerificationModel.disablePreuveDeVie = !canEnableSelfieDocument();
+          identityVerificationModel.disablePreuveDeVie =
+              !canEnableSelfieDocument();
         }
       }
     }
-    
-    debugPrint('🔄 Document button states updated: SELFIE enabled=${enableDocButton['SELFIE']}, PREUVEIE enabled=${enableDocButton['PREUVEIE']}');
+
+    debugPrint(
+      '🔄 Document button states updated: SELFIE enabled=${enableDocButton['SELFIE']}, PREUVEIE enabled=${enableDocButton['PREUVEIE']}',
+    );
     notifyListeners();
   }
 
@@ -139,13 +149,17 @@ class IdentityVerificationProvider extends ChangeNotifier {
     // Load selected piece type and entered CIN from SharedPreferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? savedPieceType = prefs.getString('selected_piece_type');
-    debugPrint('Loaded selected_piece_type from SharedPreferences: $savedPieceType');
+    debugPrint(
+      'Loaded selected_piece_type from SharedPreferences: $savedPieceType',
+    );
     if (savedPieceType != null) {
       identityVerificationModel.selectedPieceType = savedPieceType;
     }
 
-    enteredCinNumber = prefs.getString('entered_cin_number') ??  "06308631";
-    debugPrint('Loaded entered_cin_number from SharedPreferences: $enteredCinNumber');
+    enteredCinNumber = prefs.getString('entered_id_number') ?? "";
+    debugPrint(
+      'Loaded entered_id_number from SharedPreferences: $enteredCinNumber',
+    );
 
     // Load required documents
     loadDocuments();
@@ -157,29 +171,47 @@ class IdentityVerificationProvider extends ChangeNotifier {
     try {
       // Set loading state
       identityVerificationModel.isProcessingImage = true;
-      identityVerificationModel.processingMessage = 'Chargement des documents requis...';
+      identityVerificationModel.processingMessage =
+          'Chargement des documents requis...';
       notifyListeners();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
 
       // Simulate API call to get required documents based on account level and person type
       // This replaces the hardcoded logic with dynamic loading similar to chargerDocInRequisNvCompte
+      String? selectedAccountType = prefs.getString(
+        'personal_selected_account_type',
+      );
+      signataireEtTitulaire =
+          selectedAccountType == AccountType.titulaireEtSignataire.toString();
+      identityVerificationModel.accountLevel=prefs.getString('niveau_compte_code');
       final documents = await _chargerDocInRequisNvCompte(
-        signataireEtTitulaire: identityVerificationModel.signataireEtTitulaire ?? DEFAULT_SIGNATAIRE_TITULAIRE,
+        signataireEtTitulaire: signataireEtTitulaire,
         niveau: identityVerificationModel.accountLevel ?? DEFAULT_ACCOUNT_LEVEL,
-        pp: identityVerificationModel.isPhysicalPerson ?? DEFAULT_IS_PHYSICAL_PERSON,
+        pp:
+            identityVerificationModel.isPhysicalPerson ??
+            DEFAULT_IS_PHYSICAL_PERSON,
       );
 
       // Store the full document list for filtering
       identityVerificationModel.documentsRequis = documents;
+      // String? selectedAccountType = prefs.getString('personal_selected_account_type');
+      // if ( selectedAccountType ==AccountType.titulaire.toString() )
 
       // Update model with loaded documents
-      identityVerificationModel.docManquants = documents.map((doc) => doc.docInCode ?? '').toList();
-      identityVerificationModel.tituimages = List.filled(documents.length, null);
+      identityVerificationModel.docManquants = documents
+          .map((doc) => doc.docInCode ?? '')
+          .toList();
+      identityVerificationModel.tituimages = List.filled(
+        documents.length,
+        null,
+      );
 
       // Initialize button states - only first document is enabled
       identityVerificationModel.enableDocButton = {};
       for (var i = 0; i < documents.length; i++) {
         final docCode = documents[i].docInCode ?? '';
-        identityVerificationModel.enableDocButton![docCode] = (i == 0); // Only first document enabled
+        identityVerificationModel.enableDocButton![docCode] =
+            (i == 0); // Only first document enabled
       }
 
       // Reset preview states when documents change
@@ -193,13 +225,18 @@ class IdentityVerificationProvider extends ChangeNotifier {
 
       // Update disable flags based on loaded documents
       if (documents.isNotEmpty) {
-        identityVerificationModel.disableCINR = false; // First document is always enabled
+        identityVerificationModel.disableCINR =
+            false; // First document is always enabled
       }
-
     } catch (e) {
       debugPrint('Error loading documents: $e');
       // Fallback to basic documents if API fails
-      identityVerificationModel.docManquants = ['CINR', 'CINV', 'SELFIE', 'PREUVEIE'];
+      identityVerificationModel.docManquants = [
+        'CINR',
+        'CINV',
+        'SELFIE',
+        'PREUVEIE',
+      ];
       identityVerificationModel.tituimages = List.filled(4, null);
       identityVerificationModel.enableDocButton = {
         'CINR': true,
@@ -246,7 +283,9 @@ class IdentityVerificationProvider extends ChangeNotifier {
 
   Future<bool> _getImageFromSource(int index, ImageSource source) async {
     try {
-      debugPrint('Starting _getImageFromSource for index: $index, source: $source');
+      debugPrint(
+        'Starting _getImageFromSource for index: $index, source: $source',
+      );
 
       // Request permissions if accessing gallery
       if (source == ImageSource.gallery) {
@@ -267,7 +306,9 @@ class IdentityVerificationProvider extends ChangeNotifier {
 
         // If photos permission not available, try storage permission (older Android)
         if (!status.isGranted) {
-          debugPrint('Photos permission not granted, trying storage permission...');
+          debugPrint(
+            'Photos permission not granted, trying storage permission...',
+          );
           PermissionStatus storageStatus = await Permission.storage.status;
           debugPrint('Storage permission status: $storageStatus');
 
@@ -285,7 +326,8 @@ class IdentityVerificationProvider extends ChangeNotifier {
           debugPrint('Gallery permission permanently denied');
           // Show error message with option to open settings
           identityVerificationModel.backendError = true;
-          identityVerificationModel.backendErrorMessage = 'Accès à la galerie refusé. Veuillez autoriser l\'accès aux photos dans les paramètres de l\'application.';
+          identityVerificationModel.backendErrorMessage =
+              'Accès à la galerie refusé. Veuillez autoriser l\'accès aux photos dans les paramètres de l\'application.';
           notifyListeners();
           // Open app settings after a short delay
           Future.delayed(const Duration(seconds: 2), () {
@@ -296,7 +338,8 @@ class IdentityVerificationProvider extends ChangeNotifier {
           debugPrint('Gallery permission still not granted');
           // Show error message to user
           identityVerificationModel.backendError = true;
-          identityVerificationModel.backendErrorMessage = 'Accès à la galerie refusé. Veuillez autoriser l\'accès aux photos pour continuer.';
+          identityVerificationModel.backendErrorMessage =
+              'Accès à la galerie refusé. Veuillez autoriser l\'accès aux photos pour continuer.';
           notifyListeners();
           return false;
         }
@@ -325,7 +368,9 @@ class IdentityVerificationProvider extends ChangeNotifier {
         return false;
       }
 
-      debugPrint('Image picked successfully for index: $index, path: ${pickedFile.path}');
+      debugPrint(
+        'Image picked successfully for index: $index, path: ${pickedFile.path}',
+      );
 
       // Process the captured image
       return await _processCapturedImage(pickedFile, index);
@@ -361,9 +406,7 @@ class IdentityVerificationProvider extends ChangeNotifier {
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false,
           ),
-          IOSUiSettings(
-            title: 'Crop Image',
-          ),
+          IOSUiSettings(title: 'Crop Image'),
         ],
       );
 
@@ -391,20 +434,23 @@ class IdentityVerificationProvider extends ChangeNotifier {
       debugPrint('Processing document type: $docType at index: $index');
 
       if (docType == 'CINR') {
-        identityVerificationModel.processingMessage = 'Analyse du texte et vérification du document en cours...';
+        identityVerificationModel.processingMessage =
+            'Analyse du texte et vérification du document en cours...';
         notifyListeners();
         await _processCINR(croppedFile.path, index);
         // Check if CINR validation passed
         validationPassed = cinValidationPassed;
       } else if (docType == 'CINV') {
-        identityVerificationModel.processingMessage = 'Lecture du code-barres...';
+        identityVerificationModel.processingMessage =
+            'Lecture du code-barres...';
         notifyListeners();
         await _processCINV(croppedFile.path, index);
         // CINV validation passed if pieceIdVerifiee is true
         validationPassed = identityVerificationModel.pieceIdVerifiee ?? false;
       } else if (docType == 'SELFIE' || docType == 'PREUVEIE') {
         // No special processing needed for SELFIE and PREUVEIE
-        identityVerificationModel.processingMessage = 'Traitement de l\'image...';
+        identityVerificationModel.processingMessage =
+            'Traitement de l\'image...';
         notifyListeners();
         // Simulate brief processing for consistency
         await Future.delayed(const Duration(milliseconds: 500));
@@ -412,7 +458,8 @@ class IdentityVerificationProvider extends ChangeNotifier {
         validationPassed = true; // Selfie/PreuveIE always pass
       } else if (docType == 'SIGN') {
         // No special processing needed for SIGN, just mark as valid
-        identityVerificationModel.processingMessage = 'Traitement de la signature...';
+        identityVerificationModel.processingMessage =
+            'Traitement de la signature...';
         notifyListeners();
         // Simulate brief processing for consistency
         await Future.delayed(const Duration(milliseconds: 500));
@@ -435,7 +482,9 @@ class IdentityVerificationProvider extends ChangeNotifier {
           debugPrint('This is the last document, no next document to enable');
         }
       } else {
-        debugPrint('Validation failed for $docType, not enabling next document');
+        debugPrint(
+          'Validation failed for $docType, not enabling next document',
+        );
       }
 
       // Reset loading state
@@ -459,7 +508,9 @@ class IdentityVerificationProvider extends ChangeNotifier {
     try {
       // Mimic old wallet11_page.dart logic with parallel processing
       final TextRecognizer textRecognizer = TextRecognizer();
-      final recognizedTextFuture = textRecognizer.processImage(InputImage.fromFilePath(imagePath));
+      final recognizedTextFuture = textRecognizer.processImage(
+        InputImage.fromFilePath(imagePath),
+      );
       final logoFlagFuture = checkLogoAndFlag(imagePath);
 
       // Use Future.wait for parallel processing like old version
@@ -473,10 +524,13 @@ class IdentityVerificationProvider extends ChangeNotifier {
       final hasLogoAndFlag = logoFlagResults[0] as bool?;
 
       // Require BOTH logo/flag detection AND valid CIN text (like old version)
-      if ((hasLogoAndFlag ?? false) && recognizedText.blocks.isNotEmpty && recognizedText.text.length >= 8) {
+      if ((hasLogoAndFlag ?? false) &&
+          recognizedText.blocks.isNotEmpty &&
+          recognizedText.text.length >= 8) {
         // Look for 8-digit CIN in text blocks
         for (final block in recognizedText.blocks) {
-          if (block.text.length == 8 && RegExp(r'^\d{8}$').hasMatch(block.text)) {
+          if (block.text.length == 8 &&
+              RegExp(r'^\d{8}$').hasMatch(block.text)) {
             identityVerificationModel.cinr = block.text;
 
             // Validate CIN matches entered CIN from PersonalInformationsScreen
@@ -484,8 +538,10 @@ class IdentityVerificationProvider extends ChangeNotifier {
               if (block.text == enteredCinNumber) {
                 cinValidationPassed = true;
                 identityVerificationModel.disableCINV = false;
-                debugPrint('CIN detected and validated: ${block.text} - matches entered CIN');
-                
+                debugPrint(
+                  'CIN detected and validated: ${block.text} - matches entered CIN',
+                );
+
                 // Update document button states after successful CIN validation (like old app)
                 updateDocumentButtonStates();
               } else {
@@ -493,24 +549,35 @@ class IdentityVerificationProvider extends ChangeNotifier {
                 identityVerificationModel.disableCINV = true;
                 identityVerificationModel.disableSELFIE = true;
                 identityVerificationModel.disablePreuveDeVie = true;
-                debugPrint('CIN detected but does not match entered CIN: extracted=${block.text}, entered=${enteredCinNumber}');
+                debugPrint(
+                  'CIN detected but does not match entered CIN: extracted=${block.text}, entered=${enteredCinNumber}',
+                );
 
                 // Disable all subsequent documents in the enableDocButton map
                 if (identityVerificationModel.enableDocButton != null) {
                   // Find current document index
-                  final currentIndex = identityVerificationModel.docManquants?.indexOf('CINR') ?? -1;
+                  final currentIndex =
+                      identityVerificationModel.docManquants?.indexOf('CINR') ??
+                      -1;
                   if (currentIndex >= 0) {
                     // Disable all documents after CINR
-                    for (var i = currentIndex + 1; i < (identityVerificationModel.docManquants?.length ?? 0); i++) {
-                      final docCode = identityVerificationModel.docManquants![i];
-                      identityVerificationModel.enableDocButton![docCode] = false;
+                    for (
+                      var i = currentIndex + 1;
+                      i < (identityVerificationModel.docManquants?.length ?? 0);
+                      i++
+                    ) {
+                      final docCode =
+                          identityVerificationModel.docManquants![i];
+                      identityVerificationModel.enableDocButton![docCode] =
+                          false;
                     }
                   }
                 }
 
                 // Show mismatch error
                 identityVerificationModel.backendError = true;
-                identityVerificationModel.backendErrorMessage = 'Le numéro CIN extrait (${block.text}) ne correspond pas au numéro CIN saisi (${enteredCinNumber}). Veuillez vérifier vos informations.';
+                identityVerificationModel.backendErrorMessage =
+                    'Le numéro CIN extrait (${block.text}) ne correspond pas au numéro CIN saisi (${enteredCinNumber}). Veuillez vérifier vos informations.';
                 notifyListeners();
                 return; // Exit early on mismatch
               }
@@ -518,7 +585,9 @@ class IdentityVerificationProvider extends ChangeNotifier {
               // No entered CIN to compare with, allow if CIN is extracted
               cinValidationPassed = true;
               identityVerificationModel.disableCINV = false;
-              debugPrint('CIN detected: ${block.text} - no entered CIN to validate against');
+              debugPrint(
+                'CIN detected: ${block.text} - no entered CIN to validate against',
+              );
             }
             break;
           }
@@ -534,10 +603,15 @@ class IdentityVerificationProvider extends ChangeNotifier {
         // Disable all subsequent documents in the enableDocButton map
         if (identityVerificationModel.enableDocButton != null) {
           // Find current document index
-          final currentIndex = identityVerificationModel.docManquants?.indexOf('CINR') ?? -1;
+          final currentIndex =
+              identityVerificationModel.docManquants?.indexOf('CINR') ?? -1;
           if (currentIndex >= 0) {
             // Disable all documents after CINR
-            for (var i = currentIndex + 1; i < (identityVerificationModel.docManquants?.length ?? 0); i++) {
+            for (
+              var i = currentIndex + 1;
+              i < (identityVerificationModel.docManquants?.length ?? 0);
+              i++
+            ) {
               final docCode = identityVerificationModel.docManquants![i];
               identityVerificationModel.enableDocButton![docCode] = false;
             }
@@ -547,9 +621,12 @@ class IdentityVerificationProvider extends ChangeNotifier {
         // Show appropriate error message
         String errorMessage = 'Erreur de validation du document CIN';
         if (hasLogoAndFlag == false) {
-          errorMessage = 'Document non reconnu. Assurez-vous que la carte d\'identité tunisienne est clairement visible.';
-        } else if (recognizedText.blocks.isEmpty || recognizedText.text.length < 8) {
-          errorMessage = 'Texte illisible. Réessayez avec une image plus claire.';
+          errorMessage =
+              'Document non reconnu. Assurez-vous que la carte d\'identité tunisienne est clairement visible.';
+        } else if (recognizedText.blocks.isEmpty ||
+            recognizedText.text.length < 8) {
+          errorMessage =
+              'Texte illisible. Réessayez avec une image plus claire.';
         }
 
         // Set backend error for UI display
@@ -565,7 +642,8 @@ class IdentityVerificationProvider extends ChangeNotifier {
       identityVerificationModel.cinr = '';
       identityVerificationModel.disableCINV = true;
       identityVerificationModel.backendError = true;
-      identityVerificationModel.backendErrorMessage = 'Erreur lors de l\'analyse du document. Veuillez réessayer.';
+      identityVerificationModel.backendErrorMessage =
+          'Erreur lors de l\'analyse du document. Veuillez réessayer.';
       notifyListeners();
     }
   }
@@ -586,7 +664,7 @@ class IdentityVerificationProvider extends ChangeNotifier {
             identityVerificationModel.disablePreuveDeVie = false;
             identityVerificationModel.pieceIdVerifiee = true;
             debugPrint('CINV barcode matches CINR: $cin');
-            
+
             // Update document button states after successful CINV validation (like old app)
             updateDocumentButtonStates();
           } else {
@@ -598,10 +676,15 @@ class IdentityVerificationProvider extends ChangeNotifier {
             // Disable all subsequent documents in the enableDocButton map
             if (identityVerificationModel.enableDocButton != null) {
               // Find current document index
-              final currentIndex = identityVerificationModel.docManquants?.indexOf('CINV') ?? -1;
+              final currentIndex =
+                  identityVerificationModel.docManquants?.indexOf('CINV') ?? -1;
               if (currentIndex >= 0) {
                 // Disable all documents after CINV
-                for (var i = currentIndex + 1; i < (identityVerificationModel.docManquants?.length ?? 0); i++) {
+                for (
+                  var i = currentIndex + 1;
+                  i < (identityVerificationModel.docManquants?.length ?? 0);
+                  i++
+                ) {
                   final docCode = identityVerificationModel.docManquants![i];
                   identityVerificationModel.enableDocButton![docCode] = false;
                 }
@@ -610,10 +693,13 @@ class IdentityVerificationProvider extends ChangeNotifier {
 
             // Show mismatch error
             identityVerificationModel.backendError = true;
-            identityVerificationModel.backendErrorMessage = 'Le code-barres du CIN Verso (${cin}) ne correspond pas au numéro CIN Recto (${identityVerificationModel.cinr}). Veuillez vérifier vos documents.';
+            identityVerificationModel.backendErrorMessage =
+                'Le code-barres du CIN Verso (${cin}) ne correspond pas au numéro CIN Recto (${identityVerificationModel.cinr}). Veuillez vérifier vos documents.';
             notifyListeners();
 
-            debugPrint('CINV barcode mismatch: barcode=$cin, cinr=${identityVerificationModel.cinr}');
+            debugPrint(
+              'CINV barcode mismatch: barcode=$cin, cinr=${identityVerificationModel.cinr}',
+            );
           }
         } else {
           // Invalid barcode length - disable subsequent documents
@@ -623,9 +709,14 @@ class IdentityVerificationProvider extends ChangeNotifier {
 
           // Disable all subsequent documents
           if (identityVerificationModel.enableDocButton != null) {
-            final currentIndex = identityVerificationModel.docManquants?.indexOf('CINV') ?? -1;
+            final currentIndex =
+                identityVerificationModel.docManquants?.indexOf('CINV') ?? -1;
             if (currentIndex >= 0) {
-              for (var i = currentIndex + 1; i < (identityVerificationModel.docManquants?.length ?? 0); i++) {
+              for (
+                var i = currentIndex + 1;
+                i < (identityVerificationModel.docManquants?.length ?? 0);
+                i++
+              ) {
                 final docCode = identityVerificationModel.docManquants![i];
                 identityVerificationModel.enableDocButton![docCode] = false;
               }
@@ -633,7 +724,8 @@ class IdentityVerificationProvider extends ChangeNotifier {
           }
 
           identityVerificationModel.backendError = true;
-          identityVerificationModel.backendErrorMessage = 'Code-barres invalide sur le CIN Verso. Veuillez réessayer avec une image plus claire.';
+          identityVerificationModel.backendErrorMessage =
+              'Code-barres invalide sur le CIN Verso. Veuillez réessayer avec une image plus claire.';
           notifyListeners();
 
           debugPrint('Invalid CINV barcode length: $code');
@@ -646,9 +738,14 @@ class IdentityVerificationProvider extends ChangeNotifier {
 
         // Disable all subsequent documents
         if (identityVerificationModel.enableDocButton != null) {
-          final currentIndex = identityVerificationModel.docManquants?.indexOf('CINV') ?? -1;
+          final currentIndex =
+              identityVerificationModel.docManquants?.indexOf('CINV') ?? -1;
           if (currentIndex >= 0) {
-            for (var i = currentIndex + 1; i < (identityVerificationModel.docManquants?.length ?? 0); i++) {
+            for (
+              var i = currentIndex + 1;
+              i < (identityVerificationModel.docManquants?.length ?? 0);
+              i++
+            ) {
               final docCode = identityVerificationModel.docManquants![i];
               identityVerificationModel.enableDocButton![docCode] = false;
             }
@@ -656,7 +753,8 @@ class IdentityVerificationProvider extends ChangeNotifier {
         }
 
         identityVerificationModel.backendError = true;
-        identityVerificationModel.backendErrorMessage = 'Code-barres non détecté sur le CIN Verso. Veuillez réessayer avec une image plus claire.';
+        identityVerificationModel.backendErrorMessage =
+            'Code-barres non détecté sur le CIN Verso. Veuillez réessayer avec une image plus claire.';
         notifyListeners();
 
         debugPrint('No barcode found in CINV');
@@ -671,9 +769,14 @@ class IdentityVerificationProvider extends ChangeNotifier {
       identityVerificationModel.pieceIdVerifiee = false;
 
       if (identityVerificationModel.enableDocButton != null) {
-        final currentIndex = identityVerificationModel.docManquants?.indexOf('CINV') ?? -1;
+        final currentIndex =
+            identityVerificationModel.docManquants?.indexOf('CINV') ?? -1;
         if (currentIndex >= 0) {
-          for (var i = currentIndex + 1; i < (identityVerificationModel.docManquants?.length ?? 0); i++) {
+          for (
+            var i = currentIndex + 1;
+            i < (identityVerificationModel.docManquants?.length ?? 0);
+            i++
+          ) {
             final docCode = identityVerificationModel.docManquants![i];
             identityVerificationModel.enableDocButton![docCode] = false;
           }
@@ -681,7 +784,8 @@ class IdentityVerificationProvider extends ChangeNotifier {
       }
 
       identityVerificationModel.backendError = true;
-      identityVerificationModel.backendErrorMessage = 'Erreur lors de la lecture du code-barres. Veuillez réessayer.';
+      identityVerificationModel.backendErrorMessage =
+          'Erreur lors de la lecture du code-barres. Veuillez réessayer.';
       notifyListeners();
     }
   }
@@ -698,7 +802,7 @@ class IdentityVerificationProvider extends ChangeNotifier {
     try {
       // Use the original backend endpoint from login_store.dart
       final response = await http.get(
-        Uri.parse('http://${BACKEND_SERVER}:8081/docInNiveauCompte/'),
+        Uri.parse('http://${backendServer}:8081/docInNiveauCompte/'),
       );
 
       if (response.statusCode <= 206 && response.contentLength! > 0) {
@@ -708,70 +812,114 @@ class IdentityVerificationProvider extends ChangeNotifier {
         List<dynamic>? filtredDocInNivComptes = [];
         if (signataireEtTitulaire) {
           filtredDocInNivComptes = docInNivComptes
-              ?.where((e) =>
-                  e['niveauCompte']['niveauCompteDsg'] == niveau &&
-                  e['docIn']['docInBoolLignePpTituSign'] != 'N' &&
-                  e['operation']['operationCode'] == CODE_OPERATION_NOUVELLE_COMPTE)
+              ?.where(
+                (e) =>
+                    e['niveauCompte']['niveauCompteDsg'] == niveau &&
+                    e['docIn']['docInBoolLignePpTituSign'] != 'N' &&
+                    e['operation']['operationCode'] ==
+                        CODE_OPERATION_NOUVELLE_COMPTE,
+              )
               .toList();
         } else if (!pp) {
           filtredDocInNivComptes = docInNivComptes
-              ?.where((e) =>
-                  e['niveauCompte']['niveauCompteDsg'] == niveau &&
-                  e['docIn']['docInBoolLignePmTitu'] != 'N' &&
-                  e['operation']['operationCode'] == CODE_OPERATION_NOUVELLE_COMPTE)
+              ?.where(
+                (e) =>
+                    e['niveauCompte']['niveauCompteDsg'] == niveau &&
+                    e['docIn']['docInBoolLignePmTitu'] != 'N' &&
+                    e['operation']['operationCode'] ==
+                        CODE_OPERATION_NOUVELLE_COMPTE,
+              )
               .toList();
         } else {
           filtredDocInNivComptes = docInNivComptes
-              ?.where((e) =>
-                  e['niveauCompte']['niveauCompteDsg'] == niveau &&
-                  e['docIn']['docInBoolLignePpMand'] != 'N' &&
-                  e['operation']['operationCode'] == CODE_OPERATION_NOUVELLE_COMPTE)
+              ?.where(
+                (e) =>
+                    e['niveauCompte']['niveauCompteDsg'] == niveau &&
+                    e['docIn']['docInBoolLignePpTituOnly'] != 'N' &&
+                    e['operation']['operationCode'] ==
+                        CODE_OPERATION_NOUVELLE_COMPTE,
+              )
               .toList();
         }
 
-        debugPrint('filtredDocInNivComptes: ${filtredDocInNivComptes?.map((e) => e['docIn']['docInCode']).toList()}');
+        debugPrint(
+          'filtredDocInNivComptes: ${filtredDocInNivComptes?.map((e) => e['docIn']['docInCode']).toList()}',
+        );
 
         // Convert to DocumentRequis format and filter out SIGN documents
         List<DocumentRequis> docsRequis = filtredDocInNivComptes!
             .map((e) => DocumentRequis.fromJson(e['docIn']))
             .toList();
-       // docsRequis.removeWhere((e) => e.docInCode == 'SIGN');
-       debugPrint('docsRequis before sorting: ${docsRequis.map((d) => '${d.docInCode}: pieceIdentite=${d.pieceIdentite?.pieceIdentiteCode}').toList()}');
-       docsRequis.sort((a, b) {
-             if (a.docInCode == 'SIGN' && b.docInCode != 'SIGN') return 1;
-             if (a.docInCode != 'SIGN' && b.docInCode == 'SIGN') return -1;
-             return 0; // Keep original order for others
-        });
-        debugPrint('docsRequis after sorting: ${docsRequis.map((d) => d.docInCode).toList()}');
+        // docsRequis.removeWhere((e) => e.docInCode == 'SIGN');
+        debugPrint(
+          'docsRequis before sorting: ${docsRequis.map((d) => '${d.docInCode}: pieceIdentite=${d.pieceIdentite?.pieceIdentiteCode}').toList()}',
+        );
+        //  docsRequis.sort((a, b) {
+        //        if (a.docInCode == 'SIGN' && b.docInCode != 'SIGN') return 1;
+        //        if (a.docInCode != 'SIGN' && b.docInCode == 'SIGN') return -1;
+        //        return 0; // Keep original order for others
+        //   });
+        docsRequis.sort((a, b) {
+          if (a.pieceIdentite != null && b.pieceIdentite == null) return -1;
+          if (a.pieceIdentite == null && b.pieceIdentite != null) return 1;
 
-        debugPrint('Loaded ${docsRequis.length} documents from backend before piece type filtering');
-        debugPrint('Selected piece type: ${identityVerificationModel.selectedPieceType}');
-        debugPrint('Documents before filtering: ${docsRequis.map((d) => '${d.docInCode}: pieceIdentite=${d.pieceIdentite?.pieceIdentiteCode}, boolTypePieceIdent=${d.docInBoolTypePieceIdent}').toList()}');
+          if (a.docInCode == 'SIGN' && b.docInCode != 'SIGN') return 1;
+          if (a.docInCode != 'SIGN' && b.docInCode == 'SIGN') return -1;
+
+          return 0; // keep original order for others
+        });
+        debugPrint(
+          'docsRequis after sorting: ${docsRequis.map((d) => d.docInCode).toList()}',
+        );
+
+        debugPrint(
+          'Loaded ${docsRequis.length} documents from backend before piece type filtering',
+        );
+        debugPrint(
+          'Selected piece type: ${identityVerificationModel.selectedPieceType}',
+        );
+        debugPrint(
+          'Documents before filtering: ${docsRequis.map((d) => '${d.docInCode}: pieceIdentite=${d.pieceIdentite?.pieceIdentiteCode}, boolTypePieceIdent=${d.docInBoolTypePieceIdent}').toList()}',
+        );
 
         // Apply piece type filtering if a piece type is selected
         if (identityVerificationModel.selectedPieceType != null) {
-          docsRequis = _applyPieceTypeFilter(docsRequis, identityVerificationModel.selectedPieceType!);
+          docsRequis = _applyPieceTypeFilter(
+            docsRequis,
+            identityVerificationModel.selectedPieceType!,
+          );
         }
 
-        debugPrint('Loaded ${docsRequis.length} documents from backend (after piece type filtering)');
-        debugPrint('Documents after filtering: ${docsRequis.map((d) => d.docInCode).toList()}');
+        debugPrint(
+          'Loaded ${docsRequis.length} documents from backend (after piece type filtering)',
+        );
+        debugPrint(
+          'Documents after filtering: ${docsRequis.map((d) => d.docInCode).toList()}',
+        );
         return docsRequis;
       } else {
-        debugPrint('Backend returned status ${response.statusCode} with no content');
+        debugPrint(
+          'Backend returned status ${response.statusCode} with no content',
+        );
         throw Exception('Backend returned status ${response.statusCode}');
       }
     } catch (e) {
       debugPrint('Error calling backend API: $e');
       // Set backend error flag for UI notification
       identityVerificationModel.backendError = true;
-      identityVerificationModel.backendErrorMessage = 'Impossible de contacter le serveur. Utilisation des documents par défaut.';
+      identityVerificationModel.backendErrorMessage =
+          'Impossible de contacter le serveur. Utilisation des documents par défaut.';
       // Return default documents based on business rules when backend is unavailable
       return _getDefaultDocuments(signataireEtTitulaire, niveau, pp);
     }
   }
 
   // Default document logic based on business rules from login_store.dart
-  List<DocumentRequis> _getDefaultDocuments(bool signataireEtTitulaire, String niveau, bool pp) {
+  List<DocumentRequis> _getDefaultDocuments(
+    bool signataireEtTitulaire,
+    String niveau,
+    bool pp,
+  ) {
     // Match the original fallback logic from login_store.dart
     // which returns ['CINR', 'CINV', 'SELFIE'] for physical persons
 
@@ -779,53 +927,76 @@ class IdentityVerificationProvider extends ChangeNotifier {
 
     // For physical persons (pp = true), return the standard documents
     if (pp) {
-      documents.add(DocumentRequis(
-        docInCode: DOC_CINR,
-        docInLibelle: 'Carte d\'Identité Nationale Recto',
-        obligatoire: true,
-      ));
+      documents.add(
+        DocumentRequis(
+          docInCode: DOC_CINR,
+          docInLibelle: 'Carte d\'Identité Nationale Recto',
+          obligatoire: true,
+        ),
+      );
 
-      documents.add(DocumentRequis(
-        docInCode: DOC_CINV,
-        docInLibelle: 'Carte d\'Identité Nationale Verso',
-        obligatoire: true,
-      ));
+      documents.add(
+        DocumentRequis(
+          docInCode: DOC_CINV,
+          docInLibelle: 'Carte d\'Identité Nationale Verso',
+          obligatoire: true,
+        ),
+      );
 
-      documents.add(DocumentRequis(
-        docInCode: DOC_SELFIE,
-        docInLibelle: 'Selfie',
-        obligatoire: true,
-      ));
+      documents.add(
+        DocumentRequis(
+          docInCode: DOC_SELFIE,
+          docInLibelle: 'Selfie',
+          obligatoire: true,
+        ),
+      );
     } else {
       // For legal entities, return passport and selfie
-      documents.add(DocumentRequis(
-        docInCode: DOC_PASSPORT,
-        docInLibelle: 'Passeport',
-        obligatoire: true,
-      ));
+      documents.add(
+        DocumentRequis(
+          docInCode: DOC_PASSPORT,
+          docInLibelle: 'Passeport',
+          obligatoire: true,
+        ),
+      );
 
-      documents.add(DocumentRequis(
-        docInCode: DOC_SELFIE,
-        docInLibelle: 'Selfie',
-        obligatoire: true,
-      ));
+      documents.add(
+        DocumentRequis(
+          docInCode: DOC_SELFIE,
+          docInLibelle: 'Selfie',
+          obligatoire: true,
+        ),
+      );
     }
 
-    debugPrint('Using default documents: ${documents.map((d) => d.docInCode).toList()}');
+    debugPrint(
+      'Using default documents: ${documents.map((d) => d.docInCode).toList()}',
+    );
     return documents;
   }
 
   // Apply piece type filtering logic from the old version
   // Only show SIGN, SELFIE and documents that match the selected piece type
-  List<DocumentRequis> _applyPieceTypeFilter(List<DocumentRequis> documents, String selectedPieceType) {
-    debugPrint('_applyPieceTypeFilter input: ${documents.map((d) => '${d.docInCode}: pieceIdentite=${d.pieceIdentite?.pieceIdentiteCode}, boolType=${d.docInBoolTypePieceIdent}').toList()}');
-    final filtered = documents.where((doc) =>
-        doc != null &&
-        (doc.docInCode == 'SIGN' || doc.docInCode == 'SELFIE' ||
-         (doc.pieceIdentite != null &&
-          doc.pieceIdentite?.pieceIdentiteCode == selectedPieceType))
-    ).toList();
-    debugPrint('_applyPieceTypeFilter output: ${filtered.map((d) => d.docInCode).toList()}');
+  List<DocumentRequis> _applyPieceTypeFilter(
+    List<DocumentRequis> documents,
+    String selectedPieceType,
+  ) {
+    debugPrint(
+      '_applyPieceTypeFilter input: ${documents.map((d) => '${d.docInCode}: pieceIdentite=${d.pieceIdentite?.pieceIdentiteCode}, boolType=${d.docInBoolTypePieceIdent}').toList()}',
+    );
+    final filtered = documents
+        .where(
+          (doc) =>
+              doc != null &&
+              (doc.docInCode == 'SIGN' || doc.docInCode == 'SELFIE' ||   doc.pieceIdentite == null ||
+                  (doc.pieceIdentite != null &&
+                      doc.pieceIdentite?.pieceIdentiteCode ==
+                          selectedPieceType)),
+        )
+        .toList();
+    debugPrint(
+      '_applyPieceTypeFilter output: ${filtered.map((d) => d.docInCode).toList()}',
+    );
     return filtered;
   }
 
@@ -844,12 +1015,17 @@ class IdentityVerificationProvider extends ChangeNotifier {
 
   // Check if piece type selection is needed
   bool get requiresPieceTypeSelection {
-    return identityVerificationModel.documentsRequis?.any((doc) =>
-        doc.docInBoolTypePieceIdent == 'O' && doc.pieceIdentite != null) ?? false;
+    return identityVerificationModel.documentsRequis?.any(
+          (doc) =>
+              doc.docInBoolTypePieceIdent == 'O' && doc.pieceIdentite != null,
+        ) ??
+        false;
   }
 
   bool get allDocumentsCaptured {
-    bool allImagesCaptured = identityVerificationModel.tituimages?.every((image) => image != null) ?? false;
+    bool allImagesCaptured =
+        identityVerificationModel.tituimages?.every((image) => image != null) ??
+        false;
 
     // For CIN documents, also require CIN validation to pass
     if (identityVerificationModel.docManquants?.contains('CINR') ?? false) {
@@ -885,27 +1061,56 @@ class IdentityVerificationProvider extends ChangeNotifier {
 
   void navigateToNextScreen(BuildContext context) async {
     if (allDocumentsCaptured) {
-      // Save document data and validation results to SharedPreferences
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setStringList('identity_document_images', identityVerificationModel.tituimages?.where((path) => path != null).cast<String>().toList() ?? []);
-      await prefs.setString('identity_cinr', identityVerificationModel.cinr ?? '');
-      await prefs.setBool('identity_piece_id_verifiee', identityVerificationModel.pieceIdVerifiee ?? false);
-      await prefs.setString('identity_selected_piece_type', identityVerificationModel.selectedPieceType ?? '');
+      // Use DocumentManager to store documents with their codes
+      if (identityVerificationModel.docManquants != null &&
+          identityVerificationModel.tituimages != null) {
+        await DocumentManager.storeDocumentsWithCodes(
+          identityVerificationModel.tituimages!,
+          identityVerificationModel.docManquants!,
+          prefix:
+              'titu', // Use 'titu' prefix to separate from mandataire documents
+        );
+      }
 
-      NavigatorService.pushNamed(AppRoutes.accountRecoveryScreen);
+      // Save other identity verification data to SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+        'identity_cinr',
+        identityVerificationModel.cinr ?? '',
+      );
+      await prefs.setBool(
+        'identity_piece_id_verifiee',
+        identityVerificationModel.pieceIdVerifiee ?? false,
+      );
+      await prefs.setString(
+        'identity_selected_piece_type',
+        identityVerificationModel.selectedPieceType ?? '',
+      );
+
+      String? selectedAccountType = prefs.getString(
+        'personal_selected_account_type',
+      );
+
+      if (selectedAccountType == AccountType.titulaireEtSignataire.toString()) {
+        NavigatorService.pushNamed(AppRoutes.accountRecoveryScreen);
+      } else if (selectedAccountType == AccountType.titulaire.toString()) {
+        NavigatorService.pushNamed(AppRoutes.personalInformationsMandScreen);
+      }
     } else {
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Veuillez capturer tous les documents requis')),
+        const SnackBar(
+          content: Text('Veuillez capturer tous les documents requis'),
+        ),
       );
     }
   }
 
-
   // Add document filtering method based on selected piece type
   // This implements the same logic as wallet11_page.dart lines 1278-1289
   void filterDocumentsByPieceType(String? selectedValueTypePiece) {
-    if (selectedValueTypePiece == null || identityVerificationModel.documentsRequis == null) {
+    if (selectedValueTypePiece == null ||
+        identityVerificationModel.documentsRequis == null) {
       return;
     }
 
@@ -919,26 +1124,36 @@ class IdentityVerificationProvider extends ChangeNotifier {
     //     doc.pieceIdentite == null))
     // .toList();
 
-    final filteredDocs = identityVerificationModel.documentsRequis!.where((doc) =>
-        doc != null &&
-        ((doc.docInBoolTypePieceIdent == 'O' &&
-            doc.pieceIdentite != null &&
-            doc.pieceIdentite?.pieceIdentiteCode == selectedValueTypePiece) ||
-        doc.pieceIdentite == null)
-    ).toList();
+    final filteredDocs = identityVerificationModel.documentsRequis!
+        .where(
+          (doc) =>
+              doc != null &&
+              ((doc.docInBoolTypePieceIdent == 'O' &&
+                      doc.pieceIdentite != null &&
+                      doc.pieceIdentite?.pieceIdentiteCode ==
+                          selectedValueTypePiece) ||
+                  doc.pieceIdentite == null),
+        )
+        .toList();
 
     // Update the model with filtered documents
     identityVerificationModel.documentsRequis = filteredDocs;
-    identityVerificationModel.docManquants = filteredDocs.map((doc) => doc.docInCode ?? '').toList();
+    identityVerificationModel.docManquants = filteredDocs
+        .map((doc) => doc.docInCode ?? '')
+        .toList();
 
     // Reset image capture state for filtered documents
-    identityVerificationModel.tituimages = List.filled(filteredDocs.length, null);
+    identityVerificationModel.tituimages = List.filled(
+      filteredDocs.length,
+      null,
+    );
 
     // Reset button states - only first document is enabled
     identityVerificationModel.enableDocButton = {};
     for (var i = 0; i < filteredDocs.length; i++) {
       final docCode = filteredDocs[i].docInCode ?? '';
-      identityVerificationModel.enableDocButton![docCode] = (i == 0); // Only first document enabled
+      identityVerificationModel.enableDocButton![docCode] =
+          (i == 0); // Only first document enabled
     }
 
     // Reset disable flags
@@ -953,16 +1168,21 @@ class IdentityVerificationProvider extends ChangeNotifier {
   // Mimic checkLogoAndFlag from old wallet11_page.dart login_store.dart
   Future<bool?> checkLogoAndFlag(String imagePath) async {
     try {
-      var url = Uri.parse("http://${BACKEND_SERVER}:5000/");
+      var url = Uri.parse("http://${backendServer}:5000/");
 
       var request = http.MultipartRequest('POST', url);
 
-      request.files.add(await http.MultipartFile.fromPath(
-          'sampleImage', imagePath,
-          contentType: MediaType('image', 'jpeg')));
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'sampleImage',
+          imagePath,
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      );
 
-      request.headers
-          .addEntries(<String, String>{'enctype': 'multipart/form-data'}.entries);
+      request.headers.addEntries(
+        <String, String>{'enctype': 'multipart/form-data'}.entries,
+      );
 
       var sendRequest = await request.send();
       var response = await http.Response.fromStream(sendRequest);

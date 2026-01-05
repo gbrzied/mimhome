@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../core/app_export.dart';
-import '../../widgets/custom_image_view.dart';
-import 'package:millime/theme/theme_helper.dart';
+import '../../core/utils/translation_constants.dart';
+import '../../providers/app_language_provider.dart';
 
 // --- Le fichier principal, par exemple, settings_screen.dart ---
 
-class MillimeSettings extends StatelessWidget {
+class MillimeSettings extends StatefulWidget {
    const MillimeSettings({super.key});
 
    static Widget builder(BuildContext context) {
@@ -13,108 +13,113 @@ class MillimeSettings extends StatelessWidget {
    }
 
    @override
-  Widget build(BuildContext context) {
+  State<MillimeSettings> createState() => _MillimeSettingsState();
+}
 
+class _MillimeSettingsState extends State<MillimeSettings> {
+  bool _isLanguageMenuExpanded = false;
+
+   @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          // Background overlay with gradient
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF6BA8B8).withAlpha(204),
-                    Color(0xFF9BC4CC).withAlpha(153),
-                    appTheme.whiteCustom.withAlpha(77),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          // Settings panel
-          Positioned(
-            top: 30,
-            left: 0,
-            child: Container(
-              width: 289,
-              height: 768,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(15),
-                  bottomRight: Radius.circular(15),
-                ),
-              ),
-              child: Column(
-                children: [
-                  // La AppBar customisée
-                  Container(
-                    height: 150.0,
-                    color: appTheme.primaryColor, // La couleur de fond de l'en-tête
-                    padding: const EdgeInsets.only(top: 40.0, left: 16.0, bottom: 20.0),
-                    alignment: Alignment.center,
-                    child: _buildLogoSection(),
-                  ),
-
-                  // Le corps de la page (la liste des options)
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      children: [
-                        // 1. FAQ
-                        CustomSettingsTile(
-                          icon: ImageConstant.imgFaq,
-                          title: 'FAQ',
-                          subtitle: 'Questions fréquentes',
-                          showChevron: false,
-                        ),
-
-                        // 2. Assistance
-                         CustomSettingsTile(
-                          icon: ImageConstant.imgAssistance,
-                          title: 'Assistance',
-                          subtitle: 'Support Client',
-                          showChevron: false,
-                        ),
-
-                        // 3. À propos
-                         CustomSettingsTile(
-                          icon: ImageConstant.imgApropos,
-                          title: 'A propos',
-                          subtitle: 'à propos de l\'application',
-                          showChevron: false,
-                        ),
-
-                        // 4. Langue
-                         CustomSettingsTile(
-                          icon: ImageConstant.imgLangue,
-                          title: 'Langue',
-                          subtitle: 'Français',
-                          showChevron: true,
-                        ),
-
-                        // 5. Mode (avec Switch)
-                         CustomSettingsTile(
-                          icon: ImageConstant.imgLight,
-                          title: 'Mode',
-                          subtitle: 'Activer le mode de nuit',
-                          isToggle: true,
-                          
-                          initialToggleValue: false, // L'état initial du switch
-                        ),
+      body: Consumer<AppLanguageProvider>(
+        builder: (context, appLanguageProvider, child) {
+          return Stack(
+            children: [
+              // Background overlay with gradient
+              GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xFF6BA8B8).withAlpha(204),
+                        Color(0xFF9BC4CC).withAlpha(153),
+                        appTheme.whiteCustom.withAlpha(77),
                       ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ],
+              // Settings panel
+              Positioned(
+                top: 30,
+                left: 0,
+                child: Container(
+                  width: 289,
+                  height: 768,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(15),
+                      bottomRight: Radius.circular(15),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      // La AppBar customisée
+                      Container(
+                        height: 150.0,
+                        color: appTheme.primaryColor, // La couleur de fond de l'en-tête
+                        padding: const EdgeInsets.only(top: 40.0, left: 16.0, bottom: 20.0),
+                        alignment: Alignment.center,
+                        child: _buildLogoSection(),
+                      ),
+
+                      // Le corps de la page (la liste des options)
+                      Expanded(
+                        child: ListView(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          children: [
+                            // 1. FAQ
+                            CustomSettingsTile(
+                              icon: ImageConstant.imgFaq,
+                              title: 'FAQ',
+                              subtitle: 'Questions fréquentes',
+                              showChevron: false,
+                            ),
+
+                            // 2. Assistance
+                             CustomSettingsTile(
+                              icon: ImageConstant.imgAssistance,
+                              title: 'Assistance',
+                              subtitle: 'Support Client',
+                              showChevron: false,
+                            ),
+
+                            // 3. À propos
+                             CustomSettingsTile(
+                              icon: ImageConstant.imgApropos,
+                              title: 'A propos',
+                              subtitle: 'à propos de l\'application',
+                              showChevron: false,
+                            ),
+
+                            // 4. Langue (avec sous-menu collapsible)
+                            _buildCollapsibleLanguageTile(context, appLanguageProvider),
+
+                            // 5. Mode (avec Switch)
+                             CustomSettingsTile(
+                              icon: ImageConstant.imgLight,
+                              title: 'Mode',
+                              subtitle: 'Activer le mode de nuit',
+                              isToggle: true,
+                              
+                              initialToggleValue: false, // L'état initial du switch
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -139,6 +144,231 @@ class MillimeSettings extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Get current language display name
+  String _getCurrentLanguageName() {
+    // Use the appLanguageProvider to get the current language display name
+    return context.read<AppLanguageProvider>().currentLanguageDisplayName;
+  }
+
+  /// Build collapsible language tile with submenu
+  Widget _buildCollapsibleLanguageTile(BuildContext context, AppLanguageProvider appLanguageProvider) {
+    return Column(
+      children: [
+        // Main Language Menu Item
+        ListTile(
+          leading: Container(
+            width: 42,
+            height: 40,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: appTheme.overlayDark,
+            ),
+            child: Center(
+              child: CustomImageView(
+                imagePath: ImageConstant.imgLangue,
+                height: 24,
+                width: 24,
+                color: appTheme.primaryColor,
+              ),
+            ),
+          ),
+          title: Text(
+            'Langue',
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 16.0,
+            ),
+          ),
+          subtitle: Text(
+            _getCurrentLanguageName(),
+            style: const TextStyle(
+              color: Colors.black45,
+            ),
+          ),
+          trailing: AnimatedRotation(
+            turns: _isLanguageMenuExpanded ? 0.5 : 0.0,
+            duration: const Duration(milliseconds: 200),
+            child: const Icon(Icons.keyboard_arrow_down, color: Colors.black45),
+          ),
+          onTap: () {
+            setState(() {
+              _isLanguageMenuExpanded = !_isLanguageMenuExpanded;
+            });
+          },
+        ),
+        
+        // Animated Language Options Submenu
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          height: _isLanguageMenuExpanded ? null : 0,
+          child: ClipRect(
+            child: Offstage(
+              offstage: !_isLanguageMenuExpanded,
+              child: Column(
+                children: [
+                  const Divider(height: 1),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 8),
+                        _buildLanguageOption(
+                          context,
+                          languageCode: 'fr',
+                          languageName: 'Français',
+                          languageNameAr: 'الفرنسية',
+                          languageNameEn: 'French',
+                          isSelected: appLanguageProvider.currentLanguage == 'fr',
+                          flag: "🇫🇷",
+                          onTap: () => _changeLanguage(context, 'fr'),
+                        ),
+                        const SizedBox(height: 4),
+                        _buildLanguageOption(
+                          context,
+                          languageCode: 'en',
+                          languageName: 'English',
+                          languageNameAr: 'الإنجليزية',
+                          languageNameEn: 'English',
+                          isSelected: appLanguageProvider.currentLanguage == 'en',
+                             flag: "🇬🇧",
+                          onTap: () => _changeLanguage(context, 'en'),
+                        ),
+                        const SizedBox(height: 4),
+                        _buildLanguageOption(
+                          context,
+                          languageCode: 'ar',
+                          languageName: 'العربية',
+                          languageNameAr: 'العربية',
+                          languageNameEn: 'Arabic',
+                          isSelected: appLanguageProvider.currentLanguage == 'ar',
+                          flag: "🇹🇳",
+                          onTap: () => _changeLanguage(context, 'ar'),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Build language option for submenu
+  Widget _buildLanguageOption(
+    BuildContext context, {
+    required String languageCode,
+    required String languageName,
+    required String languageNameAr,
+    required String languageNameEn,
+    required bool isSelected,
+    required String flag,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.maxFinite,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? appTheme.primaryColor.withValues(alpha: 0.1) : null,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isSelected ? appTheme.primaryColor : Colors.transparent,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: isSelected ? appTheme.primaryColor : appTheme.onSurfaceVariant.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                 flag,
+                //    color: isSelected ? Colors.white : appTheme.onSurfaceVariant,
+                // size: 16,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                _getLanguageDisplayName(languageCode, languageNameAr, languageNameEn),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: isSelected ? appTheme.primaryColor : appTheme.onSurface,
+                ),
+              ),
+            ),
+            if (isSelected)
+              Icon(
+                Icons.check_circle,
+                color: appTheme.primaryColor,
+                size: 20,
+              )
+            else
+              Icon(
+                Icons.radio_button_unchecked,
+                color: appTheme.onSurfaceVariant,
+                size: 20,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Get language display name based on current app language
+  String _getLanguageDisplayName(String languageCode, String languageNameAr, String languageNameEn) {
+    switch (AppTranslations.currentLanguage) {
+      case 'en':
+        return languageNameEn;
+      case 'ar':
+        return languageNameAr;
+      default: // French
+        return languageCode == 'fr' ? 'Français' : languageNameEn;
+    }
+  }
+
+  /// Change language and show confirmation
+  void _changeLanguage(BuildContext context, String languageCode) {
+    final appLanguageProvider = Provider.of<AppLanguageProvider>(context, listen: false);
+    appLanguageProvider.setLanguage(languageCode);
+    
+    // Show confirmation message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(_getLanguageChangeMessage(languageCode)),
+        backgroundColor: appTheme.successColor,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    
+    // Collapse the menu
+    setState(() {
+      _isLanguageMenuExpanded = false;
+    });
+  }
+
+  /// Get language change confirmation message
+  String _getLanguageChangeMessage(String languageCode) {
+    switch (languageCode) {
+      case 'en':
+        return 'Language changed to English successfully';
+      case 'ar':
+        return 'تم تغيير اللغة إلى العربية بنجاح';
+      default: // French
+        return 'Langue changée en français avec succès';
+    }
   }
 }
 
@@ -276,7 +506,7 @@ class _ToggleSettingsTileState extends State<_ToggleSettingsTile> {
             _isOn = newValue;
           });
           // Ici, vous ajouteriez la logique réelle pour changer de mode (ex: ThemeProvider)
-          print('Mode de nuit activé : $newValue');
+          // print('Mode de nuit activé : $newValue');
         },
         activeColor: const Color(0xFF4DB6AC), // Couleur du switch quand actif
       ),
@@ -303,6 +533,12 @@ class _ToggleSettingsTileState extends State<_ToggleSettingsTile> {
 //     return MaterialApp(
 //       title: 'Millime App UI',
 //       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: const MillimeSettingsScreen(),
+//     );
+//   }
+// }
 //         primarySwatch: Colors.blue,
 //       ),
 //       home: const MillimeSettingsScreen(),

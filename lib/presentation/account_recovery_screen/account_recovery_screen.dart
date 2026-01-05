@@ -1,65 +1,49 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:signature/signature.dart';
 import '../../core/app_export.dart';
+import '../../localizationMillime/localization/app_localization.dart';
 
-// Définition de la classe de l'écran (Widget d'état)
 class AccountRecoveryScreen extends StatefulWidget {
   const AccountRecoveryScreen({super.key});
+
+  static Widget builder(BuildContext context) {
+    return const AccountRecoveryScreen();
+  }
 
   @override
   State<AccountRecoveryScreen> createState() => _AccountRecoveryScreenState();
 }
 
 class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
-  // Contrôleurs de texte pour les champs de saisie (pour la gestion des données)
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
-  // Signature controller
-  late SignatureController _signatureController;
-
-  // État pour déterminer si le bouton "Confirmer" doit être activé
   bool _canConfirm = false;
-  
-  // États pour les messages d'erreur de validation
   String? _phoneError;
   String? _emailError;
-  
-  // Stockage des valeurs de référence
   String? _storedPhoneNumber;
   String? _storedEmail;
+  String? _storedRecoveryPhoneNumber;
+  String? _storedRecoveryEmail;
 
   @override
   void initState() {
     super.initState();
-    // Initialize signature controller
-    _signatureController = SignatureController(
-      penStrokeWidth: 3,
-      penColor: Colors.black,
-      exportBackgroundColor: Colors.transparent,
-      exportPenColor: Colors.black,
-    );
-
-    // Charger les valeurs stockées et configurer les écouteurs
     _loadStoredValues();
     _phoneController.addListener(_checkConfirmationStatus);
     _emailController.addListener(_checkConfirmationStatus);
   }
-  
-  // Charger les valeurs stockées dans les préférences
+
   Future<void> _loadStoredValues() async {
     final prefs = await SharedPreferences.getInstance();
     _storedPhoneNumber = prefs.getString('terms_phone_number');
     _storedEmail = prefs.getString('terms_email');
-    
-    // Vérifier la validation initiale
+    _storedRecoveryPhoneNumber = prefs.getString('recovery_phone');
+    _storedRecoveryEmail = prefs.getString('recovery_email');
     _validateInputs();
   }
 
-  // Fonction pour vérifier si au moins un des champs n'est pas vide et valider les entrées
   void _checkConfirmationStatus() {
     _validateInputs();
     
@@ -73,281 +57,290 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
       });
     }
   }
-  
-  // Fonction pour valider les entrées par rapport aux valeurs stockées
+
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(email);
+  }
+
   void _validateInputs() {
     setState(() {
       _phoneError = null;
       _emailError = null;
       
-      // Validation du téléphone
-      if (_phoneController.text.isNotEmpty && _storedPhoneNumber != null) {
-        if (_phoneController.text.trim() == _storedPhoneNumber!.trim()) {
-          _phoneError = 'Le numéro de téléphone doit être différent de celui utilisé dans les conditions générales';
+      // Validation for phone number
+      if (_phoneController.text.isNotEmpty) {
+        // Check if phone number is different from management phone
+        if (_storedPhoneNumber != null && _phoneController.text.trim() == _storedPhoneNumber!.trim()) {
+          _phoneError = 'key_phone_different_from_management'.tr;
         }
+        // Check if phone number is different from existing recovery phone
+        else if (_storedRecoveryPhoneNumber != null && _phoneController.text.trim() == _storedRecoveryPhoneNumber!.trim()) {
+          _phoneError = 'key_phone_different_from_existing'.tr;
+        }
+      } else {
+        _phoneError = 'key_phone_required'.tr;
       }
       
-      // Validation de l'email
-      if (_emailController.text.isNotEmpty && _storedEmail != null) {
-        if (_emailController.text.trim().toLowerCase() == _storedEmail!.trim().toLowerCase()) {
-          _emailError = 'L\'adresse email doit être différente de celle utilisée dans les conditions générales';
+      // Validation for email
+      if (_emailController.text.isNotEmpty) {
+        // Check email format
+        if (!_isValidEmail(_emailController.text)) {
+          _emailError = 'key_email_invalid'.tr;
         }
+        // Check if email is different from management email
+        else if (_storedEmail != null && _emailController.text.trim().toLowerCase() == _storedEmail!.trim().toLowerCase()) {
+          _emailError = 'key_email_different_from_management'.tr;
+        }
+        // Check if email is different from existing recovery email
+        else if (_storedRecoveryEmail != null && _emailController.text.trim().toLowerCase() == _storedRecoveryEmail!.trim().toLowerCase()) {
+          _emailError = 'key_email_different_from_existing'.tr;
+        }
+      } else {
+        _emailError = 'key_email_required'.tr;
       }
     });
   }
 
   @override
   void dispose() {
-    // Nettoyer les contrôleurs lorsqu'ils ne sont plus nécessaires
     _phoneController.dispose();
     _emailController.dispose();
-    _signatureController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Thème de couleur principal (basé sur le bouton bleu/vert foncé)
-    const Color primaryColor = Color(0xFF1E6C7D);
-    // Couleur de fond des boutons désactivés (gris clair)
-    const Color disabledButtonColor = Color(0xFFDCDCDC);
-
-    // Couleur du texte désactivé
-    const Color disabledTextColor = Color(0xFF757575);
-
     return Scaffold(
-      // 1. App Bar personnalisé avec barre de progression
-      appBar: AppBar(
-        // L'icône de retour (la flèche)
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            // Logique de navigation 'Précédent'
-            Navigator.pop(context);
-          },
-        ),
-        // Suppression de l'ombre/élévation
-        elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        title: Row(
-          children: [
-            // Barre de progression (étape 5/5)
-            Expanded(
-              child: LinearProgressIndicator(
-                // La valeur 5/5 = 1.0 (complètement rempli)
-                value: 1.0, 
-                backgroundColor: disabledButtonColor,
-                valueColor: const AlwaysStoppedAnimation<Color>(primaryColor),
-                minHeight: 10,
-                borderRadius: BorderRadius.circular(5),
+      backgroundColor: appTheme.white_A700,
+      appBar: CustomProgressAppBar(
+        currentStep: 5,
+        totalSteps: 5,
+        onBackPressed: () => NavigatorService.goBack(),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 24.h, vertical: 16.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Title
+              Text(
+                "key_account_recovery_title".tr,
+                style: TextStyleHelper.instance.title18SemiBoldQuicksand
+                    .copyWith(height: 1.28),
               ),
-            ),
-            const SizedBox(width: 8),
-            // Indication de l'étape
-            const Text('5/5', style: TextStyle(fontSize: 14)),
-          ],
+              SizedBox(height: 12.h),
+
+              // Description
+              Text(
+                "key_account_recovery_description".tr,
+                style: TextStyleHelper.instance.body12RegularManrope
+                    .copyWith(height: 1.5, color: appTheme.gray_600),
+              ),
+              SizedBox(height: 32.h),
+
+              // Phone Recovery Section
+              Text(
+                "key_tel_recup".tr,
+                style: TextStyleHelper.instance.body12RegularManrope
+                    .copyWith(color: appTheme.onBackground),
+              ),
+              SizedBox(height: 8.h),
+              TextFormField(
+                controller: _phoneController,
+                maxLength: 8,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                keyboardType: TextInputType.phone,
+                style: TextStyleHelper.instance.body12RegularManrope.copyWith(color: appTheme.black_900),
+                decoration: InputDecoration(
+                  hintText: "key_recovery_phone_hint".tr,
+                  hintStyle: TextStyleHelper.instance.body12RegularManrope
+                      .copyWith(color: appTheme.black_900),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 15.h,
+                    horizontal: 16.h,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.h),
+                    borderSide: BorderSide(
+                      color: appTheme.gray_300,
+                      width: 1.h,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.h),
+                    borderSide: BorderSide(
+                      color: appTheme.gray_300,
+                      width: 1.h,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.h),
+                    borderSide: BorderSide(
+                      color: appTheme.primaryColor,
+                      width: 1.h,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.h),
+                    borderSide: BorderSide(
+                      color: appTheme.errorColor,
+                      width: 1.h,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.h),
+                    borderSide: BorderSide(
+                      color: appTheme.errorColor,
+                      width: 1.h,
+                    ),
+                  ),
+                  errorText: _phoneError,
+                  errorMaxLines: 2,
+                  errorStyle: TextStyleHelper.instance.body12RegularManrope
+                      .copyWith(color: appTheme.errorColor),
+                  counterText: '',
+                ),
+              ),
+              SizedBox(height: 24.h),
+
+              // Email Recovery Section
+              Text(
+                "key_email_recup".tr,
+                style: TextStyleHelper.instance.body12RegularManrope
+                    .copyWith(color: appTheme.onBackground),
+              ),
+              SizedBox(height: 8.h),
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                style: TextStyleHelper.instance.body12RegularManrope.copyWith(color: appTheme.black_900),
+                
+                decoration: InputDecoration(
+                  hintText: "key_recovery_email_hint".tr,
+                  hintStyle: TextStyleHelper.instance.body12RegularManrope
+                      .copyWith(color: appTheme.black_900),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 15.h,
+                    horizontal: 16.h,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.h),
+                    borderSide: BorderSide(
+                      color: appTheme.gray_300,
+                      width: 1.h,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.h),
+                    borderSide: BorderSide(
+                      color: appTheme.gray_300,
+                      width: 1.h,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.h),
+                    borderSide: BorderSide(
+                      color: appTheme.primaryColor,
+                      width: 1.h,
+                    ),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.h),
+                    borderSide: BorderSide(
+                      color: appTheme.errorColor,
+                      width: 1.h,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.h),
+                    borderSide: BorderSide(
+                      color: appTheme.errorColor,
+                      width: 1.h,
+                    ),
+                  ),
+                  errorText: _emailError,
+                  errorMaxLines: 2,
+                  errorStyle: TextStyleHelper.instance.body12RegularManrope
+                      .copyWith(color: appTheme.errorColor),
+                ),
+              ),
+              SizedBox(height: 32.h),
+            ],
+          ),
         ),
       ),
-
-      // 2. Corps de l'écran (Titre, description et champs de saisie)
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            // Titre principal
-            const Text(
-              'Récupération du compte',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            // Description
-            const Text(
-              'Entrez vos coordonnées de récupération pour sécuriser l\'accès à votre compte.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(height: 30),
-
-            // --- Champ Téléphone de récupération ---
-            const Text(
-              'Téléphone de récupération',
-              style: TextStyle(fontSize: 14, color: Colors.black),
-            ),
-            const SizedBox(height: 4),
-            TextField(
-              maxLength: 8,
-              controller: _phoneController,
-              keyboardType: TextInputType.phone, // Clavier numérique pour téléphone
-              decoration: InputDecoration(
-                hintText: 'Saisir votre téléphone de récupération',
-                contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                errorText: _phoneError,
-                errorMaxLines: 2,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // --- Champ Email de récupération ---
-            const Text(
-              'Email de récupération',
-              style: TextStyle(fontSize: 14, color: Colors.black),
-            ),
-            const SizedBox(height: 4),
-            TextField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress, // Clavier adapté pour l'email
-              decoration: InputDecoration(
-                hintText: 'Saisir votre email de récupération',
-                contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                errorText: _emailError,
-                errorMaxLines: 2,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Signature section
-            // const Text(
-            //   'Signature',
-            //   style: TextStyle(fontSize: 14, color: Colors.black),
-            // ),
-            // const SizedBox(height: 4),
-            // Container(
-            //   height: 200,
-            //   decoration: BoxDecoration(
-            //     border: Border.all(color: Colors.grey),
-            //     borderRadius: BorderRadius.circular(8.0),
-            //   ),
-            //   child: Signature(
-            //     controller: _signatureController,
-            //     height: 200,
-            //     width: double.infinity,
-            //     backgroundColor: Colors.transparent,
-            //   ),
-            // ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     IconButton(
-            //       icon: const Icon(Icons.undo),
-            //       onPressed: () => _signatureController.undo(),
-            //     ),
-            //     IconButton(
-            //       icon: const Icon(Icons.redo),
-            //       onPressed: () => _signatureController.redo(),
-            //     ),
-            //     IconButton(
-            //       icon: const Icon(Icons.clear),
-            //       onPressed: () => _signatureController.clear(),
-            //     ),
-            //   ],
-            // ),
-
-            // // Espace pour pousser les boutons vers le bas
-            // const Spacer(),
-          ],
-        ),
-      ),
-
-      // 3. Barre de boutons en bas
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 30.0, top: 10.0),
-        // S'assurer qu'il y a un espace sûr en bas (encoche, etc.)
-        child: SafeArea( 
+        padding: EdgeInsets.symmetric(horizontal: 24.h, vertical: 16.h),
+        decoration: BoxDecoration(
+          color: appTheme.white_A700,
+          boxShadow: [
+            BoxShadow(
+              color: appTheme.gray_200.withOpacity(0.5),
+              spreadRadius: 0.h,
+              blurRadius: 10.h,
+              offset: Offset(0, -2.h),
+            ),
+          ],
+        ),
+        child: SafeArea(
           top: false,
           child: Row(
-            children: <Widget>[
-              // Bouton 'Précédent'
+            children: [
+              // Previous Button
               Expanded(
                 child: SizedBox(
-                  height: 50,
+                  height: 48.h,
                   child: OutlinedButton(
-                    onPressed: () {
-                      // Logique 'Précédent'
-                    },
+                    onPressed: () => NavigatorService.goBack(),
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
+                      backgroundColor: appTheme.white_A700,
+                      side: BorderSide(
+                        color: appTheme.primaryColor,
+                        width: 1.h,
                       ),
-                      // Pas de bordure visible pour l'effet de bouton plein
-                      side: BorderSide.none, 
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.h),
+                      ),
                     ),
-                    child: const Text(
-                      'Précédent',
-                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                    child: Text(
+                      'key_precedent'.tr,
+                      style: TextStyleHelper.instance.title16MediumSyne
+                          .copyWith(
+                            height: 1.25,
+                            color: appTheme.primaryColor,
+                          ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: 12.h),
 
-              // Bouton 'Confirmer' (activé/désactivé)
+              // Confirm Button
               Expanded(
                 child: SizedBox(
-                  height: 50,
+                  height: 48.h,
                   child: ElevatedButton(
-                    onPressed: _canConfirm ? () async {
-                      // Check if signature is provided
-                      // if (_signatureController.isEmpty) {
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //     const SnackBar(content: Text('Veuillez signer avant de confirmer')),
-                      //   );
-                      //   return;
-                      // }
-
-                      // Export signature
-                      // final signatureBytes = await _signatureController.toPngBytes();
-                      // if (signatureBytes == null) {
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //     const SnackBar(content: Text('Erreur lors de l\'export de la signature')),
-                      //   );
-                      //   return;
-                      // }
-
-                      // Save signature to file
-                      final dir = await getApplicationDocumentsDirectory();
-                      final signatureFile = File('${dir.path}/signature.png');
-                    //  await signatureFile.writeAsBytes(signatureBytes);
-
-                      // Save recovery phone, email and signature path to SharedPreferences
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      await prefs.setString('recovery_phone', _phoneController.text);
-                      await prefs.setString('recovery_email', _emailController.text);
-                      await prefs.setString('signature_path', signatureFile.path);
-
-                      // Navigate to EnrollmentSuccessScreen
-                      NavigatorService.pushNamed(AppRoutes.finEnrolScreen);
-                    } : null, // null désactive le bouton
+                    onPressed: _canConfirm && _phoneError == null && _emailError == null ? _handleConfirm : null,
                     style: ElevatedButton.styleFrom(
-                      // Couleur de fond selon l'état
-                      backgroundColor: _canConfirm ? disabledButtonColor : disabledButtonColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      // Pas d'ombre
+                      backgroundColor: _canConfirm 
+                          ? appTheme.primaryColor 
+                          : appTheme.gray_300,
                       elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.h),
+                      ),
                     ),
                     child: Text(
-                      'Confirmer',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        // Couleur du texte selon l'état
-                        color: _canConfirm ? Colors.black : disabledTextColor,
-                      ),
+                      'key_confirmer'.tr,
+                      style: TextStyleHelper.instance.title16MediumSyne
+                          .copyWith(
+                            height: 1.25,
+                            color: _canConfirm 
+                                ? appTheme.onPrimary 
+                                : appTheme.gray_600,
+                          ),
                     ),
                   ),
                 ),
@@ -358,21 +351,24 @@ class _AccountRecoveryScreenState extends State<AccountRecoveryScreen> {
       ),
     );
   }
-}
 
-// Widget principal pour l'exécution
-void main() {
-  runApp(const MyApp());
-}
+  Future<void> _handleConfirm() async {
+    try {
+      // Save recovery data to SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('recovery_phone', _phoneController.text.trim());
+      await prefs.setString('recovery_email', _emailController.text.trim());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: AccountRecoveryScreen(),
-    );
+      // Navigate to enrollment success screen
+      NavigatorService.pushNamed(AppRoutes.finEnrolScreen);
+    } catch (e) {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${'key_save_error'.tr}: $e'),
+          backgroundColor: appTheme.errorColor,
+        ),
+      );
+    }
   }
 }

@@ -1,5 +1,9 @@
 export 'package:provider/provider.dart';
 export 'utils/navigator_service.dart';
+export 'utils/document_manager.dart';
+export 'utils/http_client_wrapper.dart' hide AuthException;
+export 'repository/auth_repository.dart';
+export 'provider/auth_provider.dart';
 export '../routes/app_routes.dart';
 export '../theme/theme_helper.dart';
 export '../theme/text_style_helper.dart';

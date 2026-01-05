@@ -15,20 +15,20 @@ class AccountTypeSelectionProvider extends ChangeNotifier {
 
   void initialize() {
     // Set default selection to Individual Person as shown in the design
-    accountTypeSelectionModel.selectedAccountType = AccountType.individual;
+    accountTypeSelectionModel.selectedAccountTypePMPP = AccountTypePMPP.individual;
     notifyListeners();
   }
 
-  void selectAccountType(AccountType accountType) async {
-    accountTypeSelectionModel.selectedAccountType = accountType;
+  void selectAccountTypePMPP(AccountTypePMPP accountType) async {
+    accountTypeSelectionModel.selectedAccountTypePMPP = accountType;
     // Save to shared preferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('selected_account_type', accountType == AccountType.individual ? 'individual' : 'business');
+    await prefs.setString('selected_account_typePPPM', accountType == AccountTypePMPP.business ? 'business' : 'individual');
     notifyListeners();
   }
 
   void navigateToNextScreen(BuildContext context) {
-    if (accountTypeSelectionModel.selectedAccountType != null) {
+    if (accountTypeSelectionModel.selectedAccountTypePMPP != null) {
       // Navigate to the next screen in the account opening flow
       NavigatorService.pushNamed(AppRoutes.accountLevelSelectionScreen);
     } else {
