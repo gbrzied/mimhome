@@ -1,11 +1,11 @@
 {
-    "name": "cible",
-    "short_name": "cible",
+    "name": "Millime",
+    "short_name": "Millime",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",
-    "theme_color": "#1A7B8E",
-    "description": "A new Flutter project.",
+    "theme_color": "#2B6F71",
+    "description": "Millime - Mobile Banking Application",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

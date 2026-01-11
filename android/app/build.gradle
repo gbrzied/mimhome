@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.me"
+    namespace = "com.example.cible"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -19,7 +19,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.me"
+        applicationId = "com.example.cible"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -45,8 +45,15 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22")
     implementation('androidx.multidex:multidex:2.0.1')
     
-    // Basic ML Kit text recognition (Latin script only)
-    implementation('com.google.mlkit:text-recognition:17.0.2')
+    // Add Play Core dependency for Flutter split APK support
+    implementation 'com.google.android.play:core:1.10.3'
+}
+
+// Force androidx.preference version to avoid transform cache bugs
+configurations.all {
+    resolutionStrategy {
+        force('androidx.preference:preference:1.2.0')
+    }
 }
 
 flutter {

@@ -660,6 +660,7 @@ final Map<String, String> frTn = {
 
 "mdp_8_char_min"            :"- contenir au minimum 8 caractères"         ,
 "mdp_1_char_maj"            :"- contenir au moins un caractère majuscule" ,
+  "mdp_1_char_min"            :"- contenir au moins un caractère minuscule" ,
 "mdp_1_char_spec"           :"- contenir au moins un caractère spécial" ,  
 "mdp_1_chiffre"         :"- contenir au moins un chiffre",             
 "mdp_pas_deja_utilise"          :"- pas être déjà utilisé",
@@ -784,8 +785,11 @@ final Map<String, String> frTn = {
   // Login Screen translations
   "key_no_account_question":"Vous n'avez pas de compte ? ",
   "key_register":"s'inscrire",
-  "key_discover_app_question":"Vous voulez découvrir l'application ? ",
+  "key_discover_app_question":"Voulez-vous découvrir l’application ? ",
   "key_discover_app":"Découvrir",
+  "key_no_account_with":"Vous n’avez pas de compte avec ce numéro de téléphone" , 
+
+
 
   // Terms & Conditions Screen translations
   "key_language":"Langue",
@@ -940,7 +944,25 @@ final Map<String, String> frTn = {
   "key_retry": "Réessayer",
   "key_progress_5_of_5": "5/5",
   "key_previous": "Précédent",
-  "key_submit_request": "Soumettre la demande"
+  "key_submit_request": "Soumettre la demande",
+
+  // First Login Password Update Screen
+  "key_first_login_title": "Première connexion",
+  "key_first_login_description": "Vous devez créer un nouveau mot de passe pour accéder à votre compte",
+  "key_new_password": "Nouveau mot de passe",
+  "key_confirm_password": "Confirmer le mot de passe",
+  "key_enter_new_password": "Entrez votre nouveau mot de passe",
+  "key_enter_password_again": "Entrez à nouveau le mot de passe",
+  "key_password_minimum_length": "Le mot de passe doit contenir au moins 8 caractères",
+  "key_passwords_not_match": "Les mots de passe ne correspondent pas",
+  "key_password_requirements": "Le mot de passe doit:",
+  "key_password_updated_success": "Mot de passe mis à jour avec succès",
+  "key_password_update_failed": "Échec de la mise à jour du mot de passe",
+  "key_password_update_title": "Mettre à jour le mot de passe",
+  "key_first_login_error": "Erreur de première connexion",
+  "key_password_empty_error": "Veuillez remplir tous les champs",
+  "key_password_requirements_not_met": "Le mot de passe ne répond pas aux exigences",
+  "key_enter_password": "Entrer votre mot de passe"
 
 };
 

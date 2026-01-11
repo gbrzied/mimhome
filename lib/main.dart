@@ -8,6 +8,7 @@ import 'localizationMillime/localization/app_localization.dart';
 import 'theme/theme_helper.dart';
 import 'routes/app_routes.dart';
 import 'providers/app_language_provider.dart';
+import 'providers/backend_server_provider.dart';
 import 'core/app_export.dart';
 
 // 🚨 CRITICAL: Device orientation lock - DO NOT REMOVE
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => AppLanguageProvider()),
+        ChangeNotifierProvider(create: (context) => BackendServerProvider()),
       ],
       child: Consumer<AppLanguageProvider>(
         builder: (context, appLanguageProvider, child) {

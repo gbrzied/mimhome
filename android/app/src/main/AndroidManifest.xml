@@ -1,4 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+ package="com.example.cible">
+
     <!-- Permissions for file access -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
@@ -10,7 +12,8 @@
     <application
         android:label="Millime"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/launcher_icon"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -20,6 +23,23 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
+            <!-- Enable hardware acceleration for WebView -->
+            <meta-data
+                android:name="android.webkit.WebView.EnableSafeBrowsing"
+                android:value="true" />
+            <meta-data
+                android:name="android.webkit.WebView.MetricsOptOut"
+                android:value="true" />
+            <!-- WebView stability configurations -->
+            <meta-data
+                android:name="android.webkit.WebView.EnableSlowWholeDocumentDraw"
+                android:value="true" />
+            <meta-data
+                android:name="android.webkit.WebView.EnableWebContentsDebugging"
+                android:value="false" />
+            <meta-data
+                android:name="android.webkit.WebView.EnableMemoryOptimization"
+                android:value="true" />
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues

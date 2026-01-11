@@ -1,33 +1,34 @@
-import 'package:millime/presentation/account_level_selection_screen/account_level_selection_screen.dart';
-import 'package:millime/presentation/account_type_selection_screen/account_type_pers_selection_screen.dart';
-import 'package:millime/presentation/bill_payment_selection_screen/bill_payment_selection_screen.dart';
-import 'package:millime/presentation/identity_verification_titu_pp_screen/identity_verification_screen.dart';
-import 'package:millime/presentation/identity_verification_mand_screen/identity_verification_mand_screen.dart';
-import 'package:millime/presentation/identity_verification_pm_screen/identity_verification_pm_screen.dart';
+import 'package:millime/connection/login_pass_pin_screen/login_pass_pin_screen.dart';
+import 'package:millime/enrol/account_level_selection_screen/account_level_selection_screen.dart';
+import 'package:millime/enrol/account_type_selection_screen/account_type_pers_selection_screen.dart';
+import 'package:millime/enrol/bill_payment_selection_screen/bill_payment_selection_screen.dart';
+import 'package:millime/enrol/identity_verification_titu_pp_screen/identity_verification_screen.dart';
+import 'package:millime/enrol/identity_verification_mand_screen/identity_verification_mand_screen.dart';
+import 'package:millime/enrol/identity_verification_pm_screen/identity_verification_pm_screen.dart';
 
-import 'package:millime/presentation/login_screen/login_screen.dart';
-import 'package:millime/presentation/otp_screen/otp_screen.dart';
-import 'package:millime/presentation/wallet_setup_confirmation_screen/wallet_setup_confirmation_screen.dart';
+import 'package:millime/connection/password_update_screen/password_update_screen.dart';
+import 'package:millime/enrol/otp_screen/otp_screen.dart';
+import 'package:millime/enrol/wallet_setup_confirmation_screen/wallet_setup_confirmation_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../presentation/account_dashboard_screen/account_dashboard_screen.dart';
-import '../presentation/accordion_document_screen/terms_conditions_screen.dart';
-import '../presentation/accordion_document_screen/terms_conditions_screen_v2.dart';
-import '../presentation/accordion_document_screen/accordion_document_wrapper_screen.dart';
-import '../presentation/accordion_document_screen/provider/terms_conditions_provider.dart';
-import '../presentation/personal_informations_screen/personal_informations_screen.dart';
-import '../presentation/personal_informations_mand_screen/personal_informations_mand_screen.dart';
-import '../presentation/pm_informations_screen/pm_informations_screen.dart';
+import '../enrol/account_dashboard_screen/account_dashboard_screen.dart';
+import '../enrol/accordion_document_screen/terms_conditions_screen.dart';
+import '../enrol/accordion_document_screen/terms_conditions_screen_v2.dart';
+import '../enrol/accordion_document_screen/accordion_document_wrapper_screen.dart';
+import '../enrol/accordion_document_screen/provider/terms_conditions_provider.dart';
+import '../enrol/personal_informations_screen/personal_informations_screen.dart';
+import '../enrol/personal_informations_mand_screen/personal_informations_mand_screen.dart';
+import '../enrol/pm_informations_screen/pm_informations_screen.dart';
 
 
-import '../presentation/account_recovery_screen/account_recovery_screen.dart';
-import '../presentation/millime_settings/millime_settings.dart';
-import '../presentation/millime_settings/language_selection_screen.dart';
+import '../enrol/account_recovery_screen/account_recovery_screen.dart';
+import '../enrol/millime_settings/millime_settings.dart';
+import '../enrol/millime_settings/language_selection_screen.dart';
 
-import '../presentation/fin_enrol/fin_enrol.dart';
-import '../presentation/onboarding/on_boarding.dart';
+import '../enrol/fin_enrol/fin_enrol.dart';
+import '../enrol/onboarding/on_boarding.dart';
 
-import '../presentation/app_navigation_screen/app_navigation_screen.dart';
+import '../enrol/app_navigation_screen/app_navigation_screen.dart';
 
 class AppRoutes {
   
@@ -64,18 +65,23 @@ class AppRoutes {
 
   static const String accountRecoveryScreen = '/account_recovery_screen';
   static const String loginScreen = '/login_screen';
+  static const String passwordUpdateScreen = '/password_update_screen';
   static const String finEnrolScreen = '/fin_enrol_screen';
   static const String millimeSettingsScreen = '/millime_settings_screen';
   static const String languageSelectionScreen = '/language_selection_screen';
   static const String onboardingScreen = '/onboarding_screen';
+
+  static const String loginPassPinScreen = '/login_pass_pin_screen';
+
   static const String initialRoute = '/';
 
 //account_dashboard_screen  account_opening_screen  app_navigation_screen  bill_payment_selection_screen  wallet_setup_confirmation_screen
 
   static Map<String, WidgetBuilder> get routes => {
       ///onTapScreenTitle: () => onTapDialogTitle(context,  WalletSetupConfirmationScreen.builder(context))
-      ///
-    
+
+
+        loginPassPinScreen: LoginPassPinScreen.builder,
 
         accountTypeSelectionScreen: AccountTypePersSelectionScreen.builder, 
 
@@ -85,8 +91,7 @@ class AppRoutes {
         accountLevelSelectionScreen: AccountLevelSelectionScreen.builder,
 
         appNavigationScreen: AppNavigationScreen.builder,
-        initialRoute: LoginScreen.builder,
-        
+        initialRoute: LoginPassPinScreen.builder,
         //initialRoute: IdentityVerificationScreen.builder,
 
         termsConditionsScreen: TermsConditionsScreen.builder,
@@ -106,12 +111,9 @@ class AppRoutes {
         identityVerificationPmScreen: IdentityVerificationPmScreen.builder, 
 
 
-
-
-
         
         accountRecoveryScreen: (context) => AccountRecoveryScreen(),
-        loginScreen: LoginScreen.builder,
+        passwordUpdateScreen: PasswordUpdateScreen.builder,
         finEnrolScreen: (context) => EnrollmentSuccessScreen(),
         millimeSettingsScreen: MillimeSettings.builder,
         languageSelectionScreen: LanguageSelectionScreen.builder,

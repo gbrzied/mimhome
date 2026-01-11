@@ -94,6 +94,16 @@ class AuthRepository {
         
         return token;
       } else if (response.statusCode == 401) {
+        // Check for first login indicator in response
+        final responseBody = json.decode(response.body);
+        final errorDescription = responseBody['error_description'] ?? '';
+        
+        if (errorDescription.toString().contains('FIRST_LOGIN') || 
+            responseBody['error'] == 'FIRST_LOGIN' ||
+            responseBody['first_login'] == true) {
+          throw AuthException("FIRST_LOGIN", "Première connexion - mise à jour du mot de passe requise");
+        }
+        
         throw AuthException("NOT_AUTHORIZED", "Numéro de téléphone ou mot de passe incorrect");
       } else if (response.statusCode == 400) {
         throw AuthException("NEED_EMAIL_VERIFICATION", "Veuillez vérifier votre adresse email");
@@ -174,6 +184,7 @@ class AuthRepository {
           'notifBySMS': notifyBySMS,
           'notifByMAIL': notifyByEmail
         },
+        requiresAuth: false
       );
 
       if (response.statusCode <= 206) {

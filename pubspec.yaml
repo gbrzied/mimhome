@@ -115,10 +115,10 @@ flutter:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/millime_logo.png"
+  image_path: "assets/images/logo2_launcher.png"
   min_sdk_android: 21
   web:
     generate: true
-    image_path: "assets/images/millime_logo.png"
+    image_path: "assets/images/logo2_launcher.png"
     background_color: "#FFFFFF"
-    theme_color: "#1A7B8E"
+    theme_color: "#2B6F71"

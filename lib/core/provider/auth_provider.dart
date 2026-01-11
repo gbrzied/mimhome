@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:millime/core/build_info.dart';
 import 'package:millime/core/repository/auth_repository.dart';
 import 'package:millime/core/utils/http_client_wrapper.dart';
 import 'package:millime/core/utils/navigator_service.dart';
@@ -8,6 +10,8 @@ import 'package:millime/routes/app_routes.dart';
 /// Authentication Provider for state management using Provider pattern
 class AuthProvider extends ChangeNotifier {
   final AuthRepository _authRepository = AuthRepository.instance;
+
+  late HttpClientWrapper httpClientWrapper;
   
   // Authentication state
   bool _isAuthenticated = false;
@@ -37,9 +41,12 @@ class AuthProvider extends ChangeNotifier {
   String? get authMethod => _authMethod;
   AuthRepository get authRepository => _authRepository;
 
+
+
   /// Initialize authentication provider
   void initialize(String backendServer) {
     _authRepository.initialize(backendServer);
+    httpClientWrapper=new HttpClientWrapper();
     _checkAuthStatus();
     _initializeTokenRefresh();
   }
@@ -62,6 +69,31 @@ class AuthProvider extends ChangeNotifier {
       );
     }
   }
+
+
+  Future<dynamic> getCompteByTelGestionPlus(String tel) async {
+    dynamic compte;
+    try {
+      final response = await httpClientWrapper.getUrl(
+          'http://${backendServer}:8081/compte/telgestplus/' + tel + '/');
+
+      if (response.statusCode <= 206 && response.contentLength! > 0) {
+        compte = jsonDecode(response.body);
+        clearError();
+
+        return compte;
+      } else if (response.statusCode == 422) {
+          return Future.error(response);
+       
+      } 
+
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+
 
   /// Check and refresh token if needed
   Future<void> _checkAndRefreshToken() async {
@@ -172,7 +204,8 @@ class AuthProvider extends ChangeNotifier {
         _currentPassword = password;
         _authMethod = 'password';
         _userAccount = await _authRepository.getAccountByPhoneNumber(phoneNumber);
-        
+        NavigatorService.pushNamedAndRemoveUntil(AppRoutes.accountDashboardScreen);
+
         _startTokenRefreshTimer();
         _setLoading(false);
         notifyListeners();
@@ -184,6 +217,19 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       _setLoading(false);
       if (e is AuthException) {
+        if (e.code == 'NEED_EMAIL_VERIFICATION') {
+          // First login detected - store phone number and redirect to password update screen
+          _currentPhoneNumber = phoneNumber;
+          _setError('Première connexion - mise à jour du mot de passe requise');
+          // Navigate to password update screen after a brief delay, passing phone number
+          Future.delayed(Duration(milliseconds: 777), () {
+            NavigatorService.pushNamed(
+              AppRoutes.passwordUpdateScreen,
+              arguments: {'phoneNumber': phoneNumber},
+            );
+          });
+          return false;
+        }
         _setError(e.message);
       } else {
         _setError('Erreur de connexion');
@@ -235,6 +281,19 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       _setLoading(false);
       if (e is AuthException) {
+        if (e.code == 'FIRST_LOGIN') {
+          // First login detected - store phone number and redirect to password update screen
+          _currentPhoneNumber = phoneNumber;
+          _setError('Première connexion - mise à jour du mot de passe requise');
+          // Navigate to password update screen after a brief delay, passing phone number
+          Future.delayed(Duration(milliseconds: 500), () {
+            NavigatorService.pushNamed(
+              AppRoutes.passwordUpdateScreen,
+              arguments: {'phoneNumber': phoneNumber},
+            );
+          });
+          return false;
+        }
         _setError(e.message);
       } else {
         _setError('Erreur de connexion avec PIN');
@@ -266,46 +325,57 @@ class AuthProvider extends ChangeNotifier {
   }
 
   /// Update password
-  Future<bool> updatePassword(String oldPassword, String newPassword, String confirmPassword) async {
+  Future<bool> updatePassword(String oldPassword, String newPassword, String confirmPassword, {bool isFirstLogin = false, String? phoneNumber}) async {
     try {
       _setLoading(true);
       clearError();
 
       // Validate input
-      if (oldPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
+      if (newPassword.isEmpty || confirmPassword.isEmpty) {
         _setError('Veuillez remplir tous les champs');
+        _setLoading(false);
         return false;
       }
 
       if (newPassword != confirmPassword) {
         _setError('Les mots de passe ne correspondent pas');
+        _setLoading(false);
         return false;
       }
 
       if (newPassword.length < 6) {
         _setError('Le mot de passe doit contenir au moins 6 caractères');
+        _setLoading(false);
         return false;
       }
 
-      if (_currentPhoneNumber == null) {
+      // Use provided phone number for first login, otherwise use stored one
+      final String phoneToUse = isFirstLogin 
+          ? (phoneNumber ?? _currentPhoneNumber ?? '')
+          : (_currentPhoneNumber ?? '');
+      
+      if (phoneToUse.isEmpty) {
         _setError('Numéro de téléphone non disponible');
+        _setLoading(false);
         return false;
       }
 
       // Update password
       final success = await _authRepository.updatePassword(
-        _currentPhoneNumber!,
+        phoneToUse,
         oldPassword,
         newPassword,
       );
 
       if (success) {
         _currentPassword = newPassword;
+        _isAuthenticated = true;
         _setLoading(false);
         notifyListeners();
         return true;
       } else {
         _setError('Échec de la mise à jour du mot de passe');
+        _setLoading(false);
         return false;
       }
     } catch (e) {
@@ -573,5 +643,9 @@ class AuthProvider extends ChangeNotifier {
   void dispose() {
     _stopTokenRefreshTimer();
     super.dispose();
+  }
+
+  void setErrorMessage(String? err) {
+      _errorMessage=err;
   }
 }

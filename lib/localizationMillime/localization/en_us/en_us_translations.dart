@@ -672,7 +672,23 @@ final Map<String, String> enUs = {
   "key_retry": "Retry",
   "key_progress_5_of_5": "5/5",
 
-
-
+  // First login password update translations
+  "key_first_login_title": "First Login",
+  "key_first_login_description": "You must create a new password to access your account",
+  "key_new_password": "New Password",
+  "key_confirm_password": "Confirm Password",
+  "key_password_minimum_length": "Password must contain at least 8 characters",
+  "key_passwords_not_match": "Passwords do not match",
+  "key_password_requirements": "Password must:\n- Contain at least 8 characters\n- Contain at least one uppercase letter\n- Contain at least one digit\n- Contain at least one special character",
+  "key_password_updated_success": "Password updated successfully",
+  "key_password_update_failed": "Password update failed",
+  "key_password_update_title": "Update Password",
+  "key_first_login_error": "First login error",
+  "key_mdp_8_char_min": "At least 8 characters",
+  "key_mdp_1_char_maj": "At least one uppercase letter",
+  "key_mdp_1_chiffre": "At least one digit",
+  "key_mdp_1_char_spec": "At least one special character",
+  "key_enter_password": "Enter password",
+  "key_enter_password_again": "Enter password again",
 
 };
