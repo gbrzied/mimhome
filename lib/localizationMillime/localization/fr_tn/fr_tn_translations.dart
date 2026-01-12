@@ -962,7 +962,8 @@ final Map<String, String> frTn = {
   "key_first_login_error": "Erreur de première connexion",
   "key_password_empty_error": "Veuillez remplir tous les champs",
   "key_password_requirements_not_met": "Le mot de passe ne répond pas aux exigences",
-  "key_enter_password": "Entrer votre mot de passe"
+  "key_enter_password": "Entrer votre mot de passe",
+  "key_forgot_link_pin":"'Avez-vous oublié votre code PIN ?"
 
 };
 

@@ -35,7 +35,7 @@ class WalletSetupConfirmationProvider extends ChangeNotifier {
     Navigator.of(context).pop();
 
     // Navigate to bill payment selection screen
-    NavigatorService.pushNamed(AppRoutes.billPaymentSelectionScreen);
+   // NavigatorService.pushNamed(AppRoutes.billPaymentSelectionScreen);
 
     isLoading = false;
     isDefinePressed = false;
@@ -54,7 +54,7 @@ class WalletSetupConfirmationProvider extends ChangeNotifier {
     Navigator.of(context).pop();
 
     // Navigate to bill payment selection screen
-    NavigatorService.pushNamed(AppRoutes.billPaymentSelectionScreen);
+   // NavigatorService.pushNamed(AppRoutes.billPaymentSelectionScreen);
 
     isLoading = false;
     isKeepPressed = false;

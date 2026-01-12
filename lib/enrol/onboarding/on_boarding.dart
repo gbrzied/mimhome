@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:millime/core/utils/navigator_service.dart';
+import 'package:millime/routes/app_routes.dart';
 import '../../core/utils/image_constant.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -93,6 +95,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     } else {
                       // Action finale - Navigate back to login
                       Navigator.of(context).pop();
+                   NavigatorService.pushNamedAndRemoveUntil(AppRoutes.accountDashboardScreen);
                     }
                   },
                   style: ElevatedButton.styleFrom(

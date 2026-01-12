@@ -204,7 +204,9 @@ class AuthProvider extends ChangeNotifier {
         _currentPassword = password;
         _authMethod = 'password';
         _userAccount = await _authRepository.getAccountByPhoneNumber(phoneNumber);
-        NavigatorService.pushNamedAndRemoveUntil(AppRoutes.accountDashboardScreen);
+               NavigatorService.pushNamedAndRemoveUntil(AppRoutes.onboardingScreen);
+        
+        // NavigatorService.pushNamedAndRemoveUntil(AppRoutes.accountDashboardScreen);
 
         _startTokenRefreshTimer();
         _setLoading(false);

@@ -119,6 +119,13 @@ class LoginPassPinProvider extends ChangeNotifier {
   /// Update PIN and validate
   void updatePin(String pin) {
     _pin = pin;
+    _updateFormValidity();
+    notifyListeners();
+  }
+
+    /// Update PIN and validate
+  void updateAndValidatePin(String pin) {
+    _pin = pin;
     _validatePin();
     _updateFormValidity();
     notifyListeners();
@@ -265,7 +272,9 @@ class LoginPassPinProvider extends ChangeNotifier {
         currentPassword=pin.toString().substring(ID_LENGTH+PIN_LENGTH,pin.length);
  
  if (_pin != accountPin) {
-           authProvider?.setErrorMessage('Code PIN incorrect');
+           authProvider.setErrorMessage('Code PIN incorrect');
+           _pinError = 'Code PIN incorrect';
+           updatePin('');
           notifyListeners();
           debugPrint('LoginPassPinProvider: Incorrect PIN entered');
           return false;

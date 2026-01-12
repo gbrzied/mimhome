@@ -10,6 +10,8 @@ import 'package:millime/connection/password_update_screen/password_update_screen
 import 'package:millime/enrol/otp_screen/otp_screen.dart';
 import 'package:millime/enrol/wallet_setup_confirmation_screen/wallet_setup_confirmation_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:millime/transactions/common/recu/recu_screen.dart';
+import 'package:millime/transactions/common/recu/recu_model.dart';
 import 'package:provider/provider.dart';
 import '../enrol/account_dashboard_screen/account_dashboard_screen.dart';
 import '../enrol/accordion_document_screen/terms_conditions_screen.dart';
@@ -19,6 +21,7 @@ import '../enrol/accordion_document_screen/provider/terms_conditions_provider.da
 import '../enrol/personal_informations_screen/personal_informations_screen.dart';
 import '../enrol/personal_informations_mand_screen/personal_informations_mand_screen.dart';
 import '../enrol/pm_informations_screen/pm_informations_screen.dart';
+import '../transactions/transfert/transfert_screen.dart';
 
 
 import '../enrol/account_recovery_screen/account_recovery_screen.dart';
@@ -53,6 +56,8 @@ class AppRoutes {
 
   static const String billPaymentSelectionScreen = '/bill_payment_selection_screen';
 
+  static const String transferScreen = '/transfer_screen';
+
   static const String walletSetupConfirmationScreen =      '/wallet_setup_confirmation_screen';
   static const String termsConditionsScreen = '/terms_conditions_screen';
   static const String termsConditionsScreenV2 = '/terms_conditions_screen_v2';
@@ -75,17 +80,20 @@ class AppRoutes {
 
   static const String initialRoute = '/';
 
+  static String receiptScreen='/receipt_screen';
+
 //account_dashboard_screen  account_opening_screen  app_navigation_screen  bill_payment_selection_screen  wallet_setup_confirmation_screen
 
   static Map<String, WidgetBuilder> get routes => {
       ///onTapScreenTitle: () => onTapDialogTitle(context,  WalletSetupConfirmationScreen.builder(context))
 
-
         loginPassPinScreen: LoginPassPinScreen.builder,
 
         accountTypeSelectionScreen: AccountTypePersSelectionScreen.builder, 
 
-        billPaymentSelectionScreen: BillPaymentSelectionScreen.builder, 
+        billPaymentSelectionScreen: BillPaymentSelectionScreen.builder,
+
+        transferScreen: TransferScreen.builder,
 
         walletSetupConfirmationScreen: WalletSetupConfirmationScreen.builder,
         accountLevelSelectionScreen: AccountLevelSelectionScreen.builder,
@@ -121,5 +129,6 @@ class AppRoutes {
 
        // accountOpeningPage: (context) => AccountOpeningPage(),
         accountDashboardScreen: AccountDashboardScreen.builder,
+        receiptScreen: (context) => ReceiptPage(data: ModalRoute.of(context)!.settings.arguments as ReceiptModel),
       };
 }

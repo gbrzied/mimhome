@@ -113,8 +113,10 @@ class AccountDashboardProvider extends ChangeNotifier {
 
   void onServiceItemTap(ServiceItemModel serviceItem) {
     // Handle service item tap
-
-        NavigatorService.pushNamed(AppRoutes.billPaymentSelectionScreen);
+    if (serviceItem.title == 'Transfert') {
+      NavigatorService.pushNamed(AppRoutes.transferScreen);
+    }
+    //  NavigatorService.pushNamed(AppRoutes.billPaymentSelectionScreen);
 
     notifyListeners();
   }
@@ -126,6 +128,8 @@ class AccountDashboardProvider extends ChangeNotifier {
 
   void onBillsServicesPressed() {
     // Handle bills & services press
+      // Navigate to bill payment selection screen
+    NavigatorService.pushNamed(AppRoutes.billPaymentSelectionScreen);
     notifyListeners();
   }
 

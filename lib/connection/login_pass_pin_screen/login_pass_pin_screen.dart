@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:millime/connection/login_pass_pin_screen/provider/login_pass_pin_provider.dart';
 import 'package:millime/core/app_export.dart';
+import 'package:millime/localizationMillime/localization/app_localization.dart';
 import 'package:millime/widgets/custom_text_form_field.dart';
 
 /// Responsive design constants based on Figma design (375x812)
@@ -40,20 +41,39 @@ class _LoginPassPinScreenState extends State<LoginPassPinScreen> {
 
 
   void _onKeypadTap(String value) {
+    debugPrint('Keypad Tap: $value, Current PIN: "$_pin"');
+              _provider?.clearErrors();
+
     setState(() {
       if (value == 'X') {
-        if (_pin.isNotEmpty) _pin = _pin.substring(0, _pin.length - 1);
+        if (_pin.isNotEmpty) {
+          _pin = _pin.substring(0, _pin.length - 1);
+          debugPrint('Backspace: PIN is now: "$_pin"');
+        }
       } else if (value == '✓') {
         // PIN validation
         debugPrint('LoginPassPinProvider: Attempting PIN login for phone: ${_provider ?? value}');
+        debugPrint('Submitting PIN: "$_pin"');
+    _provider?.updateAndValidatePin(_pin);
 
         _provider?.handleLogin(context);
+        _pin='';
         debugPrint('PIN Validated: $_pin (PIN auth to be implemented)');
       } else {
-        if (_pin.length < 6) _pin += value;
+        if (_pin.length < 6) {
+          _pin += value;
+          debugPrint('Added digit: PIN is now: "$_pin"');
+          _provider?.clearErrors();
+        }
       }
     });
+    debugPrint('Updating provider with PIN: "$_pin"');
     _provider?.updatePin(_pin);
+    
+    // Force UI rebuild to ensure error state is reflected immediately
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -62,7 +82,7 @@ class _LoginPassPinScreenState extends State<LoginPassPinScreen> {
     _passwordController.dispose();
     super.dispose();
   }
-
+late List<String> keys;
 LoginPassPinProvider? _provider;
   @override
   void initState() {
@@ -71,6 +91,7 @@ LoginPassPinProvider? _provider;
       _provider = context.read<LoginPassPinProvider>();
       _provider?.setAuthMode("password");
       _provider?.initialize();
+     keys = shuffleExceptIndices(keys1, [9, 11]); // Keep '0' and '✓' in place
     });
   }
 
@@ -167,8 +188,11 @@ LoginPassPinProvider? _provider;
       children: [
 
         _buildPhoneTextField(provider),
-        // if (provider.errorMessage != null && provider.errorMessage!.isNotEmpty)
-        //   _buildErrorMessage(provider),
+        if (!(provider.bAccountExists ??true) && provider.errorMessage != null && provider.errorMessage!.isNotEmpty)
+        SizedBox(height:10),
+
+        if (!(provider.bAccountExists ??true) && provider.errorMessage != null && provider.errorMessage!.isNotEmpty)
+          _buildErrorMessage(provider,big:true,maxLines:2),
       ],
     );
   }
@@ -177,6 +201,7 @@ LoginPassPinProvider? _provider;
   Widget _buildPhoneTextField(LoginPassPinProvider provider) {
     return Focus(
   onFocusChange: (hasfocus) async {
+            provider.clearErrors();
             if (!hasfocus) {
               String userTel = _phoneController.text;
               bool bUpdatePassActions = false;
@@ -199,7 +224,7 @@ LoginPassPinProvider? _provider;
           color: appTheme.onBackground,
           fontSize: 14.fSize,
         ),
-        hintText: 'Entrez votre numéro de téléphone',
+        hintText: "key_entrer_num_tel".tr,
         hintStyle: TextStyleHelper.instance.body14RegularSyne.copyWith(
           color: appTheme.onSurfaceVariant,
           fontSize: 14.fSize,
@@ -265,7 +290,7 @@ LoginPassPinProvider? _provider;
   }
 
   /// Error message display
-  Widget _buildErrorMessage(LoginPassPinProvider provider) {
+  Widget _buildErrorMessage(LoginPassPinProvider provider , {bool big = false,int maxLines =1}) {
     final errorMessage = provider.errorMessage;
     if (errorMessage == null || errorMessage.isEmpty) {
       return const SizedBox.shrink();
@@ -275,11 +300,14 @@ LoginPassPinProvider? _provider;
     debugPrint('LoginPassPinScreen: Error message length: ${errorMessage.length}');
 
     return Container(
-      margin: EdgeInsets.only(top: 8.h),
-      padding: EdgeInsets.all(12.h),
+      constraints: BoxConstraints(
+        minWidth: 0, // Allow container to shrink
+        maxWidth: double.infinity, // Allow container to expand
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 6.h, vertical: 2.h),
       decoration: BoxDecoration(
         color: appTheme.errorContainer,
-        borderRadius: BorderRadius.circular(8.h),
+        borderRadius: BorderRadius.circular(6.h),
         border: Border.all(
           color: appTheme.errorColor.withValues(alpha: 0.5),
           width: 1.h,
@@ -287,17 +315,19 @@ LoginPassPinProvider? _provider;
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.error_outline, color: appTheme.errorColor, size: 20.h),
-          SizedBox(width: 8.h),
-          Flexible(
+          Icon(Icons.error_outline, color: appTheme.errorColor, size: 14.h),
+          SizedBox(width: 4.h),
+          Expanded( // Use Expanded instead of Flexible for better constraint handling
             child: Text(
               errorMessage,
-              style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+              style: TextStyleHelper.instance.label11MediumInter.copyWith(
                 color: appTheme.errorColor,
+                fontSize: big?14.fSize: 11.fSize,
               ),
               overflow: TextOverflow.ellipsis,
-              maxLines: 2,
+              maxLines: maxLines,
             ),
           ),
         ],
@@ -310,17 +340,21 @@ LoginPassPinProvider? _provider;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Choisir méthode *',
-          style: TextStyleHelper.instance.body14RegularSyne.copyWith(
-            color: appTheme.onSurfaceVariant,
+        SizedBox(
+          height: 24.h, // Fixed height for consistency
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "key_choix_meth_recup".tr,
+                style: TextStyleHelper.instance.body14RegularSyne.copyWith(
+                  color: appTheme.onSurfaceVariant,
+                ),
+              ),
+
+            ],
           ),
         ),
-        if (provider.errorMessage != null && provider.errorMessage!.isNotEmpty)
-          Padding(
-            padding: EdgeInsets.only(top: 8.h),
-            child: _buildErrorMessage(provider),
-          ),
         SizedBox(height: 8.h),
         _buildToggleButtons(),
       ],
@@ -340,14 +374,14 @@ LoginPassPinProvider? _provider;
         children: [
           Expanded(
             child: _buildToggleButton(
-              text: 'Code PIN',
+              text: "key_pin_millime".tr,
               isActive: _isPinMode,
               onTap: () => {_isPinMode = true, _provider?.setAuthMode("pin")},
             ),
           ),
           Expanded(
             child: _buildToggleButton(
-              text: 'Mot De Passe',
+              text: "key_mdp_millime".tr,
               isActive: !_isPinMode,
               onTap: () => {_isPinMode = false,_provider?.setAuthMode("password"),}
             ),
@@ -402,7 +436,7 @@ LoginPassPinProvider? _provider;
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Saisir votre code PIN *',
+          "key_saisi_pin".tr,
           textAlign: TextAlign.left,
           style: TextStyleHelper.instance.body14RegularSyne.copyWith(
             color: appTheme.onSurfaceVariant,
@@ -411,18 +445,44 @@ LoginPassPinProvider? _provider;
         SizedBox(height: 10.h),
         _buildPinDisplay(),
         SizedBox(height: 10.h),
-        _buildForgotPinLink(),
-        SizedBox(height: 12.h),
+        SizedBox(
+          height: 24.h, // Fixed height to prevent layout shifts
+          child: Row(
+            children: [
+              if (_provider?.errorMessage != null && _provider!.errorMessage!.isNotEmpty)
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: _buildErrorMessage(_provider!),
+                  ),
+                ),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: _buildForgotPinLink(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 30.h),
         _buildPinKeypad(),
       ],
     );
   }
   /// PIN digit display with responsive sizing and visual feedback
   Widget _buildPinDisplay() {
+    // Use provider's pin state to ensure consistency with error handling
+    final providerPin = _provider?.pin ?? '';
+    final hasPinError = _provider?.pinError != null && _provider!.pinError!.isNotEmpty;
+    
+    debugPrint('Building PIN display with provider PIN: "$providerPin", hasError: $hasPinError');
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: List.generate(6, (index) {
-        final isFilled = index < _pin.length;
+        final isFilled = index < providerPin.length;
+        debugPrint('PIN digit $index: isFilled=$isFilled, hasError=$hasPinError');
         return Semantics(
           label: 'PIN digit ${index + 1} sur 6',
           child: Container(
@@ -430,18 +490,23 @@ LoginPassPinProvider? _provider;
             height: kPinDigitHeight.h,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: isFilled
-                  ? appTheme.primaryColor.withValues(alpha: 0.1)
-                  : appTheme.surfaceColor,
+              color: hasPinError
+                  ? appTheme.errorContainer
+                  : (isFilled
+                      ? appTheme.primaryColor.withValues(alpha: 0.1)
+                      : appTheme.surfaceColor),
               border: Border.all(
-                color: isFilled ? appTheme.primaryColor : appTheme.borderColor,
+                color: hasPinError
+                    ? appTheme.errorColor
+                    : (isFilled ? appTheme.primaryColor : appTheme.borderColor),
+                width: hasPinError ? 2.h : 1.5.h,
               ),
               borderRadius: BorderRadius.circular(12.h),
             ),
             child: Text(
               isFilled ? '●' : '',
               style: TextStyleHelper.instance.headline30MediumDMSans.copyWith(
-                color: appTheme.primaryColor,
+                color: hasPinError ? appTheme.errorColor : appTheme.primaryColor,
                 fontSize: 28.fSize,
               ),
             ),
@@ -460,24 +525,56 @@ LoginPassPinProvider? _provider;
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 1.h),
           child: Text(
-            'Avez-vous oublié votre code PIN ?',
+            "key_forgot_link_pin".tr,
             style: TextStyleHelper.instance.body12MediumPoppins.copyWith(
               color: appTheme.primaryColor,
               fontSize: 12.fSize,
             ),
+             overflow: TextOverflow.visible,
+              maxLines: 2,
           ),
         ),
       ),
     );
   }
 
+List<T> shuffleExceptIndices<T>(List<T> items, List<int> fixedIndices) {
+  List<T> movableItems = [];
+  
+  // 1. Collect values from indices that ARE NOT fixed
+  for (int i = 0; i < items.length; i++) {
+    if (!fixedIndices.contains(i)) {
+      movableItems.add(items[i]);
+    }
+  }
+
+  // 2. Shuffle the movable values
+  movableItems.shuffle();
+
+  // 3. Create a new list and re-insert items
+  List<T> result = List.from(items);
+  int movablePointer = 0;
+  for (int i = 0; i < items.length; i++) {
+    if (!fixedIndices.contains(i)) {
+      result[i] = movableItems[movablePointer++];
+    }
+  }
+  
+  return result;
+}
+final keys1 = ['7', '0', '4', '9', '2', '8', '6', '3', '5', 'X', '1', '✓'];
+
+
+// Example Usage:
+// List<int> nums = [10, 20, 30, 40, 50];
+// var result = shuffleExceptIndices(nums, [0, 4]); 
+// Output: [10, 40, 20, 30, 50] (Index 0 and 4 never move)
+
   /// PIN keypad with proper touch targets and accessibility
   /// Note: This is UI only - authentication logic to be implemented later
   Widget _buildPinKeypad() {
-    final keys = ['7', '0', '4', '9', '2', '8', '6', '3', '5', 'X', '1', '✓'];
-
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 75.h),
+      padding: EdgeInsets.symmetric(horizontal: 80.h),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -539,7 +636,7 @@ LoginPassPinProvider? _provider;
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Saisir votre mot de passe *',
+          "key_password".tr,
           textAlign: TextAlign.left,
           style: TextStyleHelper.instance.body14RegularSyne.copyWith(
             color: appTheme.onSurfaceVariant,
@@ -565,7 +662,7 @@ LoginPassPinProvider? _provider;
         color: appTheme.onBackground,
         fontSize: 14.fSize,
       ),
-      hintText: 'Entrez votre mot de passe',
+      hintText: "key_enter_password".tr,
       hintStyle: TextStyleHelper.instance.body14RegularSyne.copyWith(
         color: appTheme.onSurfaceVariant,
         fontSize: 14.fSize,
@@ -629,7 +726,7 @@ LoginPassPinProvider? _provider;
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 8.h),
           child: Text(
-            'Avez-vous oublié votre mot de passe ?',
+            "key_forgotten_pass".tr,
             style: TextStyleHelper.instance.body12MediumPoppins.copyWith(
               color: appTheme.primaryColor,
               fontSize: 12.fSize,
@@ -670,7 +767,7 @@ LoginPassPinProvider? _provider;
                 ),
               )
             : Text(
-                'Valider',
+                "key_valider".tr,
                 style: TextStyleHelper.instance.title16MediumSyne.copyWith(
                   color: appTheme.onPrimary,
                   fontSize: 16.fSize,
@@ -690,7 +787,7 @@ LoginPassPinProvider? _provider;
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          "Vous n'avez pas un compte ? ",
+          "key_no_account_question".tr,
           style: TextStyleHelper.instance.body14RegularSyne.copyWith(
             color: appTheme.onSurfaceVariant,
             fontSize: 14.fSize,
@@ -703,7 +800,7 @@ LoginPassPinProvider? _provider;
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 8.h),
             child: Text(
-              "s'inscrire",
+              "key_register".tr,
               style: TextStyleHelper.instance.body14SemiBoldManrope.copyWith(
                 color: appTheme.breakColor,
                 fontSize: 14.fSize,
